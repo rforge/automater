@@ -1,0 +1,25 @@
+# ROBOHOME=$(shell pwd)
+# ROBOHOME is created by configure so it has correct path name even when
+# used in subdirectories (i.e.  tests/ )
+
+BASE=http://cran.at.r-project.org/src/base/R-2
+REPOS="http://cran.r-project.org"
+
+# file R-src/latest is written by getDates script (run by cron job)
+LATEST:=$(shell cat $(ROBOHOME)/R-src/latest)
+RPATH:=$(ROBOHOME)$(LATEST)
+
+VPATH = FLAGS
+
+RLIBS=R_LIBS=$(RPATH)/library  R_LIBS_SITE=$(RPATH)/site-library 
+RLIBSFRESH=R_LIBS_SITE=$(RPATH)/site-library-fresh R_LIBS=$(RPATH)/library 
+
+#RENV can set path before the call to $(R). 
+#PATH to R is needed to install some packages (i.e. fame) 
+R=$(RENV)  $(RPATH)/bin/R --vanilla --slave -e 
+Rf=$(RENV) $(RPATH)/bin/R --vanilla --slave -f 
+RB=$(RENV) $(RPATH)/bin/R CMD BATCH --vanilla --slave --no-save --no-restore 
+Rdiff=$(RPATH)/bin/R CMD Rdiff 
+
+RM=rm -rf
+MKDIR=mkdir -p

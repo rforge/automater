@@ -1,0 +1,18 @@
+#!/bin/sh
+
+rm -f R-src/index.html
+
+# next creates index.html but could be -
+(cd R-src ; wget -o Rver.log -O index.html "http://cran.at.r-project.org/src/base/R-2")
+	
+# omit time from date as wget of tar.gz has UTC time not local time
+cat R-src/index.html | grep ".tar.gz" | tail -1 | perl \
+   -pe 's/.*right">(\d{2})-(\w+)-(\d{4}) (\d{2}):(\d{2}).*/$1-$2-$3/go' >R-src/latestdt
+
+
+cat R-src/index.html | grep ".tar.gz" | tail -1 | perl \
+    -pe 's/.*R-(.*).tar.gz.*/R-$1/go' >R-src/latest
+
+touch -m --date=`cat R-src/latestdt` R-src/index.html
+touch -m --date=`cat R-src/latestdt` R-src/latest
+touch -m --date=`cat R-src/latestdt` R-src/latestdt

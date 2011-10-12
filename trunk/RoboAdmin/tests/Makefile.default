@@ -1,0 +1,29 @@
+
+include ../../Makevars
+
+#TESTS=${shell if [ -f *.[rR] ] ; then ls *.[rR]  ; fi}
+TESTS=${shell ls *.[rR] | grep -v "No such" }
+
+tests: testsite testfresh
+
+.NOTPARALLEL: $(TESTS:%=%out) $(TESTS:%=%outfresh) # only for db conflicts
+
+testsite: $(TESTS:%=%out)
+
+$(TESTS:%=%out):%out:%   $(RPATH)/site-library
+	@$(RM) $@ 
+	$(RLIBS)  $(RB)  $< $@.fail
+	@if [ -f $@.save ]; then  $(Rdiff) $@.save  $@.fail 1 ; fi
+	@mv $@.fail $@
+
+
+testfresh: $(TESTS:%=%outfresh)
+
+$(TESTS:%=%outfresh):%outfresh: %   
+	@$(RM) $@ 
+	$(RLIBSFRESH)  $(RB)  $< $@.fail
+	@if [ -f $@.save ]; then  $(Rdiff) $@.save  $@.fail 1 ; fi
+	@mv $@.fail $@
+
+clean:
+	$(RM) *.Rout *.Routfresh Rplots.pdf *.fail

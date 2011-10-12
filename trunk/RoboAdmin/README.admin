@@ -1,0 +1,140 @@
+First run ./configure to generate makevars.
+
+It should be possible to do any local configuration in the file Makevars.site,
+but the tests directory should have directories with locally defined *.R 
+files that stop and/or q(status= ) if things are not working.
+
+This setup is intended to make ongoing administration and R installation fairly
+automatic. There is some initial setup and, of course, things neeed to be fixed
+when they break. (See also, Problems with R and Package Installs, below.
+
+The Makefile, getDates, and the cronjob control what really happens. Below is
+an attempt to document this, but look especially at the Makefile if you want to
+really know what happens.
+
+The description in this file is generic. Keep site specific notes somewhere else
+(for example, as comments in Makevars.site).
+  
+A cron job can be used to checks for new versions of R and install them. 
+It should run ./getDates and then make default. Make will build and install a 
+new R version if it is available, based on the dates, and install site-library,
+site-library-fresh, site-library-devel, and site-library-fresh-notdevel. 
+
+Make default will also update site-library-fresh automatically each time the 
+cron job runs, even when a new R version is not installed. 
+
+To add more packages to the list installed in the different libraries, modify 
+the variables in the Makevars.site file). The package will be installed when a
+new R is installed. 
+
+The logic of these libraries is that site-library is the one users will 
+normally want and it will remain unchanged once R is installed.
+Normal users might also use site-library-fresh, which will be updated 
+regularly. See the README file on these. The libraries site-fresh-notdevel 
+and site-devel will not be used by normal users. Devel is for packages under
+development, while notdevel are packages needed for devel, but typically 
+excluding devel packages that may be in site-library-fresh.
+
+To install the package in the existing R site-library do
+
+   make site
+
+To update the packages in the existing R libraries other than site-library do
+
+   make fresh
+or
+   make devel
+or
+   make notdevel
+
+(Note, standard policy is not to update packages in the site-library. )
+
+The cron job will check the version of the R release, which is relatively 
+quick when there is not a new release, and then update packages in the FRESH 
+list as specified in Makevars.site.
+
+The crontab file can be viewed with 
+crontab -l
+
+To edit
+export EDITOR=vi
+crontab -e
+
+And, for example, to run daily insert lines like
+m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make default) >RoboAdmin /cron.out
+
+with m and d replace by minute and hour. If a http_proxy is needed it can be 
+specified:
+
+m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make default) >RoboAdmin/cron.out
+
+[crontab Entry Format
+     A crontab file consists of lines of  six  fields  each.  The
+     fields  are  separated by spaces or tabs. The first five are
+     integer patterns that specify the following:
+
+     minute (0-59),
+     hour (0-23),
+     day of the month (1-31),
+     month of the year (1-12),
+     day of the week (0-6 with 0=Sunday).
+]
+
+#############################################
+
+Problems with R and Package Installs
+
+#############################################
+
+Compiling R requires the a fortran and C compiler, X11 header files, 
+and some other things that are often not installed on a computer not 
+used for program development. Also, some packages require additional 
+support libraries. Following are notes about some Debian / Ubuntu p
+ackages that are needed.
+
+If a package fails to install it is not signaled as an error, so 
+other packages will be installed, and updates will be done by the 
+cron job. Make default will try again to install when it is re-run, 
+so once the package dependencies ar in place then make default should 
+install it (automatically if a cron job is run).
+
+########## For R ##########
+  g++
+  gfortran
+  libreadline6-dev
+  libx11-dev
+  libxt-dev
+
+  texlive-base
+  texlive-extra-utils
+  texlive-latex-base
+  texlive-bibtex-extra (puts standard url bst files in /usr/share/texmf-texlive/bibtex/bst/urlbst
+  texlive-fonts-recommended (to build GPArotation, and others?)
+
+  texinfo
+  texi2html
+
+  tcl8.5
+  tk8.5
+  libatlas-base-dev   (to use debian/ubuntu  R build and be able to compile f77)
+
+    
+########## For Packages ##########
+
+  libxml2-dev to build  XML  for SSOAP
+  libcurl4-openssl-dev  (or libcurl4-gnutls-dev)  to build Rcurl for SSOAP
+  libmysqlclient-dev      	for RMySQL
+  mysql-client      		for RMySQL, TSMySQL
+
+  libpq-dev               	for RPostgreSQL
+  postgresql-client-common	for RPostgreSQL, TSPostgreSQL
+
+  libclass-csv-perl       to build WriteXLS with working xls interface
+ 
+  unixodbc            
+  unixodbc-bin            
+  odbc-dev                for RODBC
+  odbc-postgres           for RODBC to talk to PostgreSQL
+  
+  fame package  requires proprietary Fame HLI libraries
+

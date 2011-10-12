@@ -1,0 +1,72 @@
+
+##########  R USER NOTES ##########
+
+R versions in this directory are installed approximately when the R version is 
+released.  A specific R  version can be used by setting, for example,
+
+   export RHOME=/home/mfa/gilp/Rprod/R-2.13.1/
+   export PATH=$RHOME/bin:$PATH
+
+The install process sends email notification to users when a new version has
+been install. To be added to the list you should contact the person who set 
+up this process on you system.
+
+The R recommended packages, which are distributed automatically with R, are 
+installed in the library directory of the distribution and not updated. (You 
+will get a newer library with a newer version of R.) This library is available
+by default.
+
+### site-library ###
+Other R packages, from CRAN and other repositories, are installed in the 
+site-library directory of the distribution and not updated.  (You will get a 
+newer site-library with a newer version of R.) This site-library is
+also available by default. 
+
+### site-library-fresh ###
+Some (possibly packages in the site-library list) R packages, from CRAN and 
+other repositories, are installed in the site-library-fresh directory of the 
+distribution.  These will be updated from 
+time-to-time, so you cannot be guaranteed the version of a package is the same 
+as the last time you used the library. Generally, this library will only be
+updated for the most recent version of R. You will not have access
+to this library by default, but can access it by specifying, for example,
+  
+  export R_LIBS_SITE=$RHOME/site-library-fresh/
+or 
+  export R_LIBS_SITE=$RHOME/site-library-fresh/:$RHOME/site-library/
+
+The second will cause R to look first in site-library-fresh and then in 
+site-library, using the first place a specified package is found.
+
+
+### site-library-devel ###
+Some unreleased versions of R packages are installed in the 
+site-library-devel directory of the distribution.  These will be updated from 
+time-to-time, may well be broken at certain times, and you are almost certainly 
+guaranteed the version of a package is NOT the same as the last time you used 
+the library. This library will only be maintained for the most recent version 
+of R. You will not have access to this library by default, but can access it 
+by specifying, for example,
+  
+  export R_LIBS_SITE=$RHOME/site-library-devel/:$RHOME/site-library-fresh/\
+:$RHOME/site-library/
+
+
+
+##########  R VERSION NOTES ##########
+
+The R build is done on a specific system and should work on similar systems in 
+the Bank, but may not work on sytems with a different OS. This can be of concern
+when the OS is being upgraded, and some machines have different versions than 
+others.  The most recent version of R will typically be built on a newer
+operating system (and it is sometimes difficult to build it on an old OS).
+Don't expect to get a new R on an old OS, or an old R on a new OS.
+For reference (uname -a):
+ 
+  R-2.13.0 built June 14, 2011 on asdcl1  Linux asd05545 2.6.18-194.26.1.el5 #1 SMP Fri Oct 29 14:21:16 EDT 2010 x86_64 x86_64 x86_64 GNU/Linux
+  R-2.13.1 built July 21, 2011 on zeppo   Linux zeppo 2.6.18-238.12.1.el5 #1 SMP Sat May 7 20:18:50 EDT 2011 x86_64 x86_64 x86_64 GNU/Linux
+
+
+##########  INSTALLATION INSTRUCTIONS ##########
+
+See the file README.admin  and the Makefile for more details.

@@ -1,0 +1,6 @@
+Loading required package: tframePlus
+Loading required package: tframe
+Loading required package: WriteXLS
+> proc.time()
+   user  system elapsed 
+  1.940   0.070   2.039 

@@ -1,0 +1,21 @@
+RUSERS=somebody@somewhere
+RSUPPORT=somebody@somewhere
+
+# Setting the path in RENV before the call to $(R) is only needed by
+# some packages configurations (e.g. fame) which need it to find R.
+RENV=FAME=$(FAME) PATH=$(ROBOHOME)/$(LATEST)/bin:$(PATH)
+
+OTHERREPOS="http://www.omegahat.org/R"
+OTHERREPOSPKGS=RCurl SSOAP
+
+FRESHnotDEVEL:=quadprog quantmod gtools gdata date urca PerformanceAnalytics \
+mgcv fBasics sna fSeries copula optimx \
+DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite fame RODBC XML \
+Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate googleVis
+
+DEVEL:=tframe tframePlus dse EvalEst CDNmoney GPArotation tsfa numDeriv BB \
+TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol  TSPostgreSQL \
+TSpadi TSxls TSzip
+
+SITE:=$(FRESHnotDEVEL) $(DEVEL)
+FRESH:=$(FRESHnotDEVEL) $(DEVEL)
