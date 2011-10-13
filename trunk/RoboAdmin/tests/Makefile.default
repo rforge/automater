@@ -1,8 +1,7 @@
 
 include ../../Makevars
 
-#TESTS=${shell if [ -f *.[rR] ] ; then ls *.[rR]  ; fi}
-TESTS=${shell ls *.[rR] | grep -v "No such" }
+TESTS=${bash ls *.[rR] }
 
 tests: testsite testfresh
 
