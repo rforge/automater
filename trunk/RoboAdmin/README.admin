@@ -3,7 +3,21 @@ updating fairly automatic. There is some initial setup and, of course, things
 neeed to be fixed when they break. (See also, Problems with R and Package 
 Installs, below.)
 
-##### Quick Notes (for those that do not like documentation) #####
+These scripts and Makefiles can be checked out and update with anonymous access
+to the svn archive. For example, to put files and subdirectories in the 
+directory Rprod do 
+
+  svn checkout \
+     svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin Rprod
+
+This may be complicated by firewalls and proxy servers.
+To contribute, and for further details see "SVN Notes" below.
+
+
+#################################################################
+##### Quick Notes (for those that do not like documentation)#####
+#################################################################
+
 First run
 
   ./configure 
@@ -32,7 +46,13 @@ or pgilbert.ttv9z@ncf.ca.
 
 will run the tests. This can be added to the cron job.
 
-##### End Quick Notes  #####
+#################################################################
+#####          End Quick Notes                              #####
+#################################################################
+
+#################################################################
+#####          Local Configuration                          #####
+#################################################################
 
 It should be possible to do any local configuration in the file Makevars.site,
 but the tests directory should have directories with locally defined *.R 
@@ -45,13 +65,8 @@ really know what happens.
 The description in this file is generic. Keep site specific notes somewhere else
 (for example, as comments in Makevars.site).
   
-A cron job can be used to check for new versions of R and install them. 
-It should run ./getDates and then make. Make will build and install a 
-new R version if it is available, based on the dates, and install site-library,
-site-library-fresh, site-library-devel, and site-library-fresh-notdevel. 
-
-Make will update site-library-fresh automatically each time the 
-cron job runs, even when a new R version is not installed. 
+Make will update site-library-fresh even when a new R version is not installed.
+(This can be automated with a cron job, described below.) 
 
 To add more packages to the list installed in the different libraries, modify 
 the variables in the Makevars.site file. The package will be installed when 
@@ -84,6 +99,15 @@ or
 
 (Note, the policy is to not update packages in the site-library. )
 
+#################################################################
+#####         cron job Configuration                        #####
+#################################################################
+
+A cron job can be used to check for new versions of R and install them. 
+It should run ./getDates and then make. Make will build and install a 
+new R version if it is available, based on the dates, and install site-library,
+site-library-fresh, site-library-devel, and site-library-fresh-notdevel. 
+
 The cron job will check the version of the R release, which is relatively 
 quick when there is not a new release, and then update packages in the FRESH 
 list as specified in Makevars.site.
@@ -115,11 +139,41 @@ m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ;
      day of the week (0-6 with 0=Sunday).
 ]
 
-#############################################
+ 
+#################################################################
+#####                SVN Notes                              #####
+#################################################################
 
-Problems with R and Package Installs
+These scripts and Makefiles can be checked out and update with anonymous access
+to the svn archive. For example, to put files and subdirectories in the 
+directory Rprod do 
 
-#############################################
+  svn checkout \
+     svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin Rprod
+
+This may be complicated by firewalls and proxy servers.
+(At some sites this can be fixed by settings in  ~/.subversion/servers
+  http-proxy-host=wwwproxy
+  http-proxy-port=8080
+
+If you want to contribute, register as a site user at 
+
+  https://r-forge.r-project.org/
+
+and then request to join the project at
+
+   https://r-forge.r-project.org/projects/automater/
+
+Then you will be able to checkout:
+
+  svn checkout svn+ssh://userid@scm.r-forge/svnroot/automater/trunk/RoboAdmin RoboAdmin
+
+and commit back to the repository.
+
+
+#################################################################
+#####      Problems with R and Package Installs            #####
+#################################################################
 
 Compiling R requires the a fortran and C compiler, X11 header files, 
 and some other things that are often not installed on a computer not 
