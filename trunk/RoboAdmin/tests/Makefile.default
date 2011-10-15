@@ -1,7 +1,7 @@
 
 include ../../Makevars
 
-TESTS=${bash ls *.[rR] }
+TESTS=${wildcard *.[rR] }
 
 tests: testsite testfresh
 
