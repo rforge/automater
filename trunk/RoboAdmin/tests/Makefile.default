@@ -11,8 +11,13 @@ testsite: $(TESTS:%=%out)
 
 $(TESTS:%=%out):%out:%   $(RPATH)/site-library
 	@$(RM) $@ 
-	$(RLIBS)  $(RB)  $< $@.fail
-	@if [ -f $@.save ]; then  $(Rdiff) $@.save  $@.fail 1 ; fi
+	@echo making $@ ...
+	@$(RLIBS)  $(RB)  $< $@.fail
+	@if [ -f $@.save ]; then  \
+	  grep -v "trying URL" $@.save >$@.save.tmp ; \
+	  grep -v "trying URL" $@.fail >$@.fail.tmp ; \
+	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
+	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@
 
 
@@ -20,9 +25,16 @@ testfresh: $(TESTS:%=%outfresh)
 
 $(TESTS:%=%outfresh):%outfresh: %   
 	@$(RM) $@ 
-	$(RLIBSFRESH)  $(RB)  $< $@.fail
-	@if [ -f $@.save ]; then  $(Rdiff) $@.save  $@.fail 1 ; fi
+	@echo making $@ ...
+	@$(RLIBSFRESH)  $(RB)  $< $@.fail
+	@if [ $(subst fresh,,$@.save) ]; then  \
+	  grep -v "trying URL" $(subst fresh,,$@.save) >$@.save.tmp ; \
+	  grep -v "trying URL" $@.fail >$@.fail.tmp ; \
+	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
+	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@
 
 clean:
-	$(RM) *.Rout *.Routfresh Rplots.pdf *.fail
+	$(RM) *.Rout *.Routfresh *.Routfresh Rplots.pdf *.fail
+	$(RM) *.Rout.fail.tmp *.Routfresh.fail.tmp
+	$(RM) *.Rout.save.tmp *.Routfresh.save.tmp
