@@ -4,20 +4,133 @@ Loading required package: tframePlus
 Loading required package: TSdbi
 Loading required package: RMySQL
 Loading required package: DBI
-Loading required package: timeSeries
-Loading required package: timeDate
-***** RMySQL  with timeSeries representation *********
+************** RMySQL  Examples ******************************
+**************************************************************
+* WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
+**************************************************************
+Example creating tables for different time series.
+   tables created:
+ [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
+[11] "W"   
+   COLUMN_NAME COLUMN_DEFAULT    COLLATION_NAME DATA_TYPE CHARACTER_SET_NAME
+1      vintage           <NA> latin1_swedish_ci   varchar             latin1
+2           id           <NA> latin1_swedish_ci   varchar             latin1
+3         year           <NA>              <NA>       int               <NA>
+4            v           <NA>              <NA>    double               <NA>
+5           id           <NA> latin1_swedish_ci   varchar             latin1
+6         year           <NA>              <NA>       int               <NA>
+7            v           <NA>              <NA>    double               <NA>
+8      vintage           <NA> latin1_swedish_ci   varchar             latin1
+9           id           <NA> latin1_swedish_ci   varchar             latin1
+10        year           <NA>              <NA>       int               <NA>
+11           v           <NA>              <NA>    double               <NA>
+12          id           <NA> latin1_swedish_ci   varchar             latin1
+13        year           <NA>              <NA>       int               <NA>
+14           v           <NA>              <NA>    double               <NA>
+   CHARACTER_MAXIMUM_LENGTH NUMERIC_PRECISION
+1                        20                NA
+2                        70                NA
+3                        NA                10
+4                        NA                22
+5                        70                NA
+6                        NA                10
+7                        NA                22
+8                        20                NA
+9                        70                NA
+10                       NA                10
+11                       NA                22
+12                       40                NA
+13                       NA                10
+14                       NA                22
+ [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
+[11] "W"   
+[1] TRUE
+Examples to put (fictitious) data in tables
+*************  Examples  Using TSdbi*************
+**************        with ts
+**************   done with ts
 Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:timeSeries':
-
-    time<-
-
 The following object(s) are masked from 'package:base':
 
     as.Date
+
+**************        with zoo
+**************   done with zoo
+**************        with ets
+**************        disconnecting ets
+database tables:
+ [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
+[11] "W"   
+**************  Examples Using dbGetQuery
+  COLUMN_NAME COLUMN_DEFAULT    COLLATION_NAME DATA_TYPE CHARACTER_SET_NAME
+1          id           <NA> latin1_swedish_ci   varchar             latin1
+2        year           <NA>              <NA>       int               <NA>
+3           v           <NA>              <NA>    double               <NA>
+  CHARACTER_MAXIMUM_LENGTH NUMERIC_PRECISION
+1                       40                NA
+2                       NA                10
+3                       NA                22
+  COLUMN_NAME DATA_TYPE CHARACTER_MAXIMUM_LENGTH NUMERIC_PRECISION
+1          id   varchar                       40                NA
+2        year       int                       NA                10
+3      period       int                       NA                10
+4           v    double                       NA                22
+**************        dbGetQuery with ets
+                                      description
+1 Quebec Savings Banks - Unsecured Personal Loans
+                                                                            documentation
+1 Quebec Savings Banks - Unsecured Personal LoansDiscontinued August/1987, DO NOT ARCHIVE
+**************        disconnecting ets
+**************        with get.hist.quote
+Loading required package: tseries
+Loading required package: quadprog
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=15&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+......
+downloaded 206 Kb
+
+time series starts 1998-01-02
+time series ends   2011-10-14
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=15&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... ..
+downloaded 262 Kb
+
+time series ends   2011-10-14
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F08%2F10&date=10%2F15%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+Content type 'text/html' length unknown
+opened URL
+.......... .......... .....
+downloaded 25 Kb
+
+Warning message:
+closing unused connection 3 (http://quote.yahoo.com) 
+**************        disconnecting test
+[1] TRUE
+[1] TRUE
+***** RMySQL  with timeSeries representation *********
+Loading required package: timeSeries
+Loading required package: timeDate
+
+Attaching package: 'timeSeries'
+
+The following object(s) are masked from 'package:zoo':
+
+    time<-
 
 NULL
 [1] NA
@@ -25,4 +138,4 @@ NULL
 [1] TRUE
 > proc.time()
    user  system elapsed 
-  3.130   0.020   3.216 
+ 76.220   1.150  81.633 
