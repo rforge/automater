@@ -1,9 +1,0 @@
-**************  vintage  examples with fame Server
-**************   connecting ets fame server using local Fame server
-Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
-Assuming 'ets /home/ets5/mfadata/etsmfacansim_20060526.db' is a Fame Server path due to white space.
-Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
-Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
-Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
-***********   connecting ets fame server using remote Fame server
-[1] TRUE

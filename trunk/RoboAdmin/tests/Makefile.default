@@ -1,5 +1,6 @@
 
 include ../../Makevars
+-include Makefile.depends
 
 TESTS=${wildcard *.[rR] }
 
@@ -9,7 +10,7 @@ tests: testsite testfresh
 
 testsite: $(TESTS:%=%out)
 
-$(TESTS:%=%out):%out:%   $(RPATH)/site-library
+$(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
 	@$(RLIBS)  $(RB)  $< $@.fail
@@ -23,11 +24,11 @@ $(TESTS:%=%out):%out:%   $(RPATH)/site-library
 
 testfresh: $(TESTS:%=%outfresh)
 
-$(TESTS:%=%outfresh):%outfresh: %   
+$(TESTS:%=%outfresh):%outfresh: %   $(SITEFRESH_PKGS:%=$(RPATH)/site-library/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
 	@$(RLIBSFRESH)  $(RB)  $< $@.fail
-	@if [ $(subst fresh,,$@.save) ]; then  \
+	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  grep -v "trying URL" $(subst fresh,,$@.save) >$@.save.tmp ; \
 	  grep -v "trying URL" $@.fail >$@.fail.tmp ; \
 	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi

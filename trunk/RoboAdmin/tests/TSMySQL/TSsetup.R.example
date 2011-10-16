@@ -1,4 +1,4 @@
-require("RMySQL")
+require("TSMySQL")
 
 cat("************** RMySQL  Examples ******************************\n")
 cat("**************************************************************\n")
@@ -27,6 +27,21 @@ m <- dbDriver("MySQL") # note that this is needed in sourced files.
 dbListTables(con) 
 source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
 dbListTables(con) 
+dbDisconnect(con)
+##################################################################
+
+con <- if ("" != user) tryCatch(TSconnect(m, dbname=dbname, 
+	  username=user, password=passwd, host=host)) else  
+    tryCatch(TSconnect(m, dbname=dbname)) # pass user/passwd/host in ~/.my.cnf
+
+if(inherits(con, "try-error")) stop("CreateTables did not work.")
+
+source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
+source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
+source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
+source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
+
+cat("**************        disconnecting test\n")
 dbDisconnect(con)
 dbUnloadDriver(m)
 

@@ -1,5 +1,0 @@
-**************   test fame Server
-**************        connecting ets fame server
-Assuming 'ets /home/ets/db/etsmfacansim.db' is a Fame Server path due to white space.
-***********   reading from ets /home/ets/db/etsmfacansim.db using con
-[1] TRUE
