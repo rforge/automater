@@ -4,8 +4,8 @@ require("TSfame")
 
 cat("**************        connecting testFame.db\n")
 
-unlink("tests/testFame.db")
-con <- TSconnect("fame", dbname="tests/testFame.db") 
+unlink("testFame.db")
+con <- TSconnect("fame", dbname="testFame.db") 
 
 cat("**************        examples\n")
 

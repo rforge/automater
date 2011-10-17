@@ -1,3 +1,18 @@
+Loading required package: TSfame
+Loading required package: tframe
+Loading required package: tframePlus
+Loading required package: TSdbi
+Loading required package: DBI
+Loading required package: fame
+Loading required package: tis
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 **************  vintage  examples with fame Server
 **************   connecting ets fame server using local Fame server
 Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
@@ -7,3 +22,6 @@ Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path
 Assuming 'ets /home/ets5/mfadata/etsmfacansim_20110513.db' is a Fame Server path due to white space.
 ***********   connecting ets fame server using remote Fame server
 [1] TRUE
+> proc.time()
+   user  system elapsed 
+  2.155   0.042   2.719 
