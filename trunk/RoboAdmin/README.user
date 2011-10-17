@@ -8,7 +8,7 @@ released.  A specific R version can be used by setting, for example,
    export PATH=$RHOME/bin:$PATH
 
 or in csh    
-   set RHOME=/path/to/RoboAdmin/R-2.13.2/
+   setenv RHOME /path/to/RoboAdmin/R-2.13.2/
    set path=($RHOME/bin $path )
 
 where /path/to/RoboAdmin needs to be set to the location where RoboAdmin has
