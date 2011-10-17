@@ -6,44 +6,8 @@ Loading required package: DBI
 **************************************************************
  [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
 [11] "W"   
-Example creating tables for different time series.
-   tables created:
- [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
-[11] "W"   
-   COLUMN_NAME COLUMN_DEFAULT    COLLATION_NAME DATA_TYPE CHARACTER_SET_NAME
-1      vintage           <NA> latin1_swedish_ci   varchar             latin1
-2           id           <NA> latin1_swedish_ci   varchar             latin1
-3         year           <NA>              <NA>       int               <NA>
-4            v           <NA>              <NA>    double               <NA>
-5           id           <NA> latin1_swedish_ci   varchar             latin1
-6         year           <NA>              <NA>       int               <NA>
-7            v           <NA>              <NA>    double               <NA>
-8      vintage           <NA> latin1_swedish_ci   varchar             latin1
-9           id           <NA> latin1_swedish_ci   varchar             latin1
-10        year           <NA>              <NA>       int               <NA>
-11           v           <NA>              <NA>    double               <NA>
-12          id           <NA> latin1_swedish_ci   varchar             latin1
-13        year           <NA>              <NA>       int               <NA>
-14           v           <NA>              <NA>    double               <NA>
-   CHARACTER_MAXIMUM_LENGTH NUMERIC_PRECISION
-1                        20                NA
-2                        70                NA
-3                        NA                10
-4                        NA                22
-5                        70                NA
-6                        NA                10
-7                        NA                22
-8                        20                NA
-9                        70                NA
-10                       NA                10
-11                       NA                22
-12                       40                NA
-13                       NA                10
-14                       NA                22
- [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
-[11] "W"   
 [1] TRUE
 [1] TRUE
 > proc.time()
    user  system elapsed 
-  1.480   0.040   1.823 
+  0.963   0.047   1.745 
