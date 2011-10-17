@@ -2,10 +2,17 @@
 ##########  R USER NOTES ##########
 
 R versions in this directory are installed approximately when the R version is 
-released.  A specific R  version can be used by setting, for example,
+released.  A specific R version can be used by setting, for example,
 
-   export RHOME=/home/mfa/gilp/Rprod/R-2.13.1/
+   export RHOME=/path/to/RoboAdmin/R-2.13.2/
    export PATH=$RHOME/bin:$PATH
+
+or in csh    
+   set RHOME=/path/to/RoboAdmin/R-2.13.2/
+   set path=($RHOME/bin $path )
+
+where /path/to/RoboAdmin needs to be set to the location where RoboAdmin has
+been installed on your system.
 
 The install process sends email notification to users when a new version has
 been install. To be added to the list you should contact the person who set 
