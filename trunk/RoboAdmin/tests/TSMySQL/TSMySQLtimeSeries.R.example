@@ -24,7 +24,11 @@ m <- dbDriver("MySQL") # note that this is needed in sourced files.
      }else  con <- 
        dbConnect(m, dbname=dbname) # pass user/passwd/host in ~/.my.cnf
 
+# sink here because printout from commands in source depends somewhat on
+#  the server character set
+sink("tableLayout.txt.tmp")
 source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+sink(NULL)
 dbListTables(con) 
 dbDisconnect(con)
 ##################################################################
@@ -37,7 +41,9 @@ if(inherits(con, "try-error")) stop("CreateTables did not work.")
 
 source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
 source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
+sink("tableLayout.txt.tmp", append=TRUE)
 source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
+sink(NULL)
 source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
 
 cat("**************        disconnecting test\n")

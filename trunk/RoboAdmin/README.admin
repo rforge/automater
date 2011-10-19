@@ -99,6 +99,17 @@ or
 
 (Note, the policy is to not update packages in the site-library. )
 
+To manually run any tests you have specified in the tests/ directory
+
+   make tests
+
+This should only run tests for which a library has been updated, or tests
+that have been changed or added. If you want to run all tests then
+
+   cd test
+   make clean
+   make tests
+     
 #################################################################
 #####         cron job Configuration                        #####
 #################################################################
@@ -120,12 +131,12 @@ export EDITOR=vi
 crontab -e
 
 And, for example, to run daily insert lines like
-m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make default) >RoboAdmin /cron.out
+m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin /cron.out
 
 with m and d replace by minute and hour. If a http_proxy is needed it can be 
 specified:
 
-m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make default) >RoboAdmin/cron.out
+m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin/cron.out
 
 [crontab Entry Format
      A crontab file consists of lines of  six  fields  each.  The
