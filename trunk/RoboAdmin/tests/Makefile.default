@@ -17,9 +17,9 @@ $(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 	@$(RLIBS)  $(RB)  $< $@.fail
 	@if [ -f $@.save ]; then  \
 	  grep -v "trying URL" $@.save | \
-	  grep -v "downloaded" | grep -v "....." >$@.save.tmp ; \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\." >$@.save.tmp ; \
 	  grep -v "trying URL" $@.fail | \
-	  grep -v "downloaded" | grep -v "....." >$@.fail.tmp ; \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\." >$@.fail.tmp ; \
 	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
 	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@
@@ -33,9 +33,9 @@ $(TESTS:%=%outfresh):%outfresh: %   $(SITEFRESH_PKGS:%=$(RPATH)/site-library/%)
 	@$(RLIBSFRESH)  $(RB)  $< $@.fail
 	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  grep -v "trying URL" $(subst fresh,,$@.save) | \
-	  grep -v "downloaded" | grep -v ".....">$@.save.tmp ; \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\.">$@.save.tmp ; \
 	  grep -v "trying URL" $@.fail | \
-	  grep -v "downloaded" | grep -v "....." >$@.fail.tmp ; \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\." >$@.fail.tmp ; \
 	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
 	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@

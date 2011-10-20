@@ -1,0 +1,74 @@
+Loading required package: TSPostgreSQL
+Loading required package: tframe
+Loading required package: tframePlus
+Loading required package: TSdbi
+Loading required package: RPostgreSQL
+Loading required package: DBI
+************** RPostgreSQL  Examples ******************************
+**************************************************************
+* WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
+**************************************************************
+ [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
+[11] "t"   
+[1] TRUE
+Examples to put (fictitious) data in tables
+*************  Examples  Using TSdbi*************
+**************        with ts
+**************   done with ts
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
+**************        with zoo
+**************   done with zoo
+**************        skipping ets tests
+database tables:
+ [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
+[11] "t"   
+**************  Examples Using dbGetQuery
+data frame with 0 columns and 0 rows
+data frame with 0 columns and 0 rows
+**************  skipping dbGetQuery with ets
+**************        with get.hist.quote
+Loading required package: tseries
+Loading required package: quadprog
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=19&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......
+downloaded 207 Kb
+
+time series starts 1998-01-02
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=19&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... ...
+downloaded 263 Kb
+
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F12%2F10&date=10%2F19%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+Content type 'text/html' length unknown
+opened URL
+.......... .......... .....
+downloaded 25 Kb
+
+Warning message:
+closing unused connection 3 (http://quote.yahoo.com) 
+**************        disconnecting test
+[1] TRUE
+[1] TRUE
+> proc.time()
+   user  system elapsed 
+112.040   1.320 179.059 

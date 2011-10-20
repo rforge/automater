@@ -24,8 +24,10 @@ m <- dbDriver("MySQL") # note that this is needed in sourced files.
      }else  con <- 
        dbConnect(m, dbname=dbname) # pass user/passwd/host in ~/.my.cnf
 
+sink("tableLayout.txt.tmp")
 dbListTables(con) 
 source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+sink(NULL)
 dbListTables(con) 
 dbDisconnect(con)
 dbUnloadDriver(m)

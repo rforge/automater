@@ -1,7 +1,3 @@
-service <- Sys.getenv("_R_CHECK_HAVE_POSTGRES_")
-
-if(identical(as.logical(service), TRUE)) {
-
 require("TSPostgreSQL")
 
 cat("************** RPostgreSQL  Examples ******************************\n")
@@ -11,7 +7,7 @@ cat("**************************************************************\n")
 
 m <- dbDriver("PostgreSQL") # note that this is needed in sourced files.
 
-###### This is to set up tables. Otherwise use TSconnect#########
+###### This tests setting up tables. #########
 
    dbname   <- Sys.getenv("POSTGRES_DATABASE")
    if ("" == dbname)   dbname <- "test"
@@ -34,30 +30,10 @@ m <- dbDriver("PostgreSQL") # note that this is needed in sourced files.
        con <- dbConnect(m, dbname=dbname, host=host) 
        }
 
+sink("tableLayout.txt.tmp")
 dbListTables(con) 
 source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+sink(NULL)
 dbListTables(con) 
 dbDisconnect(con)
-##################################################################
-
-# pass user/passwd in ~/.pgpass (but host defaults to PGHOST or localhost).
-
-con <- if ("" != user)  
-          tryCatch(TSconnect(m, dbname=dbname, user=user, password=passwd, host=host)) 
-    else  tryCatch(TSconnect(m, dbname=dbname)) 
-    
-if(inherits(con, "try-error")) stop("CreateTables did not work.")
-
-source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
-source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
-source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
-source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
-
-cat("**************        disconnecting test\n")
-dbDisconnect(con)
 dbUnloadDriver(m)
-
-} else  {
-   cat("POSTGRES not available. Skipping tests.\n")
-   cat("_R_CHECK_HAVE_POSTGRES_ setting ", service, "\n")
-   }
