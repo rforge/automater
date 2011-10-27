@@ -1,6 +1,6 @@
 These scripts and Makefiles are intended to make ongoing R administration and 
 updating fairly automatic. There is some initial setup and, of course, things 
-neeed to be fixed when they break. (See also, Problems with R and Package 
+need to be fixed when they break. (See also, Problems with R and Package 
 Installs, below.)
 
 These scripts and Makefiles can be checked out and update with anonymous access
@@ -22,7 +22,7 @@ First run
 
   ./configure 
 
-to generate makevars, then 
+to generate Makevars, then 
 
   cp Makevars.site.example Makevars.site
 
@@ -74,18 +74,23 @@ the cron job runs, or can be done immediately with
 
   make
 
-The logic of these libraries is that site-library is the one users will 
-normally want and it will remain unchanged once R is installed, other than
-installing packages added to the list. Normal users might also use 
-site-library-fresh, in which packages will be updated regularly. 
-See the README.user file for more on this. 
+The logic of these libraries is that site-library (packages defined by SITE)
+is the one users will normally want and it will remain unchanged once R is 
+installed, other than installing packages added to the list (SITE). 
 
-The libraries site-fresh-notdevel and site-devel will not be used by normal 
-users. Devel is for packages under development at your site, while notdevel 
-has packages needed for devel. (The logic of excluding devel packages is to 
-reduce the possibility of accidentally testing with old versions.)
+Normal users might also use site-library-fresh (packages defined by FRESH), 
+in which packages will be updated regularly. See the README.user file for 
+directions on how a user would access this. 
 
-To manually install packages in the existing R site-library do
+The libraries site-devel (packages defined by DEVEL) and site-fresh-notdevel 
+(packages defined by FRESHnotDEVEL) are for the purpose of any packages you
+might be developing at your own site and need to test, but will not be used 
+by normal users. Devel is for the packages under development at your site, 
+while fresh-notdevel has packages needed for development but not being 
+developed at your site. (The logic of this is to reduce the possibility 
+of accidentally testing with old versions.)
+
+To install packages in the existing R site-library do
 
    make site
 
@@ -99,29 +104,34 @@ or
 
 (Note, the policy is to not update packages in the site-library. )
 
-To manually run any tests you have specified in the tests/ directory
+To run any tests you have specified in the tests/ directory
 
    make tests
 
-This should only run tests for which a library has been updated, or tests
+This runs tests for using both the site-library and the site-library-fresh.
+It should only run tests for which a library has been updated, or for tests
 that have been changed or added. If you want to run all tests then
 
    cd test
    make clean
    make tests
-     
+
+Tests can also be run for the devel libraries with
+
+   make testdevel
+    
 #################################################################
 #####         cron job Configuration                        #####
 #################################################################
 
-A cron job can be used to check for new versions of R and install them. 
-It should run ./getDates and then make. Make will build and install a 
-new R version if it is available, based on the dates, and install site-library,
+A cron job can be used to check for a new versions of R and install it. 
+The cron job should run ./getDates and then make. Make will build and install a 
+new R version if it is available, based on the dates, then install site-library,
 site-library-fresh, site-library-devel, and site-library-fresh-notdevel. 
 
 The cron job will check the version of the R release, which is relatively 
 quick when there is not a new release, and then update packages in the FRESH 
-list as specified in Makevars.site.
+list as specified in Makevars.site. This also is fairly quick.
 
 The crontab file can be viewed with 
 crontab -l

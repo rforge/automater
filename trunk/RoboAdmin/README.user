@@ -62,18 +62,15 @@ by specifying, for example,
 
 ##########  R VERSION NOTES ##########
 
-The R build is done on a specific system and should work on similar systems in 
-the Bank, but may not work on sytems with a different OS. This can be of concern
+The R build is done on a specific system and may work on similar systems that
+mount the file system in a network environment, but may not work on sytems
+with a different OS. This can be of concern
 when the OS is being upgraded, and some machines have different versions than 
 others.  The most recent version of R will typically be built on a newer
 operating system (and it is sometimes difficult to build it on an old OS).
 Don't expect to get a new R on an old OS, or an old R on a new OS.
-For reference (uname -a):
- 
-  R-2.13.0 built June 14, 2011 on asdcl1  Linux asd05545 2.6.18-194.26.1.el5 #1 SMP Fri Oct 29 14:21:16 EDT 2010 x86_64 x86_64 x86_64 GNU/Linux
-  R-2.13.1 built July 21, 2011 on zeppo   Linux zeppo 2.6.18-238.12.1.el5 #1 SMP Sat May 7 20:18:50 EDT 2011 x86_64 x86_64 x86_64 GNU/Linux
 
 
 ##########  INSTALLATION INSTRUCTIONS ##########
 
-See the file README.admin  and the Makefile for more details.
+See the file README.admin (and the Makefile for details).
