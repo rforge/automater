@@ -189,8 +189,18 @@ Then you will be able to checkout:
 
   svn checkout svn+ssh://userid@scm.r-forge/svnroot/automater/trunk/RoboAdmin RoboAdmin
 
-and commit back to the repository.
+and commit back to the repository. For sites that do not allow ssh on port 22, 
+this will also work on port 23 by putting an appropiate entry in 
+your .ssh/config file:
 
+host r-forge
+    Hostname scm.r-forge.r-project.org
+    Port 23
+    ForwardAgent no
+    ForwardX11 no
+
+then checkout can be done with:
+svn checkout svn+ssh://userid@r-forge/svnroot/automater/trunk/RoboAdmin RoboAdmin
 
 #################################################################
 #####      Problems with R and Package Installs            #####
