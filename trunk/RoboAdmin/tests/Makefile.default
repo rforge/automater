@@ -1,5 +1,6 @@
 
 include ../../Makevars
+
 -include Makefile.depends
 
 TESTS=${wildcard *.[rR] }
@@ -11,10 +12,11 @@ tests: testsite testfresh
 testsite: $(TESTS:%=%out)
 
 # grep -v gets rid of lines that may change 
-$(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
+$(TESTS:%=%out):%out: %   $(SITE:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
-	@$(RLIBS)  $(RB)  $< $@.fail
+	R_LIBS=$(RPATH)/library 
+	    R_LIBS_SITE=$(RPATH)/site-library  $(RB)  $< $@.fail
 	@if [ -f $@.save ]; then  \
 	  grep -v "trying URL" $@.save | \
 	  grep -v "downloaded" | grep -v "\.\.\.\.\." >$@.save.tmp ; \
@@ -27,10 +29,12 @@ $(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 
 testfresh: $(TESTS:%=%outfresh)
 
-$(TESTS:%=%outfresh):%outfresh: %   $(SITEFRESH_PKGS:%=$(RPATH)/site-library/%) 
+
+$(TESTS:%=%outfresh):%outfresh: %   $(FRESH:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
-	@$(RLIBSFRESH)  $(RB)  $< $@.fail
+	R_LIBS_SITE=$(RPATH)/site-library-fresh
+	    R_LIBS=$(RPATH)/library  $(RB)  $< $@.fail
 	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  grep -v "trying URL" $(subst fresh,,$@.save) | \
 	  grep -v "downloaded" | grep -v "\.\.\.\.\.">$@.save.tmp ; \
@@ -40,7 +44,24 @@ $(TESTS:%=%outfresh):%outfresh: %   $(SITEFRESH_PKGS:%=$(RPATH)/site-library/%)
 	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@
 
+testdevel: $(TESTS:%=%outdevel)
+
+$(TESTS:%=%outdevel):%outdevel: %   $(DEVEL:%=$(RPATH)/site-library-devel/%) \
+                   $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)  
+	@$(RM) $@ 
+	@echo making $@ ...
+	R_LIBS_SITE=$(RPATH)/site-library-devel:$(RPATH)/site-library-fresh-notdevel \
+	    R_LIBS=$(RPATH)/library   $(RB)  $< $@.fail
+	@if [ -f $(subst devel,,$@.save) ]; then  \
+	  grep -v "trying URL" $(subst devel,,$@.save) | \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\.">$@.save.tmp ; \
+	  grep -v "trying URL" $@.fail | \
+	  grep -v "downloaded" | grep -v "\.\.\.\.\." >$@.fail.tmp ; \
+	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
+	@$(RM) $@.save.tmp $@.fail.tmp 
+	@mv $@.fail $@
+
 clean:
-	$(RM) *.Rout *.Routfresh *.Routfresh Rplots.pdf *.fail
-	$(RM) *.Rout.fail.tmp *.Routfresh.fail.tmp
-	$(RM) *.Rout.save.tmp *.Routfresh.save.tmp
+	$(RM) *.Rout *.Routfresh *.Routdevel Rplots.pdf *.fail
+	$(RM) *.Rout.fail.tmp *.Routfresh.fail.tmp *.Routdevel.fail.tmp
+	$(RM) *.Rout.save.tmp *.Routfresh.save.tmp *.Routdevel.save.tmp

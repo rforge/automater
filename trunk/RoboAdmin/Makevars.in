@@ -11,9 +11,6 @@ RPATH:=$(ROBOHOME)$(LATEST)
 
 VPATH = FLAGS
 
-RLIBS=R_LIBS=$(RPATH)/library  R_LIBS_SITE=$(RPATH)/site-library 
-RLIBSFRESH=R_LIBS_SITE=$(RPATH)/site-library-fresh R_LIBS=$(RPATH)/library 
-
 #RENV can set path before the call to $(R). 
 #PATH to R is needed to install some packages (i.e. fame) 
 R=$(RENV)  $(RPATH)/bin/R --vanilla --slave -e 
