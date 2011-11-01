@@ -5,6 +5,9 @@ RSUPPORT=somebody@somewhere
 # some packages configurations (e.g. fame) which need it to find R.
 RENV=FAME=$(FAME) PATH=$(ROBOHOME)/$(LATEST)/bin:$(PATH)
 
+DEVELREPOS="http://R-Forge.R-project.org"
+OTHERDEVELREPOS=
+
 OTHERREPOS="http://www.omegahat.org/R"
 OTHERREPOSPKGS=RCurl SSOAP
 

@@ -17,11 +17,11 @@ Examples to put (fictitious) data in tables
 **************   done with ts
 Loading required package: zoo
 
-Attaching package: 'zoo'
+Attaching package: ‘zoo’
 
-The following object(s) are masked from 'package:base':
+The following object(s) are masked from ‘package:base’:
 
-    as.Date
+    as.Date, as.Date.numeric
 
 **************        with zoo
 **************   done with zoo
@@ -30,18 +30,18 @@ The following object(s) are masked from 'package:base':
 **************        with get.hist.quote
 Loading required package: tseries
 Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=17&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=31&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-......
-downloaded 206 Kb
+.......
+downloaded 207 Kb
 
 time series starts 1998-01-02
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=17&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=31&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -52,7 +52,7 @@ opened URL
 .......... ...
 downloaded 263 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F10%2F10&date=10%2F17%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F24%2F10&date=10%2F31%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .....
@@ -67,9 +67,9 @@ closing unused connection 3 (http://quote.yahoo.com)
 Loading required package: timeSeries
 Loading required package: timeDate
 
-Attaching package: 'timeSeries'
+Attaching package: ‘timeSeries’
 
-The following object(s) are masked from 'package:zoo':
+The following object(s) are masked from ‘package:zoo’:
 
     time<-
 
@@ -79,4 +79,4 @@ NULL
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 38.548   1.632  57.461 
+ 71.670   1.430 115.645 

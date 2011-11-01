@@ -8,7 +8,7 @@ include Makevars
 
 include Makevars.site
 
-default: latest-ok install site-library site-library-fresh \
+default: latest-ok installR site-library site-library-fresh \
   site-library-fresh-notdevel  site-library-devel  fresh
 
 site: site-library
@@ -26,11 +26,6 @@ notdevel: update-site-library-fresh-notdevel
 #    repos="http://www.omegahat.org/R", dependencies=TRUE)
 #ROracle
 
-testz:
-	echo $(RENV)
-	echo $(ROBOHOME)/$(LATEST)
-	test -z "$(RSUPPORT)" || echo "Starting build of new version of "
-
 #latest-ok is just to provide more meaningful error messages when getDates 
 # failed to get the version info. 
 #Do not make this a prereq, since phony is alway run
@@ -44,7 +39,7 @@ latest-ok:
 	    exit 1)
 	
 
-install: check
+installR: check
 	@echo making $@ ...
 	(cd $(ROBOHOME)/$(LATEST) ; make install )
 	@test -z "$(RUSERS)" || \
@@ -94,23 +89,23 @@ site-library: $(SITE:%=$(LATEST)/site-library/%) $(OTHERREPOSPKGS:%=$(LATEST)/si
 	           mail -s "R site-library packages installed" $(RUSERS) 
 	@touch FLAGS/$@
 
-$(SITE:%=$(LATEST)/site-library/%): install
+$(SITE:%=$(LATEST)/site-library/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(ROBOHOME)/$(LATEST)/site-library
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library", repos=$(REPOS)) ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
-$(OTHERREPOSPKGS:%=$(LATEST)/site-library/%): install
+$(OTHERREPOSPKGS:%=$(LATEST)/site-library/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(ROBOHOME)/$(LATEST)/site-library
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library", repos=$(OTHERREPOS)) ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
 update-site-library: site-library
 	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library", repos=$(REPOS), ask=FALSE) ; q(status=0)'
+	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library", repos=$(OTHERREPOS), ask=FALSE) ; q(status=0)'
+	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	test -z "$(RUSERS)" || \
 	  echo "Some package updates have been done in $(ROBOHOME)/$(LATEST)/site-library" | \
 	           mail -s "R site-library updated" $(RUSERS) 
@@ -119,49 +114,49 @@ update-site-library: site-library
 ### site-library-fresh ##  updated as needed 
 site-library-fresh: $(FRESH:%=$(LATEST)/site-library-fresh/%)
 
-$(FRESH:%=$(LATEST)/site-library-fresh/%): install
+$(FRESH:%=$(LATEST)/site-library-fresh/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(LATEST)/site-library-fresh
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(REPOS)) ;  q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile") ;  q(status=0)'
 	@#touch $@
 
 update-site-library-fresh: site-library-fresh
 	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(REPOS), ask=FALSE) ; q(status=0)'
+	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	@test -z "$(OTHERREPOS)" || $(R) \
-	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(OTHERREPOS), ask=FALSE) ; q(status=0)' 
+	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' 
 	@#touch FLAGS/$@ do not touch. always update
 
 
 ### site-library-fresh-notdevel ##  updated as needed ## use for for qc testing
 site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(LATEST)/site-library-fresh-notdevel/%)
 
-$(FRESHnotDEVEL:%=$(LATEST)/site-library-fresh-notdevel/%): install
+$(FRESHnotDEVEL:%=$(LATEST)/site-library-fresh-notdevel/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(LATEST)/site-library-fresh-notdevel
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(REPOS)) ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#touch $@
 
 update-site-library-fresh-notdevel: site-library-fresh-notdevel
 	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(REPOS), ask=FALSE) ; q(status=0)'
+	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	@test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(OTHERREPOS), ask=FALSE) ; q(status=0)'
+	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 
 ### site-library-devel ## most recent versions (usually tested and working)
 site-library-devel: $(DEVEL:%=$(LATEST)/site-library-devel/%)
 
-$(DEVEL:%=$(LATEST)/site-library-devel/%): install
+$(DEVEL:%=$(LATEST)/site-library-devel/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(LATEST)/site-library-devel
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(REPOS)) ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(DEVELREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#touch $@
 
 update-site-library-devel: site-library-devel
 	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(REPOS), ask=FALSE) ; q(status=0)'
-	@test -z "$(OTHERREPOS)" || $(R) \
-	    'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(OTHERREPOS), ask=FALSE) ; q(status=0)'
+	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(DEVELREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
+	@test -z "$(OTHERDEVELREPOS)" || $(R) \
+	    'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(OTHERDEVELREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 
 .PHONY: tests testfresh clean reallyclean
 
