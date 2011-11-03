@@ -75,32 +75,21 @@ the cron job runs, or can be done immediately with
   make
 
 The logic of these libraries is that site-library (packages defined by SITE)
-is the one users will normally want and it will remain unchanged once R is 
-installed, other than installing packages added to the list (SITE). 
+is the one users will normally want and, after R and the library packages are 
+installed, this library will remain unchanged other than to add any packages 
+added to the list (SITE). 
 
 Normal users might also use site-library-fresh (packages defined by FRESH), 
 in which packages will be updated regularly. See the README.user file for 
 directions on how a user would access this. 
 
-The libraries site-devel (packages defined by DEVEL) and site-fresh-notdevel 
-(packages defined by FRESHnotDEVEL) are for the purpose of any packages you
-might be developing at your own site and need to test, but will not be used 
-by normal users. Devel is for the packages under development at your site, 
-while fresh-notdevel has packages needed for development but not being 
-developed at your site. (The logic of this is to reduce the possibility 
-of accidentally testing with old versions.)
-
 To install packages in the existing R site-library do
 
    make site
 
-To update the packages in the existing R libraries other than site-library do
+To update the packages in  site-library-fresh do
 
    make fresh
-or
-   make devel
-or
-   make notdevel
 
 (Note, the policy is to not update packages in the site-library. )
 
@@ -115,6 +104,25 @@ that have been changed or added. If you want to run all tests then
    cd test
    make clean
    make tests
+
+
+#################################################################
+#####          Local Development Configuration              #####
+#################################################################
+
+The libraries site-library-devel (packages defined by DEVEL) and 
+site-library-fresh-notdevel (packages defined by FRESHnotDEVEL) 
+are for the purpose of any packages you might be developing at your own site, 
+or using from R-forge, and need to test. These will not be used 
+by normal users. Devel is for the packages under development, 
+while fresh-notdevel has packages needed for development but not actually 
+being developed. (The logic of this is to reduce the possibility 
+of accidentally testing with old versions of development packages that
+have been installed in site-library or site-library-fresh.)
+
+To update the packages in  site-library-fresh-notdevel and site-library-devel do
+
+   make devel
 
 Tests can also be run for the devel libraries with
 

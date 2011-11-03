@@ -5,8 +5,9 @@ RSUPPORT=somebody@somewhere
 # some packages configurations (e.g. fame) which need it to find R.
 RENV=FAME=$(FAME) PATH=$(ROBOHOME)/$(LATEST)/bin:$(PATH)
 
-DEVELREPOS="http://R-Forge.R-project.org"
-OTHERDEVELREPOS=
+# you will need this set to do  "make devel"
+# DEVELREPOS="http://R-Forge.R-project.org"
+# OTHERDEVELREPOS=
 
 OTHERREPOS="http://www.omegahat.org/R"
 OTHERREPOSPKGS=RCurl SSOAP
@@ -14,11 +15,11 @@ OTHERREPOSPKGS=RCurl SSOAP
 FRESHnotDEVEL:=quadprog quantmod gtools gdata date urca PerformanceAnalytics \
 mgcv fBasics sna fSeries copula optimx \
 DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite fame RODBC XML \
-Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate googleVis
+Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate features googleVis
 
 DEVEL:=tframe tframePlus dse EvalEst CDNmoney GPArotation tsfa numDeriv BB \
-TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol  TSPostgreSQL \
-TSpadi TSxls TSzip
+TSdbi TSMySQL TSpadi TSfame TSodbc TSSQLite TShistQuote TSgetSymbol TSxls  \
+TSzip TSPostgreSQL
 
 SITE:=$(FRESHnotDEVEL) $(DEVEL)
 FRESH:=$(FRESHnotDEVEL) $(DEVEL)

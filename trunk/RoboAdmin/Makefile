@@ -8,16 +8,15 @@ include Makevars
 
 include Makevars.site
 
-default: latest-ok installR site-library site-library-fresh \
-  site-library-fresh-notdevel  site-library-devel  fresh
+default: latest-ok installR site-library update-site-library-fresh 
 
 site: site-library
 
 fresh: update-site-library-fresh
 
-devel: update-site-library-devel
+# to make devel you will need DEVELREPOS set in Makevars.site
+devel: update-site-library-fresh-notdevel update-site-library-devel
 
-notdevel: update-site-library-fresh-notdevel
 
 # Note tframePlus needs WriteXLS which needs Perl
 # bitops from CRAN is needed for RCurl
@@ -143,7 +142,7 @@ update-site-library-fresh-notdevel: site-library-fresh-notdevel
 	@test -z "$(OTHERREPOS)" ||  $(R) \
 	   'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 
-### site-library-devel ## most recent versions (usually tested and working)
+### site-library-devel ## most recent versions (possibly tested and working)
 site-library-devel: $(DEVEL:%=$(LATEST)/site-library-devel/%)
 
 $(DEVEL:%=$(LATEST)/site-library-devel/%): installR
@@ -158,9 +157,9 @@ update-site-library-devel: site-library-devel
 	@test -z "$(OTHERDEVELREPOS)" || $(R) \
 	    'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library-devel", repos=$(OTHERDEVELREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 
-.PHONY: tests testfresh clean reallyclean
+.PHONY: tests testsite testfresh testdevel clean reallyclean
 
-tests testsite testfresh: 
+tests testsite testfresh testdevel: 
 	@(cd tests ; $(MAKE) $@)
 
 clean:
