@@ -8,11 +8,11 @@ Loading required package: fame
 Loading required package: tis
 Loading required package: zoo
 
-Attaching package: 'zoo'
+Attaching package: ‘zoo’
 
-The following object(s) are masked from 'package:base':
+The following object(s) are masked from ‘package:base’:
 
-    as.Date
+    as.Date, as.Date.numeric
 
 **************        connecting ets fame server
 Assuming 'ets /home/ets/db/etsmfacansim.db' is a Fame Server path due to white space.
@@ -20,4 +20,4 @@ Assuming 'ets /home/ets/db/etsmfacansim.db' is a Fame Server path due to white s
 [1] TRUE
 > proc.time()
    user  system elapsed 
-  2.067   0.042   2.390 
+  2.119   0.079   2.421 
