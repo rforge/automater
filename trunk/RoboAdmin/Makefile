@@ -100,7 +100,7 @@ $(OTHERREPOSPKGS:%=$(LATEST)/site-library/%): installR
 	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(ROBOHOME)/$(LATEST)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
-update-site-library: site-library
+update-site-library: site-library #Note - normal policy is not to do this
 	@echo making $@ ...
 	$(R) 'update.packages(lib.loc="$(ROBOHOME)/$(LATEST)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	test -z "$(OTHERREPOS)" ||  $(R) \
