@@ -17,11 +17,11 @@ Examples to put (fictitious) data in tables
 **************   done with ts
 Loading required package: zoo
 
-Attaching package: 'zoo'
+Attaching package: ‘zoo’
 
-The following object(s) are masked from 'package:base':
+The following object(s) are masked from ‘package:base’:
 
-    as.Date
+    as.Date, as.Date.numeric
 
 **************        with zoo
 **************   done with zoo
@@ -36,7 +36,7 @@ data frame with 0 columns and 0 rows
 **************        with get.hist.quote
 Loading required package: tseries
 Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=19&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=10&e=03&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -47,7 +47,7 @@ opened URL
 downloaded 207 Kb
 
 time series starts 1998-01-02
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=19&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=10&e=03&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -58,7 +58,7 @@ opened URL
 .......... ...
 downloaded 263 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F12%2F10&date=10%2F19%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F27%2F10&date=11%2F03%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .....
@@ -71,4 +71,4 @@ closing unused connection 3 (http://quote.yahoo.com)
 [1] TRUE
 > proc.time()
    user  system elapsed 
-112.040   1.320 179.059 
+101.360   1.350 171.223 
