@@ -148,13 +148,28 @@ To edit
 export EDITOR=vi
 crontab -e
 
-And, for example, to run daily insert lines like
-m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin /cron.out
+If the cron job has any output it will be mailed to the address(es) last specified in 
+lines above the cron job in the crontab file, so different mailto's can be specified
+for different cron jobs.
+
+MAILTO="user1@mailhost"
+MAILTO="user1@mailhost,user2@domain.com"
+
+To run daily insert lines like, for example,
+m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin/cron.out
 
 with m and d replace by minute and hour. If a http_proxy is needed it can be 
 specified:
 
 m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin/cron.out
+
+The above both produce output, so mail will be sent if any MAILTO address has
+been specified. Alternately
+
+m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make >cron.out 2>&1 ; make tests >>cron.out 2>&1)  || echo "Error occurred.  See ~/RoboAdmin/cron.out for details"
+
+will send mail if "make test" has a non-zero exit status.(Separate from the 
+cron email, some make targets will send mail notifications about updates.) 
 
 [crontab Entry Format
      A crontab file consists of lines of  six  fields  each.  The
