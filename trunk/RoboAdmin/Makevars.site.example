@@ -13,7 +13,7 @@ OTHERREPOS="http://www.omegahat.org/R"
 OTHERREPOSPKGS=RCurl SSOAP
 
 FRESHnotDEVEL:=quadprog quantmod gtools gdata date urca PerformanceAnalytics \
-mgcv fBasics sna fSeries copula optimx \
+mgcv fBasics sna copula optimx \
 DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite fame RODBC XML \
 Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate features googleVis
 
