@@ -1,3 +1,6 @@
+# This default Makefile gets copied to any subdirectories that do not have
+#  a Makefile. It should work in most cases, but specilized situations can
+#  be handled by a customized Makefile in a subdirectory.
 
 include ../../Makevars
 
