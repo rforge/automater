@@ -5,10 +5,11 @@ Installs, below.)
 
 These scripts and Makefiles can be checked out and update with anonymous access
 to the svn archive. For example, to put files and subdirectories in the 
-directory Rprod do 
+directory RoboAdmin (which is the directory assumed in the documentation) do 
 
   svn checkout \
-     svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin Rprod
+     svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin RoboAdmin
+
 
 This may be complicated by firewalls and proxy servers.
 To contribute, and for further details see "SVN Notes" below.
@@ -190,7 +191,8 @@ cron email, some make targets will send mail notifications about updates.)
 
 These scripts and Makefiles can be checked out and update with anonymous access
 to the svn archive. For example, to put files and subdirectories in the 
-directory Rprod do 
+directory Rprod (using a directory named RoboAdmin is assumed in most of the
+documentation) do 
 
   svn checkout \
      svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin Rprod
