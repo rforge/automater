@@ -3,7 +3,7 @@ RSUPPORT=somebody@somewhere
 
 # Setting the path in RENV before the call to $(R) is only needed by
 # some packages configurations (e.g. fame) which need it to find R.
-RENV=FAME=$(FAME) PATH=$(ROBOHOME)/$(LATEST)/bin:$(PATH)
+RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
 
 # you will need this set to do  "make devel"
 # DEVELREPOS="http://R-Forge.R-project.org"
