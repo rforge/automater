@@ -3,6 +3,7 @@
 #  be handled by a customized Makefile in a subdirectory.
 
 include ../../Makevars
+include ../../Makevars.site
 
 -include Makefile.depends
 
