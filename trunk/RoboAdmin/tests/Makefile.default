@@ -19,7 +19,7 @@ testsite: $(TESTS:%=%out)
 $(TESTS:%=%out):%out: %   $(SITE:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
-	R_LIBS=$(RPATH)/library 
+	R_LIBS=$(RPATH)/library \
 	    R_LIBS_SITE=$(RPATH)/site-library  $(RB)  $< $@.fail
 	@if [ -f $@.save ]; then  \
 	  grep -v "trying URL" $@.save | \
@@ -37,7 +37,7 @@ testfresh: $(TESTS:%=%outfresh)
 $(TESTS:%=%outfresh):%outfresh: %   $(FRESH:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
-	R_LIBS_SITE=$(RPATH)/site-library-fresh
+	R_LIBS_SITE=$(RPATH)/site-library-fresh \
 	    R_LIBS=$(RPATH)/library  $(RB)  $< $@.fail
 	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  grep -v "trying URL" $(subst fresh,,$@.save) | \
