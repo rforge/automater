@@ -27,21 +27,19 @@ The following object(s) are masked from ‘package:base’:
 **************   done with zoo
 **************        with ets
 **************        disconnecting ets
-**************        with get.hist.quote
 Loading required package: tseries
 Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=31&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=11&e=26&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......
-downloaded 207 Kb
+.........
+downloaded 209 Kb
 
-time series starts 1998-01-02
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=31&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=11&e=26&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -49,17 +47,17 @@ opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... ...
-downloaded 263 Kb
+.......... .....
+downloaded 265 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F24%2F10&date=10%2F31%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=08%2F19%2F10&date=12%2F26%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .....
 downloaded 25 Kb
 
 Warning message:
-closing unused connection 3 (http://quote.yahoo.com) 
+closing unused connection 4 (http://quote.yahoo.com) 
 **************        disconnecting test
 [1] TRUE
 [1] TRUE
@@ -79,4 +77,4 @@ NULL
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 71.670   1.430 115.645 
+ 80.461   1.304 117.755 
