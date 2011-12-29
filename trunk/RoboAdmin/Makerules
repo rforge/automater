@@ -5,22 +5,26 @@
 #    a new R version is released.
 
 
-default: latest-ok installR site-library update-site-library-fresh 
+default: latest-ok installR notifyUsersNewR \
+  site-library notifyUsersNewLibs update-site-library-fresh 
 
-site: site-library
+### site-library  is typically installed with new R version and not updated 
+site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
+	@echo Update of packages in $(RPATH)/site-library being done.
+	@test -z "$(RSUPPORT)" || \
+	  echo "New packages/versions are being installed in $(RPATH)/site-library.\
+	    If this message is repeated each time the cron job runs, then some \
+	    package in the SITE list is probably not available, or the package \
+	    install is failing." | \
+	      mail -s "R site-library package update" $(RSUPPORT) 
+	@touch FLAGS/$@
 
+
+### site-library-fresh is updated regularly
 fresh: update-site-library-fresh
 
 # to make devel you will need DEVELREPOS set in Makevars.site
 devel: update-site-library-fresh-notdevel update-site-library-devel
-
-
-# Note tframePlus needs WriteXLS which needs Perl
-# bitops from CRAN is needed for RCurl
-#  install.packages(pkgs=c("RCurl","SSOAP"), 
-#    lib=Sys.getenv("R_LIBS"), 
-#    repos="http://www.omegahat.org/R", dependencies=TRUE)
-#ROracle
 
 #latest-ok is just to provide more meaningful error messages when getDates 
 # failed to get the version info. 
@@ -33,14 +37,43 @@ latest-ok:
 	@test -n "$(RPATH)" || \
 	   (echo "Error. latest indicator is empty. HTTP probably failed." ; \
 	    exit 1)
-	
+
+# The logic of notifyUsers and alertSupport is to ensure users do not get 
+# sent notifications when things are failing. Eg, when a package is not
+# available for a new R, the cron attempts every day until 
+# the package maintainer fixes the package (or it is removed from the list of
+# packages in Makevars.site). However, support should get messages in this case.
+
+notifyUsersNewR: installR
+	@test -z "$(RUSERS)" || \
+	    echo "A new R has been installed in $(RPATH)" | \
+	           mail -s "$(RPATH) now available" $(RUSERS) $(RSUPPORT)
+	@echo there is a new R
+	@touch FLAGS/$@
+
+
+notifyUsersNewLibs: FLAGS/site-library.NOTIFIED
+
+.PHONY: FLAGS/site-library.NOTIFIED
+FLAGS/site-library.NOTIFIED:
+	@$(R) 'installed.packages(lib.loc = "$(RPATH)/site-library")[,"Version", drop=FALSE] ; q(status=0)' \
+	     >$@.tmp
+	@# touch here is to suppress error condition from diff
+	@(diff  $@.tmp  $@ >$@.diff ; touch /dev/null)
+	@if [ -s $@.diff ]; then  \
+	  echo site-library package updates detected;  \
+	  test -z "$(RUSERS)" || \
+	    echo "New packages/versions have been installed in $(RPATH)/site-library" | \
+	           mail -s "R site-library package updates" $(RUSERS) $(RSUPPORT) ;\
+	  mv $@.tmp  $@ ;  \
+	  fi
+
+alertSupportNewR:	
+alertSupportNewLibs:	
 
 installR: check
 	@echo making $@ ...
 	(cd $(RPATH) ; make install )
-	@test -z "$(RUSERS)" || \
-	  echo "A new R has been installed in $(RPATH)" | \
-	           mail -s "$(RPATH) now available" $(RUSERS) 
 	@$(MKDIR) FLAGS
 	@touch FLAGS/$@
 
@@ -62,7 +95,7 @@ check-all: build
 	@touch FLAGS/$@
 
 # do not use dir for time stamp, as it will change when libraries are installed
-#   mail in Ubuntu requires mailutils
+
 $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	@echo making $@ ...
 	@test -z "$(RSUPPORT)" || echo "Starting build of new version of R in$(RPATH)" | \
@@ -77,13 +110,7 @@ $(ROBOHOME)/R-src/$(LATEST).tar.gz: R-src/latestdt
 	@echo making $@ ...
 	(cd R-src ; wget -o Rwget.log "$(BASE)/$(LATEST).tar.gz")
 	
-### site-library  ## typically installed with new R version and not updated 
-site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
-	@echo making $@ ...
-	@test -z "$(RUSERS)" || \
-	  echo "New packages have been installed in $(RPATH)/site-library" | \
-	           mail -s "R site-library packages installed" $(RUSERS) 
-	@touch FLAGS/$@
+### site-library  ### typically not updated
 
 $(SITE:%=$(RPATH)/site-library/%): installR
 	@echo making $@ ...
@@ -102,9 +129,6 @@ update-site-library: site-library #Note - normal policy is not to do this
 	$(R) 'update.packages(lib.loc="$(RPATH)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	test -z "$(OTHERREPOS)" ||  $(R) \
 	   'update.packages(lib.loc="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
-	test -z "$(RUSERS)" || \
-	  echo "Some package updates have been done in $(RPATH)/site-library" | \
-	           mail -s "R site-library updated" $(RUSERS) 
 	@touch FLAGS/$@
 
 ### site-library-fresh ##  updated as needed 
@@ -118,7 +142,7 @@ $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 
 update-site-library-fresh: site-library-fresh
 	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
+	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	@test -z "$(OTHERREPOS)" || $(R) \
 	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' 
 	@#touch FLAGS/$@ do not touch. always update

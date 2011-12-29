@@ -12,6 +12,11 @@ RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
 OTHERREPOS="http://www.omegahat.org/R"
 OTHERREPOSPKGS=RCurl SSOAP
 
+# The DEVEL distinction is only for packages which are developed at your site,
+# so you can make a distinction between these packages and fresh version of
+# other packages  they need. If this situation does not apply, you can just 
+# set SITE and FRESH.
+
 FRESHnotDEVEL:=quadprog quantmod gtools gdata date urca PerformanceAnalytics \
 mgcv fBasics sna copula optimx \
 DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite fame RODBC XML \
@@ -23,3 +28,9 @@ TSzip TSPostgreSQL
 
 SITE:=$(FRESHnotDEVEL) $(DEVEL)
 FRESH:=$(FRESHnotDEVEL) $(DEVEL)
+
+# Note tframePlus needs WriteXLS which needs Perl
+# bitops from CRAN is needed for RCurl
+#  install.packages(pkgs=c("RCurl","SSOAP"), 
+#    lib=Sys.getenv("R_LIBS"), 
+#    repos="http://www.omegahat.org/R", dependencies=TRUE)
