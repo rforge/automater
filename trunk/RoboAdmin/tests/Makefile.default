@@ -20,7 +20,7 @@ define RdiffPlus
 endef
 
 # grep -v gets rid of lines that may change 
-$(TESTS:%=%out):%out: %   $(SITE:%=$(RPATH)/site-library/%)
+$(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
 	R_LIBS=$(RPATH)/library \
@@ -36,7 +36,7 @@ $(TESTS:%=%out):%out: %   $(SITE:%=$(RPATH)/site-library/%)
 testfresh: $(TESTS:%=%outfresh)
 
 
-$(TESTS:%=%outfresh):%outfresh: %   $(FRESH:%=$(RPATH)/site-library-fresh/%) 
+$(TESTS:%=%outfresh):%outfresh: %   $(FRESH_PKGS:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
 	R_LIBS_SITE=$(RPATH)/site-library-fresh \
@@ -50,7 +50,7 @@ $(TESTS:%=%outfresh):%outfresh: %   $(FRESH:%=$(RPATH)/site-library-fresh/%)
 
 testdevel: $(TESTS:%=%outdevel)
 
-$(TESTS:%=%outdevel):%outdevel: %   $(DEVEL:%=$(RPATH)/site-library-devel/%) \
+$(TESTS:%=%outdevel):%outdevel: %   $(DEVEL_PKGS:%=$(RPATH)/site-library-devel/%) \
                    $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)  
 	@$(RM) $@ 
 	@echo making $@ ...

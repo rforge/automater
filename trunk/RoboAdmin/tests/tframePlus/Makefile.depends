@@ -6,4 +6,8 @@
 
 SITE_PKGS=tframePlus tframe timeSeries zoo xts its tis timeSeries WriteXLS
 
-SITEFRESH_PKGS=$(SITE_PKGS)
+FRESH_PKGS=$(SITE_PKGS)
+
+DEVEL_PKGS=tframePlus tframe
+
+FRESHnotDEVEL_PKGS=timeSeries zoo xts its tis timeSeries WriteXLS_PKGS
