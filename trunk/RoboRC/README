@@ -1,0 +1,3 @@
+This Makefile based system installs R release candidates and runs tests 
+from the RoboAdmin direcory. The location of that directory should be passed as
+an argument to configure.
