@@ -38,11 +38,14 @@ latest-ok:
 	   (echo "Error. latest indicator is empty. HTTP probably failed." ; \
 	    exit 1)
 
-# The logic of notifyUsers and alertSupport is to ensure users do not get 
+# The logic of notifyUsers is to ensure users do not get 
 # sent notifications when things are failing. Eg, when a package is not
 # available for a new R, the cron attempts every day until 
 # the package maintainer fixes the package (or it is removed from the list of
-# packages in Makevars.site). However, support should get messages in this case.
+# packages in Makevars.site). To determine if a notification should be sent,
+# the current list of packages is compared against the packages at the last 
+# notification. This list is not kept in FLAGS so it does not get cleaned.
+# However, support should get messages in this case.
 
 notifyUsersNewR: installR
 	@test -z "$(RUSERS)" || \
@@ -52,24 +55,23 @@ notifyUsersNewR: installR
 	@touch FLAGS/$@
 
 
-notifyUsersNewLibs: FLAGS/site-library.NOTIFIED
+notifyUsersNewLibs: site-library.NOTIFIED
 
-.PHONY: FLAGS/site-library.NOTIFIED
-FLAGS/site-library.NOTIFIED:
+.PHONY: site-library.NOTIFIED
+site-library.NOTIFIED:
 	@$(R) 'installed.packages(lib.loc = "$(RPATH)/site-library")[,"Version", drop=FALSE] ; q(status=0)' \
-	     >$@.tmp
-	@# touch here is to suppress error condition from diff
-	@(diff  $@.tmp  $@ >$@.diff ; touch /dev/null)
-	@if [ -s $@.diff ]; then  \
+	     >FLAGS/$@.tmp
+	@# diff has a problem if $@ does not exist so
+	@test -e $@ || touch  $@
+	@# touch in next is to suppress error condition from diff
+	@(diff  FLAGS/$@.tmp  $@ >FLAGS/$@.diff ; touch /dev/null)
+	@if [ -s FLAGS/$@.diff ]; then  \
 	  echo site-library package updates detected;  \
 	  test -z "$(RUSERS)" || \
 	    echo "New packages/versions have been installed in $(RPATH)/site-library" | \
 	           mail -s "R site-library package updates" $(RUSERS) $(RSUPPORT) ;\
-	  mv $@.tmp  $@ ;  \
+	  mv FLAGS/$@.tmp  $@ ;  \
 	  fi
-
-alertSupportNewR:	
-alertSupportNewLibs:	
 
 installR: check
 	@echo making $@ ...
