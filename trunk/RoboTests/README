@@ -1,0 +1,6 @@
+This Makefile based system does not install R. It is intended for running 
+regular (automatic) tests when the tests themselves, or the packages they 
+depend, on are updated. 
+
+It uses an already installed R version (eg, from RoboAdmin), the location of
+which should be given as an argument to configure.

@@ -1,0 +1,33 @@
+#! /bin/sh
+
+version="RoboTest configure 0.1"
+usage="Usage: configure [--help | --version] ~/RoboAdmin"
+
+if [ $# -ne 1 ]; then 
+    echo "${usage}"; exit 1 
+fi
+
+export ROBOADMIN=${1} 
+#echo ROBOADMIN set to ${ROBOHOME}
+ 
+case ${ROBOADMIN} in
+  -h|--help)
+    echo "${usage}"; exit 0 ;;
+  -v|--version)
+    echo "${version}"; exit 0 ;;
+  *)   break ;;
+esac
+
+
+if [ ! -f ${ROBOADMIN}/Makevars.site ] ; then 
+   echo " ${ROBOADMIN}/Makevars.site does not exists. 
+          Need full path to ROBOADMIN as argument." ; exit 1;fi
+
+if [ ! -d ${ROBOADMIN}/tests ] ; then
+   echo " ${ROBOADMIN}/tests/ does not exists. 
+          Need full path to ROBOHOME as argument." ; exit 1 ;fi
+
+echo           "creating     Makevars ..."
+echo ROBOHOME=`pwd`/        >Makevars
+echo ROBOADMIN=${ROBOADMIN}/ >>Makevars
+echo "include \${ROBOHOME}/Makevars.in" >>Makevars
