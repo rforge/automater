@@ -1,0 +1,31 @@
+# These rules can be used in any subdirectories.
+
+TESTS=${wildcard *.[rR] }
+
+
+# add this to individual Makefiles if needed (e.g., for db conflicts )
+#.NOTPARALLEL: $(TESTS:%=%out) 
+
+tests: $(TESTS:%=%out)
+
+# grep -v gets rid of lines that may change 
+define RdiffPlus
+  grep -v "trying URL" | grep -v "downloaded" |  grep -v "\.\.\.\.\." | \
+  grep -v "closing unused connection" 
+endef
+
+$(TESTS:%=%out):%out:  %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
+	@$(RM) $@ 
+	@echo making $@ ...
+	R_LIBS=$(RPATH)/library \
+	    R_LIBS_SITE=$(RPATH)/site-library  $(RB)  $< $@.fail
+	@if [ -f $@.save ]; then  \
+	  cat $@.save | $(RdiffPlus) >$@.save.tmp ; \
+	  cat $@.fail | $(RdiffPlus) >$@.fail.tmp ; \
+	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
+	@$(RM) $@.save.tmp $@.fail.tmp 
+	@mv $@.fail $@
+
+
+clean:
+	$(RM) FLAGS *.Rout Rplots.pdf *.fail  *.fail.tmp  *.save.tmp

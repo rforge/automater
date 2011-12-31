@@ -1,14 +1,7 @@
-# ROBOHOME is set by configure to pwd (RoboTest)  NOT TO ROBOADMIN
-# ROBOADMIN needs to be specified as argument to configure to 
-#  find packages and tests
+# ROBOHOME is set by configure to pwd (RoboTest) 
+# RVERSION needs to be specified as argument to configure
 
-BASE=http://cran.at.r-project.org/src/base-prerelease
-REPOS="http://cran.r-project.org"
-
-# file R-src/latest is written by getDates script (run by cron job)
-LATEST:=$(shell cat $(ROBOHOME)/R-src/latest)
-#RPATH:=$(ROBOHOME)R-patched
-RPATH:=$(ROBOHOME)R-rc
+RPATH:=$(RVERSION)
 
 VPATH = FLAGS
 

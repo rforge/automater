@@ -1,16 +1,15 @@
 #! /bin/sh
 
 version="RoboTest configure 0.1"
-usage="Usage: configure [--help | --version] ~/RoboAdmin"
+usage="Usage: configure [--help | --version] ~/RVERSION/R-2.14.1"
 
 if [ $# -ne 1 ]; then 
     echo "${usage}"; exit 1 
 fi
 
-export ROBOADMIN=${1} 
-#echo ROBOADMIN set to ${ROBOHOME}
+export RVERSION=${1} 
  
-case ${ROBOADMIN} in
+case ${RVERSION} in
   -h|--help)
     echo "${usage}"; exit 0 ;;
   -v|--version)
@@ -19,15 +18,11 @@ case ${ROBOADMIN} in
 esac
 
 
-if [ ! -f ${ROBOADMIN}/Makevars.site ] ; then 
-   echo " ${ROBOADMIN}/Makevars.site does not exists. 
-          Need full path to ROBOADMIN as argument." ; exit 1;fi
+if [ ! -f ${RVERSION}/bin/R ] ; then 
+   echo " ${RVERSION}/bin/R does not exists. 
+          Need full path to R version as argument." ; exit 1;fi
 
-if [ ! -d ${ROBOADMIN}/tests ] ; then
-   echo " ${ROBOADMIN}/tests/ does not exists. 
-          Need full path to ROBOHOME as argument." ; exit 1 ;fi
-
-echo           "creating     Makevars ..."
-echo ROBOHOME=`pwd`/        >Makevars
-echo ROBOADMIN=${ROBOADMIN}/ >>Makevars
+echo           "creating       Makevars ..."
+echo ROBOHOME=`pwd`/          >Makevars
+echo RVERSION=${RVERSION}/   >>Makevars
 echo "include \${ROBOHOME}/Makevars.in" >>Makevars
