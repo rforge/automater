@@ -54,4 +54,4 @@ updateclean: clean
 	test -z "$(UPDATE)" || $(MAKE) --directory=$(UPDATE) clean
 
 clean:
-	$(RM) *.Rout Rplots.pdf *.fail  *.fail.tmp  *.save.tmp FLAGS
+	$(RM) *.Rout Rplots.pdf *.ps *.fail  *.fail.tmp  *.save.tmp FLAGS
