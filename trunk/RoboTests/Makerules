@@ -1,12 +1,7 @@
 # These rules can be used in any subdirectories.
 
-TESTS=${wildcard *.[rR] }
-
-
 # add this to individual Makefiles if needed (e.g., for db conflicts )
 #.NOTPARALLEL: $(TESTS:%=%out) 
-
-tests: $(TESTS:%=%out)
 
 # grep -v gets rid of lines that may change 
 define RdiffPlus
@@ -14,11 +9,11 @@ define RdiffPlus
   grep -v "closing unused connection" 
 endef
 
-$(TESTS:%=%out):%out:  %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
+$(TESTS:%=%out):%out:  %   $(DEPENDS_PKGS:%=$(USELIB)/%)
 	@$(RM) $@ 
 	@echo making $@ ...
 	R_LIBS=$(RPATH)/library \
-	    R_LIBS_SITE=$(RPATH)/site-library  $(RB)  $< $@.fail
+	    R_LIBS_SITE=$(USELIB)  $(RB)  $< $@.fail
 	@if [ -f $@.save ]; then  \
 	  cat $@.save | $(RdiffPlus) >$@.save.tmp ; \
 	  cat $@.fail | $(RdiffPlus) >$@.fail.tmp ; \
@@ -27,5 +22,36 @@ $(TESTS:%=%out):%out:  %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 	@mv $@.fail $@
 
 
+FLAGS/$(PKG): FLAGS/$(PKG).tar
+	(cd FLAGS ; tar xf $(PKG).tar )
+	touch $@
+
+FLAGS/$(PKG).tar: FLAGS/$(PKG).tar.gz
+	gunzip -c FLAGS/$(PKG).tar.gz >$@
+	touch $@
+
+FLAGS/$(PKG).tar.gz: FLAGS/version
+	(cd FLAGS ; wget --timestamping $(WGET_RFORGE) )
+	@# the version number complicates things
+	(cd FLAGS ; mv  $(VERSION).tar.gz  $(PKG).tar.gz )
+	touch $@
+
+FLAGS/version:
+	$(MKDIR) FLAGS
+	(cd FLAGS ; wget  -o version.log -O index.html "https://r-forge.r-project.org/src/contrib" )
+	cat FLAGS/index.html | grep 'href="$(PKG)_' | \
+	perl  -pe 's/(.*)tar.gz">(.*).tar.gz(.*)/$$2/go' > FLAGS/version
+	touch $@
+
+update: $(UPDATE)
+
+.PHONY:$(UPDATE)
+$(UPDATE):
+	$(MAKE)  --directory=$@
+
+updateclean: clean
+	test -z "$(UPDATE)" || $(RM) *.R  DESCRIPTION 
+	test -z "$(UPDATE)" || $(MAKE) --directory=$(UPDATE) clean
+
 clean:
-	$(RM) FLAGS *.Rout Rplots.pdf *.fail  *.fail.tmp  *.save.tmp
+	$(RM) *.Rout Rplots.pdf *.fail  *.fail.tmp  *.save.tmp FLAGS

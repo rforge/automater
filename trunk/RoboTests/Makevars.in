@@ -14,3 +14,16 @@ Rdiff=$(RPATH)/bin/R CMD Rdiff
 
 RM=rm -rf
 MKDIR=mkdir -p
+
+TESTS=${wildcard *.[rR] }
+
+VERSION=$(shell cat FLAGS/version )
+
+WGET_RFORGE="https://r-forge.r-project.org/src/contrib/$(VERSION).tar.gz"
+
+DESC_DEPENDS=$(shell grep Depends DESCRIPTION | \
+  perl -p -e 's/Depends://g' | perl -p -e 's/,//g' | perl -p -e 's/ R //g'  | \
+  perl -p -e 's/\((.*)\)//g' )
+
+DESC_SUGGESTS=$(shell grep Suggests DESCRIPTION | \
+  perl -p -e 's/Suggests://g' | perl -p -e 's/,//g' )

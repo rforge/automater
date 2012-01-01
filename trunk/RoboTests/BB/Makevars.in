@@ -1,0 +1,17 @@
+PKG=BB
+
+# the library to use in R tests
+USELIB=$(RPATH)/site-library
+
+# The tests should be run if DEPENDS_PKGS packages in the library change, eg 
+#DEPENDS_PKGS=RMySQL DBI
+# The next sets DEPENDS_PKGS using  $(DESC_DEPENDS) and $(DESC_SUGGESTS)
+# which are set automatically using Depends and Suggests from a DESCRIPTION 
+# file in the directory, if it exists. The DESCRIPTION file can be retrieved 
+# automatically in UpdateTests, and is removed by make clean, so if the 
+# automatical UpdateTests mechanism is not used then 
+#   DEPENDS_PKGS should be set manually.
+DEPENDS_PKGS=$(DESC_DEPENDS) $(DESC_SUGGESTS)
+
+#UPDATE=UpdateTests  if the directory exists, otherwise empty
+UPDATE=$(shell test -d UpdateTests && echo UpdateTests)
