@@ -1,5 +1,3 @@
-PKG=EvalEst
-
 # the library to use in R tests
 USELIB=$(RPATH)/site-library
 

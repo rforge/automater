@@ -1,3 +1,6 @@
+#source of tests:
+PKG=BB
+
 # The directory UpdateTests does not need to exist, but if it does then the
 # Makefile in the directory default should get the *.R files for tests and put 
 # them in the parent directory. 
