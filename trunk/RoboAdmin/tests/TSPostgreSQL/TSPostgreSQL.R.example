@@ -30,8 +30,11 @@ if(inherits(con, "try-error")) stop("CreateTables did not work.")
 
 source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
 source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
+sink("tableLayout.txt.tmp", append=TRUE)
 source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
+# sink next because series end is printed (and changes)
 source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
+sink(NULL)
 
 cat("**************        disconnecting test\n")
 dbDisconnect(con)

@@ -26,28 +26,19 @@ The following object(s) are masked from ‘package:base’:
 **************        with zoo
 **************   done with zoo
 **************        skipping ets tests
-database tables:
- [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
-[11] "t"   
-**************  Examples Using dbGetQuery
-data frame with 0 columns and 0 rows
-data frame with 0 columns and 0 rows
-**************  skipping dbGetQuery with ets
-**************        with get.hist.quote
 Loading required package: tseries
 Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=10&e=03&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=0&e=01&f=2012&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......
-downloaded 207 Kb
+.......... 
+downloaded 210 Kb
 
-time series starts 1998-01-02
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=10&e=03&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=0&e=01&f=2012&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -55,20 +46,20 @@ opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... ...
-downloaded 263 Kb
+.......... .....
+downloaded 265 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F27%2F10&date=11%2F03%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=08%2F25%2F10&date=01%2F01%2F12&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .....
 downloaded 25 Kb
 
 Warning message:
-closing unused connection 3 (http://quote.yahoo.com) 
+closing unused connection 4 (http://quote.yahoo.com) 
 **************        disconnecting test
 [1] TRUE
 [1] TRUE
 > proc.time()
    user  system elapsed 
-101.360   1.350 171.223 
+ 91.113   1.156 242.828 
