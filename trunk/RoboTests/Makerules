@@ -3,6 +3,10 @@
 # add this to individual Makefiles if needed (e.g., for db conflicts )
 #.NOTPARALLEL: $(TESTS:%=%out) 
 
+################################################################
+#              target for running tests
+################################################################
+
 # grep -v gets rid of lines that may change 
 define RdiffPlus
   grep -v "trying URL" | grep -v "downloaded" |  grep -v "\.\.\.\.\." | \
@@ -21,6 +25,27 @@ $(TESTS:%=%out):%out:  %   $(DEPENDS_PKGS:%=$(USELIB)/%)
 	@$(RM) $@.save.tmp $@.fail.tmp 
 	@mv $@.fail $@
 
+
+clean:
+	$(RM) *.Rout Rplots.pdf *.ps *.fail  *.fail.tmp  *.save.tmp FLAGS
+
+################################################################
+#    target for updating tests 
+################################################################
+
+update: $(UPDATE)
+
+.PHONY:$(UPDATE)
+$(UPDATE):
+	$(MAKE)  --directory=$@
+
+updateclean: clean
+	test -z "$(UPDATE)" || $(RM) *.R  DESCRIPTION 
+	test -z "$(UPDATE)" || $(MAKE) --directory=$(UPDATE) clean
+
+################################################################
+#        ... updating tests from an R-forge source PKG/tests
+################################################################
 
 FLAGS/$(PKG): FLAGS/$(PKG).tar
 	(cd FLAGS ; tar xf $(PKG).tar )
@@ -43,15 +68,11 @@ FLAGS/version:
 	perl  -pe 's/(.*)tar.gz">(.*).tar.gz(.*)/$$2/go' > FLAGS/version
 	touch $@
 
-update: $(UPDATE)
+################################################################
+#     ... updating tests from an R-forge anonymous svn checkout
+################################################################
 
-.PHONY:$(UPDATE)
-$(UPDATE):
-	$(MAKE)  --directory=$@
-
-updateclean: clean
-	test -z "$(UPDATE)" || $(RM) *.R  DESCRIPTION 
-	test -z "$(UPDATE)" || $(MAKE) --directory=$(UPDATE) clean
-
-clean:
-	$(RM) *.Rout Rplots.pdf *.ps *.fail  *.fail.tmp  *.save.tmp FLAGS
+FLAGS/SVN/$(PKG): 
+	$(MKDIR) FLAGS/SVN/$(PKG)
+	(cd FLAGS/SVN ; svn checkout $(SVN_RFORGE) )
+	touch $@

@@ -1,6 +1,16 @@
 This Makefile based system does not install R. It is intended for running 
 regular (automatic) tests when the tests themselves, or the packages they 
-depend, on are updated. 
+depend on, are updated. 
 
 It uses an already installed R version (eg, from RoboAdmin), the location of
 which should be given as an argument to configure.
+
+Note: The RoboTests subdirectory names may correspond to an R package name, 
+in which case the tests would typically be tests for that package.
+The tests could come from the tests/ directory for the package, but might not. 
+Directories BB and EvalEst provide examples of pulling tests automatically 
+the from R-forge source tar.gz for packages. 
+Directory TSMySQL provides an example of pulling tests automatically 
+from the R-forge svn archive for a package. 
+Both of these examples use tests from the package itself, but that is not
+necessary.
