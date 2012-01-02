@@ -5,6 +5,9 @@
 include    Makevars.in
 include ../Makevars
 
+# to avoid database conflicts
+.NOTPARALLEL: $(TESTS:%=%out) 
+
 tests:  $(TESTS:%=%out)
 #tests: $(UPDATE) $(TESTS:%=%out)
 
