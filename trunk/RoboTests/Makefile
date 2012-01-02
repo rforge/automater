@@ -4,7 +4,7 @@ DIRS=${shell (ls -p -d -1 * | grep "/" )}
 
 default: tests
 
-tests clean:
+update tests clean updateclean:
 	@for f in ${DIRS}"" ; do \
 	   (cd $$f ; $(MAKE) $@ );  \
 	   done ; 
