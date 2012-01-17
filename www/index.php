@@ -1,51 +1,43 @@
+<HTML>
+<TITLE>automateR</TITLE></a>
+<hr>
+<?php require("header.php") ; ?>
+<hr>
+<?php  require("forgeBar.php") ; ?>
+<table width=100% ALIGN=CENTER CELLPADDING=5 border=0>
+<?php require("navigate.php") ; ?>
+<!-------------------- START OF CONTENTS -------------------------->
+<BODY BGCOLOR="#FFFFFF">
+<hr>
+<b><i>automateR</i></b> has several sub-projects to automate certain tasks 
+related to maintaining and testing R packages. The project does not (yet)
+include any <i>R</i> packages, but the Subversion Repository has directories 
+with structures for automatically doing tasks related to maintaining 
+an <i>R</i> installation and regularly testing <i>R</i> code segments. 
+These rely on gmake and cron jobs and should work on any system that 
+supports these facilities (but has not been broadly tested).
 
-<!-- This is the project specific website template -->
-<!-- It can be changed as liked or replaced by other content -->
+<P>
+<a href=RoboAdmin.php><b>RoboAdmin</b>.</a> provides tools that automatically
+install new versions of <i>R</i> when they are released, and runs site
+specific tests to ensure everything works with the new version. 
 
-<?php
+<P>
+<a href=RoboRC.php><b>RoboRC</b>.</a> Provides tools that automatically run
+site specific tests to ensure everything works with <i>R</i> release candidates.
 
-$domain=ereg_replace('[^\.]*\.(.*)$','\1',$_SERVER['HTTP_HOST']);
-$group_name=ereg_replace('([^\.]*)\..*$','\1',$_SERVER['HTTP_HOST']);
-$themeroot='r-forge.r-project.org/themes/rforge/';
+<P>
+<a href=RoboDev.php><b>RoboDev</b>.</a> Provides tools that automatically run
+site specific tests to ensure everything works with the develeopment version 
+of <i>R</i>.
 
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-?>
-<!DOCTYPE html
-	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en   ">
+<P>
+<a href=RoboTests.php><b>RoboTests</b>.</a> Provides tools that automatically
+runs tests suites with a specific versions of <i>R</i> and record results
+from the different test suites.
 
-  <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title><?php echo $group_name; ?></title>
-	<link href="http://<?php echo $themeroot; ?>styles/estilo1.css" rel="stylesheet" type="text/css" />
-  </head>
 
-<body>
-
-<!-- R-Forge Logo -->
-<table border="0" width="100%" cellspacing="0" cellpadding="0">
-<tr><td>
-<a href="http://r-forge.r-project.org/"><img src="http://<?php echo $themeroot; ?>/imagesrf/logo.png" border="0" alt="R-Forge Logo" /> </a> </td> </tr>
+<!-------------------------------- END OF CONTENTS ------------------->
 </table>
 
-
-<!-- get project title  -->
-<!-- own website starts here, the following may be changed as you like -->
-
-<?php if ($handle=fopen('http://'.$domain.'/export/projtitl.php?group_name='.$group_name,'r')){
-$contents = '';
-while (!feof($handle)) {
-	$contents .= fread($handle, 8192);
-}
-fclose($handle);
-echo $contents; } ?>
-
-<!-- end of project description -->
-
-<p> No content added. </p>
-
-<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
-
-</body>
-</html>
+</body></html>
