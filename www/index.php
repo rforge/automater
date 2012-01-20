@@ -10,10 +10,10 @@
 <BODY BGCOLOR="#FFFFFF">
 <hr>
 <b><i>automateR</i></b> has several sub-projects to automate certain tasks 
-related to maintaining and testing R packages. The project does not (yet)
+related to maintaining an <i>R</i> installation and site-specific testing of packages. The project does not (yet)
 include any <i>R</i> packages, but the Subversion Repository has directories 
-with structures for automatically doing tasks related to maintaining 
-an <i>R</i> installation and regularly testing <i>R</i> code segments. 
+with structures for automatically doing tasks related to installing and
+maintaining <i>R</i>, and regularly testing <i>R</i> code segments. 
 These rely on gmake and cron jobs and should work on any system that 
 supports these facilities (but has not been broadly tested).
 
