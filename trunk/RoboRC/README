@@ -1,3 +1,24 @@
 This Makefile based system installs R release candidates and runs tests 
 from the RoboAdmin direcory. The location of that directory should be passed as
-an argument to configure.
+an argument to configure:
+
+./configure   path/to/RoboAdmin
+
+The testing can be run automatically with a crontab entry like
+
+0 2 * * * (cd RoboRC ; ./getPreRelDates ; make >cron.out 2>&1 ) || echo "Error occurred. See $HOME/RoboRC/cron.out for details"
+which would run at 2am local time.
+
+This downloads and compiles the latest beta or RC version of R from CRAN (in 
+R-test) and then changes into the tests directory and runs make there.
+
+The script getPreRelDates sets file time stamps to the beginning of the day
+of the release (i.e. time 00:00). If it is run in the late evening in a time
+zone to the west of CRAN (Austria), and next day's release has already happened,
+this has the result that the file time stamp is set in the future. Make then
+complains:
+
+  File `R-src/latestdt' has modification time ... s in the future
+
+and fails to build the new R. This can be avoided by running the cron job in 
+the early morning rather than late evening.

@@ -70,6 +70,8 @@ $(ROBOHOME)/R-src/$(LATEST).tar.gz: R-src/latestdt
 	@echo making $@ ...
 	rm -rf R-src/$(LATEST).tar.gz
 	(cd R-src ; wget -o Rwget.log "$(BASE)/$(LATEST).tar.gz")
+	@#wget seems to use web file date with UTC shift, so touch is important
+	@touch $@
 
 	
 ### site-library  ## typically installed with new R version and not updated 
