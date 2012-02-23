@@ -1,14 +1,16 @@
 
 # This will build R every day during the pre-release cycle.
-# Only site-library is installed, but in other respects this is similar to
-# RoboAdmin.  ${ROBOADMIN}/Makevars.site is used to find package to install
-# and tests/  uses the  tests in ${ROBOADMIN}/tests/
+# (Hopefully) works with R-rc and R-beta (using latest in /src/base-prerelease).
+# The target R version is called R-test. Any previous R-test is removed.
+# Only site-library is installed, but in other respects the installed R-test
+#  is similar to RoboAdmin.  ${ROBOADMIN}/Makevars.site is used to find packages
+# to install and tests/  uses the  tests in ${ROBOADMIN}/tests/
 
 include Makevars
 
 include ${ROBOADMIN}/Makevars.site
 
-default: latest-ok installR site-library 
+default: latest-ok installR site-library tests
 
 #latest-ok is just to provide more meaningful error messages when getDates 
 # failed to get the version info. 
@@ -21,7 +23,7 @@ latest-ok:
 	    exit 1)
 	@test -z "`grep 'ERROR' R-src/Rver.log`" || \
 	          (echo from   R-src/Rver.log: ; cat  R-src/Rver.log; exit 1 )
-	@test -n "$(RPATH)" || \
+	@test -n "$(LATEST)" || \
 	   (echo "Error. latest indicator is empty. HTTP probably failed." ; \
 	    exit 1)
 	
@@ -52,18 +54,21 @@ check-all: build
 	@$(MKDIR) FLAGS
 	@touch FLAGS/$@
 
-# do not use dir for time stamp, as it will change when libraries are installed
+# do not use $(RPATH) dir for time stamp, it changes when libraries are installed
 #   mail in Ubuntu requires mailutils
 $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	@echo making $@ ...
-	test -d "$(RRPATH)" || mv $(RPATH) $(RPATH).pre$(LATEST)
-	@gunzip -c $< | tar xf -
-	(cd $(RPATH) ; ./configure --prefix=$(RPATH) )
-	(cd $(RPATH) ; make )
+	gunzip -c $< | tar xf -
+	rm -rf R-test
+	if [ -d "R-beta" ]; then   mv R-beta R-test ; fi
+	if [ -d "R-rc"   ]; then   mv R-rc   R-test ; fi
+	(cd $(RPATH)/ ; ./configure --prefix=$(RPATH)/ )
+	(cd $(RPATH)// ; make )
 	@touch $@
 
-$(ROBOHOME)/R-src/$(LATEST).tar.gz:
+$(ROBOHOME)/R-src/$(LATEST).tar.gz: R-src/latestdt
 	@echo making $@ ...
+	rm -rf R-src/$(LATEST).tar.gz
 	(cd R-src ; wget -o Rwget.log "$(BASE)/$(LATEST).tar.gz")
 
 	
@@ -94,9 +99,9 @@ update-site-library: site-library #Note - normal policy is not to do this
 	   'update.packages(lib.loc="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
 	@touch FLAGS/$@
 
-.PHONY: tests testsite clean reallyclean
+.PHONY: tests clean reallyclean
 
-tests testsite: 
+tests: 
 	@(cd tests ; $(MAKE) $@)
 
 clean:

@@ -1,17 +1,17 @@
 include ../Makevars
 
-DIRS=${shell (cd $(ROBOADMIN)/tests; ls -p -d -1 * | grep "/" )}
+#DIRS=${shell (cd $(ROBOADMIN)/tests; ls -p -d -1 * | grep "/" )}
 
-default: tests
+default: RoboAdmin
 
-testz:
-	echo ${DIRS}
+RoboAdmin:
+	mkdir RoboAdmin
+	cp -r $(ROBOHOME)/Makevars.in    RoboAdmin
+	cp -r $(ROBOHOME)/Makevars       RoboAdmin
+	cp -r $(ROBOADMIN)/Makevars.site RoboAdmin
+	cp -r $(ROBOADMIN)/tests         RoboAdmin
+	(cd RoboAdmin/tests ; make clean ) 
+	(cd RoboAdmin/tests ; make  testsite ) 
 
-#dir is created if it does not exist, and Makefile.default copied there. If a 
-#test requires a special Makefile then the directory and Makefile need to exist.
-tests testsite clean:
-	@for f in ${DIRS}"" ; do \
-	   mkdir -p $$f ; \
-	   if [ ! -f $$f/Makefile ]; then cp Makefile.default $$f/Makefile; fi ;\
-	   (cd $$f ; $(MAKE) $@ );  \
-	   done ; 
+clean:
+	rm -rf RoboAdmin

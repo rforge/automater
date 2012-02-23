@@ -7,8 +7,7 @@ REPOS="http://cran.r-project.org"
 
 # file R-src/latest is written by getDates script (run by cron job)
 LATEST:=$(shell cat $(ROBOHOME)/R-src/latest)
-#RPATH:=$(ROBOHOME)R-patched
-RPATH:=$(ROBOHOME)R-rc
+RPATH:=$(ROBOHOME)R-test
 
 VPATH = FLAGS
 
