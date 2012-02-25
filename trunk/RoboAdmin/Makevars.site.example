@@ -1,8 +1,11 @@
 RUSERS=somebody@somewhere
 RSUPPORT=somebody@somewhere
 
+# Some tests may need environment variable settings when R is executed.
+# (cron jobs may not get setting done in normal sessions, eg in .bashrc )
+RENV=POSTGRES_HOST=192.168.xxx.xxx POSTGRES_DATABASE=xxxx POSTGRES_USER=xxxx POSTGRES_PASSWD=xxxx
 # Setting the path in RENV before the call to $(R) is only needed by
-# some packages configurations (e.g. fame) which need it to find R.
+# some packages configurations (e.g. fame) which needs it to find R.
 RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
 
 # you will need this set to do  "make devel"
