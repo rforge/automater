@@ -58,10 +58,15 @@ check-all: build
 #   mail in Ubuntu requires mailutils
 $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	@echo making $@ ...
-	gunzip -c $< | tar xf -
-	rm -rf R-test
-	if [ -d "R-beta" ]; then   mv R-beta R-test ; fi
-	if [ -d "R-rc"   ]; then   mv R-rc   R-test ; fi
+	@gunzip -c $< | tar xf -
+	@rm -rf R-test
+	@if    [ -d "R-beta" ]; then   mv R-beta R-test ;\
+	  elif [ -d "R-rc"   ]; then   mv R-rc   R-test ;\
+	  elif [ -d "R-patched"   ]; then   \
+	    echo   "Only R-patched exists. Has new R been released?";\
+	    echo   "(If so, stop any cron job that runs this.)" ; \
+	    exit 1;\
+	  fi
 	(cd $(RPATH)/ ; ./configure --prefix=$(RPATH)/ )
 	(cd $(RPATH)// ; make )
 	@touch $@

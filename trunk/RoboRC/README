@@ -1,3 +1,12 @@
+****************  KNOWN BUGS   ****************
+
+The fetching of the tarball uses R-latestest.tar.gz which will be R-patched
+after the new R is released. Make recognizes this and stops, but there is not
+yet a mechanism to stop before the tarball is downloaded. To prevent this extra
+netork traffic the cron job should be removed until it is again needed.
+
+****************  DESCRIPTION  ****************
+
 This Makefile based system installs R release candidates and runs tests 
 from the RoboAdmin direcory. The location of that directory should be passed as
 an argument to configure:
