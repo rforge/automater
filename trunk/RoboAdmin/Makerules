@@ -182,6 +182,12 @@ update-site-library-devel: site-library-devel
 
 .PHONY: tests testsite testfresh testdevel clean reallyclean
 
+#  make tests    only does testsite 
+# usually would also want 
+#  make  testfresh
+# and maybe  
+#  make  testdevel
+
 tests testsite testfresh testdevel: 
 	@(cd tests ; $(MAKE) $@)
 

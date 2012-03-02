@@ -86,25 +86,37 @@ directions on how a user would access this.
 
 To install packages in the existing R site-library do
 
-   make site
+  make site
 
 To update the packages in  site-library-fresh do
 
-   make fresh
+  make fresh
 
 (Note, the policy is to not update packages in the site-library. )
 
 To run any tests you have specified in the tests/ directory
 
-   make tests
+  make tests
+   
+or the equivalent
 
-This runs tests for using both the site-library and the site-library-fresh.
-It should only run tests for which a library has been updated, or for tests
-that have been changed or added. If you want to run all tests then
+  make testsite
 
-   cd test
-   make clean
-   make tests
+This runs tests for using site-library. It should only run tests for which a library has been updated, or for which tests that have been changed or added. 
+
+  make testfresh
+and
+  make testdevel
+
+runs tests for using site-library-fresh or site-library-devel.
+
+If no changes have been made, but you want to run all tests then
+
+  cd test
+  make clean
+  make testsite
+  make testfresh
+  make testdevel
 
 
 #################################################################
@@ -157,20 +169,32 @@ MAILTO="user1@mailhost"
 MAILTO="user1@mailhost,user2@domain.com"
 
 To run daily insert lines like, for example,
-m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin/cron.out
 
-with m and d replace by minute and hour. If a http_proxy is needed it can be 
+m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ;
+ make testsite ; make testfresh) >RoboAdmin/cron.out
+
+(all on one line) with m and d replace by minute and hour. The above produces output, so mail will be sent if any MAILTO address has been specified. Alternately
+
+m h * * * (cd RoboAdmin ; ./getDates ; make  >cron.out 2>&1 ; make testsite 
+  >>cron.out 2>&1 ; make testfresh >>cron.out 2>&1)  || 
+  echo "Error occurred.  See $HOME/RoboAdmin/cron.out for details"
+
+or
+
+m h  * * * ( cd RoboAdmin ; ./getDates ; make >cron.out 2>&1 ; 
+  make site-library-fresh-notdevel >>cron.out 2>&1 ; 
+  make testfresh  >>cron.out 2>&1) || 
+  echo "Error occurred.  See $HOME/RoboAdmin/cron.out for details"
+
+(all on one line) will send mail if the last make has a non-zero exit
+status. (Separate from the cron email, some make targets can be set to send 
+mail notifications about updates.) 
+
+If a http_proxy is needed it can be 
 specified:
 
 m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make ; make tests ) >RoboAdmin/cron.out
 
-The above both produce output, so mail will be sent if any MAILTO address has
-been specified. Alternately
-
-m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ; make >cron.out 2>&1 ; make tests >>cron.out 2>&1)  || echo "Error occurred.  See $HOME/RoboAdmin/cron.out for details"
-
-will send mail if "make test" has a non-zero exit status.(Separate from the 
-cron email, some make targets will send mail notifications about updates.) 
 
 [crontab Entry Format
      A crontab file consists of lines of  six  fields  each.  The
