@@ -14,3 +14,29 @@ Directory TSMySQL provides an example of pulling tests automatically
 from the R-forge svn archive for a package. 
 Both of these examples use tests from the package itself, but that is not
 necessary.
+
+####### Additional possibly useful notes #######
+ 
+####  getting reverse dependencies of a package. 
+  (Based on Rd email from Uwejan 18,2012 )
+
+packages_to_check <- function(dep, 
+  which = c("Depends", "Imports", "LinkingTo", "Suggests"), recursive = FALSE){
+
+    download.file("http://cran.R-project.org/web/packages/packages.rds",
+                "packages.rds", mode="wb")
+    x <- readRDS("packages.rds")
+    x <- x[!duplicated(x[,1]),]
+    packages <- x[,1]
+    rdeps <- tools:::.package_dependencies(packages = dep, x,
+                        which = which,
+                        recursive = recursive, reverse = TRUE)
+    paste(apply(x[x[,1] %in% rdeps[[1]], 1:2], 1, paste, collapse="_"), ".tar.gz", sep="")
+   }
+
+result <-  packages_to_check("TSdbi")
+
+or if you want the whole chain including recursive dependencies:
+
+result <-  packages_to_check("sp", recursive=TRUE)
+
