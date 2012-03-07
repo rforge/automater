@@ -18,23 +18,27 @@ These rely on gmake and cron jobs and should work on any system that
 supports these facilities (but has not been broadly tested).
 
 <P>
-<a href=RoboAdmin.php><b>RoboAdmin</b>.</a> provides tools that automatically
+<a href=RoboAdmin.php><b>RoboAdmin</b></a> provides tools that automatically
 install new versions of <i>R</i> when they are released, and runs site
 specific tests to ensure everything works with the new version. 
 
 <P>
-<a href=RoboRC.php><b>RoboRC</b>.</a> Provides tools that automatically run
+<a href=RoboRC.php><b>RoboRC</b></a> provides tools that automatically run
 site specific tests to ensure everything works with <i>R</i> release candidates.
 
 <P>
-<a href=RoboDev.php><b>RoboDev</b>.</a> Provides tools that automatically run
+<a href=RoboDev.php><b>RoboDev</b></a> provides tools that automatically run
 site specific tests to ensure everything works with the develeopment version 
 of <i>R</i>.
 
 <P>
-<a href=RoboTests.php><b>RoboTests</b>.</a> Provides tools that automatically
+<a href=RoboTests.php><b>RoboTests</b></a> provides tools that automatically
 runs tests suites with a specific versions of <i>R</i> and record results
 from the different test suites.
+
+<P>
+<a href=makeDevel.php><b>makeDevel</b></a> provides tools to support development
+of <i>R</i> packages.
 
 
 <!-------------------------------- END OF CONTENTS ------------------->
