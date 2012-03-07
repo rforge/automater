@@ -261,6 +261,8 @@ errors:
 	    | grep -v "sumSqerror" \
 	   ; touch /dev/null)
 
+svnstatus:    ;@(svn status ;  touch /dev/null)
+
 debug:
 	@echo  starting R with Makefile environment
 	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) \

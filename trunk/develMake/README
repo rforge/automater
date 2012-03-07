@@ -14,11 +14,17 @@ identify the directory as a package. It scans Makefiles in these directories
 build the file Makepac.Depends, which controls the order in which packages 
 should be built. The dependencies indicated by PREREQ_PACS should only 
 indicate the packages in the qc directory, as distinct from the Depends 
-indicate in the DESCRIPTION file.  The configure also generates files 
-Makefile, Makerules and Makevars using  Makefile.in, Makerules.in, 
-Makevars.in, and Makevars.local. It should be possible to specify any local 
-settings in Makevars.local, so the make*.in files do not require local 
-modification.
+indicate in the DESCRIPTION file which may have other package dependencies.
+If PREREQ_PACS is not complete then a package build will typically fail when 
+it encounters a missing requirement. However, make -k (see below) might build
+the required package in a subsequnent step, and invoking make again will then
+complete without error. If you notice this behaviour then check that 
+PREREQ_PACS has been properly specified for the package that fails.
+
+The configure also generates files Makefile, Makerules and Makevars using  
+Makefile.in, Makerules.in, Makevars.in, and Makevars.local. It should be 
+possible to specify any local settings in Makevars.local, so the make*.in 
+files do not require local modification.
 
 The Makefiles in each package directory are relatively simple. This is an
 example for package tframePlus, which depends on package tframe:
@@ -29,9 +35,10 @@ include $(QC)/Makevars
 default:   $(DEFAULT)
 include $(QC)/Makerules
 
-In the includes above it would usually be possible to use, for example, 
- ../Makevars but if  the directory under qc is actually a soft link, then on
-some systems this goes up the real path and fails to find Makevars, so 
+If there is more than one item in PREREQ_PACS then the list should be separated
+by spaces. In the includes above it would usually be possible to use, for 
+example, ../Makevars but if  the directory under qc is actually a soft link, 
+then on some systems this goes up the real path and fails to find Makevars, so 
 setting QC avoids this problem.
 
 Make can be run in individual subdirectories or in the qc directory. It builds
@@ -51,7 +58,8 @@ will complete all targets that do not depend on something that fails.
   make clean
 
 removes the QCLIB, the FLAGS directories, and various files that get generated
-by running tests, checking, and building.
+by running tests, checking, and building. See below for a description of some
+other make targets.
 
 If the package builds and checks succesfully then a tar.gz source package
 file suitable for puting on CRAN is left in the FLAGS directory. In order to
@@ -85,4 +93,52 @@ where PKG is the name of the package directory, and add lines like
 
 plots*.pdf
 Rplots*.ps
+Rplots*.pdf
 FLAGS
+
+###############  other make targets ############### 
+
+Some other make targets are provided for convenience:
+
+  make issues
+
+descends into each package directory and greps several files output by the make
+process to look for errors, warnings, and notes. If this reports
+ "grep: FLAGS/RCMDcheck.out: No such file or directory"
+in some directories, that is an indication that make did not complete the
+building and checking of that package.
+
+  make svnstatus
+
+descends into each package directory and runs svn status.
+
+
+  make install 
+
+descends into each package directory and, if the build and check have been
+successful, installs the package into the library specified by the environment
+variable PREFIX.
+
+
+  make install-site
+
+descends into each package directory and, if the build and check have been
+successful, installs the package into the site-library for the R version
+currently in use.
+
+
+  make debug 
+
+should be run in a package directory. It starts R with the same parameters as it
+is started in the make process, using the unchecked package and the QCLIB. More
+specifically, it does
+
+   R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) \
+	   $(RENV) R --vanilla
+
+
+  make debug-vign
+
+should be run in a package directory. It echos the R code stripped from a
+vignette (to allow simple copy and paste) and then starts R as in make debug 
+above. (This is simplistic debugging but sumtimes useful.)
