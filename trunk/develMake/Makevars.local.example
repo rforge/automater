@@ -1,0 +1,13 @@
+
+##########################################################################
+#
+#                Normal Local Setup              
+#
+##########################################################################
+
+# The Makefile in each package directory needs to be edited to indicate 
+#   package prereqs
+
+#RENV should indicate any necessary local environment settings for R execution.
+# (It may not be necessary).
+

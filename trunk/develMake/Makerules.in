@@ -1,0 +1,278 @@
+# The Makefile in individual package directories should define the 
+# default - usually using $(DEFAULT)
+
+# As of ~ R-2.5.0 (or before) it is necessary to set both R_LIBS  *and*
+# R_LIBS_SITE=$(RSITE) or RHOME/site-library gets picked up in .libPaths()
+ifndef RSITE
+        RSITE=$(QCLIB):$(RSITETEST)
+endif
+
+ONWARNING=exit 1
+#ONWARNING=echo WARNING Ignored.
+
+version:
+	@echo $(PAC) $(VERSION) 
+
+# This depends on the
+# variable $(PREREQ_PACS) being set in each subdirectory Makefile.
+# It also seems necessary that $(PREREQ_PACS) have a complete list of package
+# prereqs, not just the top level (e.g. dse & tframe, not just dse which 
+# implicitly means tframe), otherwise install goes into an infinite recursion.
+
+FORCE:
+
+# this prevents parallel jobs at the package level from clobbering one another
+# but it also stops parallel running of tests/ so will try without for awhile.
+# (and note recent documentation say prereq are ignored)
+#  Consider lockfile or debian lockfile-create
+#.NOTPARALLEL: $($(PACKAGES):%=$(QCLIB)/%)
+#ERROR: failed to lock directory .../QCLIB for modifying
+#Try removing .../QCLIB/00LOCK
+#  see sleep below as kludge
+
+#$(PREREQ_PACS:%=$(QCLIB)/%): FORCE
+#	@$(MAKE) -C $(subst $(QCLIB)/,$(QC)/,$@)  
+# above should work but does not properly follow links
+
+$(PREREQ_PACS:%=$(QCLIB)/%): FORCE
+	(cd $(subst $(QCLIB)/,$(QC)/,$@) ; $(MAKE) ) 
+
+
+$(QCLIB)/$(PAC): $(PAC)_$(VERSION).tar.gz
+	@echo "making $@, changed prereqs $? ..."
+	@echo installing $(PAC) in $(QCLIB)
+	@$(MKDIR) $(QCLIB)
+	@if [ -e $(QCLIB)/00LOCK ]; then sleep 10; fi
+	@if [ -e $(QCLIB)/00LOCK ]; then sleep 20; fi
+	@if [ -e $(QCLIB)/00LOCK ]; then sleep 30; fi
+	@if [ -e $(QCLIB)/00LOCK ]; then sleep 40; fi
+	@R_LIBS_SITE=$(RSITE) R CMD INSTALL -l $(QCLIB) \
+	     $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+
+$(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% unchecked/$(PAC) \
+           $(PREREQ_PACS:%=$(QCLIB)/%)  
+	@echo $(ECHOLINE)  $(TIMELINE)
+	@$(RM) $@.tmp 
+	@$(MKDIR) $(FLAGS)/tests
+	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) $(RENV) \
+	    R CMD BATCH  --vanilla tests/$(notdir $@)  $@.tmp
+	@mv  $@.tmp  $@
+	@$(TIMELINE2)
+
+
+unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
+	@echo $(ECHOLINE)  $(TIMELINE)
+	@echo "Using R=$(R_HOME)"
+	@echo -n "        VERSION and date-stamp:"
+	@R --slave --version | grep "R version"
+	@$(RM) $@ $(FLAGS)/unchecked/$(PAC).tmp
+	@$(MKDIR) $(FLAGS)/unchecked/$(PAC).tmp 
+	@#if .o and .so exist then some compiling is skipped, so warnings missed
+	@$(RM) src/*.o src/*.so
+	@# install from source to avoid building  vignette, etc
+	@R_LIBS=$(QCLIB)  R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C R CMD INSTALL \
+	  --no-docs --library=$(FLAGS)/unchecked/$(PAC).tmp  $(CURDIR) \
+	      >$(FLAGS)/install.log.tmp 2>&1
+	@#(grep -i warning $(FLAGS)/install.log.tmp ;  touch /dev/null )
+	@(grep "couldn't" $(FLAGS)/install.log.tmp ;  touch /dev/null )
+	@test  -z  "`grep -i 'warning' $(FLAGS)/install.log.tmp`"  || \
+	      (egrep -B 4 -i 'warning' $(FLAGS)/install.log.tmp ; $(ONWARNING) )
+	@mv $(FLAGS)/install.log.tmp $(FLAGS)/install.log #not target but for convenience
+	@$(RM) $@ $(FLAGS)/unchecked/$(PAC)
+	@mv $(FLAGS)/unchecked/$(PAC).tmp $(FLAGS)/unchecked/$(PAC)
+	@# touch here is important because mv leaves date stamp older than prereq
+	@touch $(FLAGS)/unchecked/$(PAC)
+	@$(TIMELINE2)
+
+
+#This will catch S4 code/doc mismatches if set _R_CHECK_CODOC_S4_METHODS_=true 
+#  but give false positives
+
+# Vignette sources
+#VIGNS=${subst .Stex,,${shell test -d inst/doc  && (cd inst/doc; ls *.Stex )}}
+VIGNS=${subst .Stex,,${shell test -d vignettes  && (cd vignettes; ls *.Stex )}}
+
+vignette:vignettes
+
+vignettes: $(VIGNS:%=inst/doc/%.pdf)
+
+$(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
+	@echo $(ECHOLINE) $(TIMELINE)
+	$(MKDIR) inst/doc 
+	cp   $<  inst/doc 
+	(cd inst/doc ; \
+	        R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)     \
+		R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C  \
+	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
+	@echo Now acroread $@  to check, then possibly
+	@echo cp $@   to forge/PROJECT/$(PAC)/inst/doc
+
+$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) .Rbuildignore \
+           DESCRIPTION man $(RD:%=man/%) $(VIGNS:%=vignettes/%.Stex) \
+	   NEWS #inst/CITATION  
+	@echo $(ECHOLINE) $(TIMELINE)
+	@$(RM) $(CURDIR)/src/*.o $(CURDIR)/src/*.so 
+	@#  This may cause problem in parallel make
+	@if [ -e $(CURDIR)/src/Makefile ]; then \
+	     cd $(CURDIR)/src  && $(MAKE) distclean; fi
+	@$(MKDIR) $(FLAGS)/unchecked 
+	@#cd $(FLAGS)/unchecked && $(RM) $(PAC)_$(VERSION).tar.gz 
+	@cd $(FLAGS)/unchecked &&  R_LIBS=$(QCLIB) \
+	    R_LIBS_SITE=$(RSITE)  $(RENV) LC_ALL=C  R CMD build --compact-vignettes $(CURDIR)
+	@$(RM) $(FLAGS)/$(PAC).Rcheck
+	@# not sure if --no-vignettes could be specified here.What does this test 
+	@# do relative to building the vignette (which was just done in unchecked)
+	(R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) \
+	     _R_CHECK_CODOC_S4_METHODS_=true R CMD check --no-tests  \
+	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@) >$(FLAGS)/RCMDcheck.out; exit 0 )
+	# for bug in R-2.12.0 
+	# exit 0 above  
+	#mv $(PAC).Rcheck $(FLAGS) using -o now instead of --outdir
+	# for bug in R-2.12.0  
+	grep -v 'Error in as.character' $(FLAGS)/RCMDcheck.out >$(FLAGS)/zRCMDcheck.out
+	grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/zRCMDcheck.out >$(FLAGS)/RCMDcheck.out
+	grep -v 'Error in as.character' $(FLAGS)/$(PAC).Rcheck/00check.log >$(FLAGS)/$(PAC).Rcheck/00check.logz
+	grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/$(PAC).Rcheck/00check.logz >$(FLAGS)/$(PAC).Rcheck/00check.log
+	# end for bug in R-2.12.0  
+	test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
+	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheck.out`" || \
+	          (grep -v "OK"  $(FLAGS)/RCMDcheck.out; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/RCMDcheck.out`" || \
+	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 0 )
+	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK"  $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/$(PAC).Rcheck/00check.log`"   || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 0 )
+	@test -z "`grep 'missing link' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
+	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
+	@cp  $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+	@$(TIMELINE2)
+
+
+clean:	
+	@if [ -f src/Makefile ]; then  (cd src; $(MAKE) clean); fi
+	@$(RM) INDEX $(FLAGS) $(PACCLEAN) 
+	@$(RM) src/*.o src/*.so src-c/*.o src-c/*.so
+	@$(RM) core lite.out.ps Rplots*.pdf 
+
+reallyclean:	clean 
+	@$(RM) tmp*   FLAGS*
+
+
+# Rbuildignore requires a version of tar newer than 1.13, which is available at
+#http://alpha.gnu.org/pub/gnu/tar/
+
+
+########################################################
+#
+#  install targets for regular use (not for testing)
+#
+########################################################
+
+install:	$(FLAGS)/$(PAC)_$(VERSION).tar.gz 
+	@echo "making $@, changed prereqs $? ..."
+	@if [ -n "$(PREREQ_PACS)" ] ; then \
+	   for f in $(PREREQ_PACS)"" ; do (cd $(QC)/$$f ; $(MAKE) install ); done ; fi
+	@if [ -d $(PREFIX)/$(PAC) ]; then \
+	    R CMD REMOVE -l $(PREFIX) $(PAC); fi
+	@$(MKDIR) $(PREFIX)
+	@#  --with-package-versions seems to cause a problem
+	@# for parallel install of a single package (with large src/ ?)
+	R CMD INSTALL -l $(PREFIX)  $<
+#	R CMD INSTALL -l $(PREFIX)  --with-package-versions $<
+#               --save prevents lazy loading as of R 2.0.0
+#	R CMD INSTALL --save -l $(PREFIX) $<
+	@touch $(FLAGS)/$@
+	@$(TIMELINE2)
+
+# previously used $(PREFIX_SITE) here
+install-site: site-library
+
+# these bypass RoboAdmin (which looks on CRAN)
+site-library site-library-fresh site-library-devel site-library-fresh-notdevel:	$(FLAGS)/$(PAC)_$(VERSION).tar.gz 
+	@echo "making $@, changed prereqs $? ..."
+	@echo installing $(PAC) in $(R_HOME)/$@
+	if [ -n "$(PREREQ_PACS)" ] ; then \
+	   for f in $(PREREQ_PACS)""; do (cd $(QC)/$$f ; $(MAKE) $@ ); done; fi
+	if [ -d $(R_HOME)/$@/$(PAC) ]; then R CMD REMOVE -l $(R_HOME)/$@ $(PAC); fi
+	R CMD INSTALL -l $(R_HOME)/$@  $<
+	@touch $(FLAGS)/$@
+
+
+# prevent these from being deleted when they are intermediate targets
+.SECONDARY:	INDEX  $(PAC).tar.gz  $(FLAGS)/$(PAC).tar.gz  
+
+INDEX:	man 
+	@echo $(ECHOLINE) $(TIMELINE)
+	@$(MKDIR) $(FLAGS)
+	@cd $(FLAGS) && echo "library(tools);  if (0 == length(\
+	  capture.output(Rdindex('$(CURDIR)/man', outFile = 'INDEX.tmp')))) \
+	   q('no', status=0) else q('no', status=1)" | R --vanilla --slave 
+	@mv $(FLAGS)/INDEX.tmp  INDEX
+	@$(TIMELINE2)
+
+
+
+########################################################
+#
+#  special targets for debugging
+#
+########################################################
+
+
+# The manuals now are produced in $(FLAGS)/$(PAC).Rcheck
+
+Rprof: $(TESTS:%=$(FLAGS)/tests/%) 
+	@echo $(ECHOLINE) $(TIMELINE)
+	@$(RM) $(FLAGS)/$@ $(FLAGS)/Rprof.in $(FLAGS)/Rprof.out
+	@if [ -n "$(DEMOS)" ] ; then  for f in $(DEMOS)""; do  \
+	   (@echo "Rprof(filename = 'Rprof.out', append = TRUE)" >$(FLAGS)/Rprof.in ;\
+	    @echo "source('$$f')" >>$(FLAGS)/Rprof.in ;\
+	    $@cd $(FLAGS) &&  R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) \
+	          R CMD BATCH --vanilla -q Rprof.in ) ; done ; fi
+	@# previously had export R_LIBS above (but that does not seem right)
+	R CMD Rprof Rprof.out
+	@$(TIMELINE2)
+
+allWarnings:
+	@(grep -i WARN $(FLAGS)/* $(FLAGS)/*/*log | grep -v warn.conflicts; \
+	      touch /dev/null)
+
+issues: notes warnings errors
+
+notes:    ;@(grep -A 2 -i NOTE $(FLAGS)/RCMDcheck.out ;  touch /dev/null)
+
+warnings: ;@(grep -A 2 -i WARN $(FLAGS)/RCMDcheck.out ;  touch /dev/null)
+
+errors:
+	@(grep -A 2 -i ERROR $(FLAGS)/RCMDcheck.out \
+	    | grep -v "syntax errors ... OK" \
+	    | grep -v "can be loaded ... OK" \
+	    | grep -v "can be loaded with stated dependencies ... OK" \
+	    | grep -v "sumSqerror" \
+	   ; touch /dev/null)
+
+debug:
+	@echo  starting R with Makefile environment
+	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) \
+	   $(RENV) R --vanilla 
+
+debug-vign:
+	@echo  starting R with Makefile environment. Copy and paste
+	@cat $(FLAGS)/Vignette/R.in
+	@cd $(FLAGS)/Vignette && R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) \
+	  R_LIBS_SITE=$(RSITE)  $(RENV)  R --vanilla    
+
+gdb:
+	@echo  starting R -d gdb  type >run then after segfault bt
+	R_LIBS=$(FLAGS):$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) R -d gdb 
+

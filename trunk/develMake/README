@@ -1,0 +1,88 @@
+The make files in this directory are meant to be in a directory above R package
+directories. The make files facilitate testing and building of the packages. 
+(The directory will be called "qc" below, but this name can be anything.) 
+The make system should be especially helpful when there are dependency 
+relationships among the packages in the qc directory. 
+
+The configure script run by
+
+  ./configure  
+
+looks in directories under qc and uses the existence of a DESCRIPTION file to 
+identify the directory as a package. It scans Makefiles in these directories
+(see below) for the setting of a PREREQ_PACS variable, and uses these to 
+build the file Makepac.Depends, which controls the order in which packages 
+should be built. The dependencies indicated by PREREQ_PACS should only 
+indicate the packages in the qc directory, as distinct from the Depends 
+indicate in the DESCRIPTION file.  The configure also generates files 
+Makefile, Makerules and Makevars using  Makefile.in, Makerules.in, 
+Makevars.in, and Makevars.local. It should be possible to specify any local 
+settings in Makevars.local, so the make*.in files do not require local 
+modification.
+
+The Makefiles in each package directory are relatively simple. This is an
+example for package tframePlus, which depends on package tframe:
+
+PREREQ_PACS=tframe
+QC=${shell cd ../ ; pwd}
+include $(QC)/Makevars 
+default:   $(DEFAULT)
+include $(QC)/Makerules
+
+In the includes above it would usually be possible to use, for example, 
+ ../Makevars but if  the directory under qc is actually a soft link, then on
+some systems this goes up the real path and fails to find Makevars, so 
+setting QC avoids this problem.
+
+Make can be run in individual subdirectories or in the qc directory. It builds
+and installs the packages in an R library called QCLIB, which is used when
+testing other packages. Files in the tests/ directory in each package are run 
+first, using an unchecked install in a directory called FLAGS/ that is created
+in each package directory. The tests can be run in parallel by using
+
+   make -j
+
+which will be faster on multicore machines. Also
+
+   make -k
+
+will complete all targets that do not depend on something that fails.
+
+  make clean
+
+removes the QCLIB, the FLAGS directories, and various files that get generated
+by running tests, checking, and building.
+
+If the package builds and checks succesfully then a tar.gz source package
+file suitable for puting on CRAN is left in the FLAGS directory. In order to
+avoid having extra clutter in this file, it is useful to have a .Rbuildignore
+file in the package directory. An example of possible lines for this file is
+
+^Makefile$
+FLAGS$
+(^|.*/)core$
+(^|.*/)run$
+^Rplots(.*).pdf$
+inst/doc/Rplots(.*).pdf$
+inst/doc/(^|.*)\.tex$
+inst/doc/(^|.*)\.R$
+inst/doc/(^|.*)\.log$
+inst/doc/(^|.*)\.stdout$
+.Rd2dvi(^|.*)
+(^|.*)\.ps$
+
+
+If the package is checked out from svn then it may also be useful to edit the
+svn properties to ignore some files. You might want to
+
+   export SVN_EDITOR=vi  #or vim or nano -w 
+
+Then, from the qc directory
+
+   svn propedit  svn:ignore PKG
+
+where PKG is the name of the package directory, and add lines like
+
+plots*.pdf
+Rplots*.ps
+FLAGS

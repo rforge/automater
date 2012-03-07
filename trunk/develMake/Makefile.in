@@ -1,0 +1,20 @@
+
+include Makevars
+
+# The default is to do individual testing using  in the test $(QCLIB), 
+#  but not install in the production Rlib indicated  by PREFIX. 
+
+# To install to PREFIX use     " make install"
+
+all: $(PACKAGES) 
+
+include Makepac.Depends
+
+install install-site issues errors warnings notes version: 
+	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
+
+clean reallyclean:	  
+	@$(RM) $(QCLIB)
+	@#for f in $(PACKAGES)  ; do $(MAKE) -C $${f} $@ || exit 1; done
+	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
+

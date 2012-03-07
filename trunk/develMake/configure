@@ -1,0 +1,71 @@
+#! /bin/sh
+
+version="QC Makefiles version 0.95"
+opts="--help --copy-files  --version"
+
+usage="Usage: configure [--help]  [--version]"
+
+
+while test -n "${1}"; do
+  case ${1} in
+    -h|--help)
+      echo "${usage}"; exit 0 ;;
+    -v|--version)
+      echo "${version}"; exit 0 ;;
+   ?*)  echo "${usage}"; exit 1 ;;
+    *)   break ;;
+  esac
+done
+
+qc=`pwd`
+
+PKGS=`ls */DESCRIPTION | sed 's/\/DESCRIPTION//g'` 
+#PKGS=`ls */DESCRIPTION | perl -e 's/\/DESCRIPTION//g'` 
+echo "packages: $PKGS"
+
+echo "creating $qc/Makevars ..."
+
+echo  MKDIR=mkdir -p               >Makevars
+echo  RM=rm -r -f                 >>Makevars
+echo  PERL=perl                   >>Makevars
+
+if test `uname` = "SunOS"  ; then 
+ echo  SHELL=/usr/bin/bash        >>Makevars
+ # this is a work around because Sun sh does not like to echo \b
+ echo  ECHO=/usr/ucb/echo         >>Makevars
+ echo  CP=cp               -r     >>Makevars
+fi
+if test `uname` = "Linux"  ; then 
+ echo  SHELL=/bin/bash            >>Makevars
+ echo  ECHO=echo                  >>Makevars
+ # --dereference is needed so links are copied as files (otherwise 
+ #         CVS  gets cobbered in build).
+ echo  CP=cp --dereference -r     >>Makevars
+fi
+
+echo QC=$qc                       >>Makevars
+echo PAC="\$(notdir \$(CURDIR))"  >>Makevars
+echo ALLPACKAGES=$PKGS            >>Makevars
+echo PACKAGES="\$(filter-out \$(SKIPPAC), \$(ALLPACKAGES))" >>Makevars
+echo FLAGS=FLAGS        >>Makevars
+echo TMP=/tmp           >>Makevars
+echo TST=TST            >>Makevars
+echo QCLIB=$qc/QCLIB    >>Makevars
+
+echo "include  $qc/Makevars.in"    >>Makevars
+echo "-include $qc/Makevars.local" >>Makevars
+
+
+echo "creating $qc/Makerules ..."
+echo "include $qc/Makerules.in"    >Makerules
+
+# Note that Makevars and Makerules are used by the Makefile in each package
+#  directory,  so the above includes cannot go directly in this Makefile.
+#  (And Makerules is not used in this Makefile.)
+echo "creating $qc/Makefile ..."
+echo "include  $qc/Makefile.in"    >Makefile
+
+echo "creating $qc/Makepac.Depends ..."
+(cd $qc && grep "PREREQ_PACS=" */Makefile | \
+         sed 's/\/Makefile:PREREQ_PACS=/: /g' | \
+         sed 's/\(.*\)/\1; @cd $@ \&\& $(MAKE)/g' >$qc/Makepac.Depends )
