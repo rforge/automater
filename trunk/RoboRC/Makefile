@@ -67,7 +67,7 @@ $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	    echo   "(If so, stop any cron job that runs this.)" ; \
 	    exit 1;\
 	  fi
-	(cd $(RPATH)/ ; ./configure --prefix=$(RPATH)/ )
+	(cd $(RPATH)/ ; ./configure --prefix=$(RPATH)/  --enable-R-shlib )
 	(cd $(RPATH)// ; make )
 	@touch $@
 
