@@ -8,6 +8,13 @@
 default: latest-ok installR notifyUsersNewR \
   site-library notifyUsersNewLibs update-site-library-fresh 
 
+# the target 
+#    make update-site-library-fresh-notdevel
+# or
+#    make devel
+# will typically be needed if you have on site package development, but
+# is not part of the default. 
+
 ### site-library  is typically installed with new R version and not updated 
 site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
 	@echo Update of packages in $(RPATH)/site-library being done.
@@ -104,7 +111,7 @@ $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	           mail -s "$(RPATH) building" $(RSUPPORT) 
 	@$(RM) $(RPATH)
 	@gunzip -c $< | tar xf -
-	(cd $(RPATH) ; ./configure --prefix=$(RPATH) )
+	(cd $(RPATH) ; ./configure --prefix=$(RPATH) --enable-R-shlib )
 	(cd $(RPATH) ; make )
 	@touch $@
 
