@@ -6,10 +6,10 @@
 <?php require("navigate.php") ; ?>
 <!-------------------- START OF CONTENTS -------------------------->
 <BODY BGCOLOR="#FFFFFF">
-<b>makeDevel</b>
+<b>develMake</b>
 <hr>
 <P>
-<b>makeDevel</b> provides tools to support development of <i>R</i> packages.
+<b>develMake</b> provides tools to support development of <i>R</i> packages.
 The make files are used in a directory above R package directories. 
 They facilitate testing and building of the packages. 
 The system is especially helpful when there are dependency 

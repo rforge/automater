@@ -37,7 +37,7 @@ runs tests suites with a specific versions of <i>R</i> and record results
 from the different test suites.
 
 <P>
-<a href=makeDevel.php><b>makeDevel</b></a> provides tools to support development
+<a href=develMake.php><b>develMake</b></a> provides tools to support development
 of <i>R</i> packages.
 
 

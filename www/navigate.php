@@ -9,7 +9,8 @@ SCM links
 <li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboRC/?root=automater">RoboRC</a>
 <li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboDev/?root=automater">RoboDev</a>
 <li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboTests/?root=automater">RoboTests</a>
-<li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/makeDevel/?root=automater">makeDevel</a>
+<li><a
+href="https://r-forge.r-project.org/scm/viewvc.php/trunk/develMake/?root=automater">develMake</a>
 </ul>
 
 
