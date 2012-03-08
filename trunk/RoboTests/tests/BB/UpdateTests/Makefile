@@ -13,14 +13,19 @@ PKG=BB
 
 VPATH=FLAGS/
 
-include    ../Makevars.in
-include ../../Makevars
+#  ../ sometimes goes up real path not the link if this directory
+#     is a soft link, so next works even it that case.
+PKG=${shell cd ../ ; pwd}
+TST=${shell cd ../../ ; pwd}
+
+-include ${PKG}/Makevars.in
+include  ${TST}/Makevars
 
 default: update
 
-include ../../Makerules
+include ${RT}/Makerules
 
 update: FLAGS/$(PKG)
-	cp FLAGS/$(PKG)/tests/*.[Rr]  ../
-	cp FLAGS/$(PKG)/DESCRIPTION   ../
+	cp FLAGS/$(PKG)/tests/*.[Rr]  ${PKG}
+	cp FLAGS/$(PKG)/DESCRIPTION   ${PKG}
 	touch FLAGS/update

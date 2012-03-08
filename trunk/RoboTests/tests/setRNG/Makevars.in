@@ -1,0 +1,6 @@
+# the library to use in R tests
+USELIB=$(RPATH)/site-library
+
+# The tests should be run if DEPENDS_PKGS packages in the library change 
+DEPENDS_PKGS=setRNG
+

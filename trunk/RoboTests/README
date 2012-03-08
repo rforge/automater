@@ -5,18 +5,46 @@ depend on, are updated.
 It uses an already installed R version (eg, from RoboAdmin), the location of
 which should be given as an argument to configure.
 
-Note: The RoboTests subdirectory names may correspond to an R package name, 
-in which case the tests would typically be tests for that package.
-The tests could come from the tests/ directory for the package, but might not. 
-Directories BB and EvalEst provide examples of pulling tests automatically 
-the from R-forge source tar.gz for packages. 
-Directory TSMySQL provides an example of pulling tests automatically 
-from the R-forge svn archive for a package. 
-Both of these examples use tests from the package itself, but that is not
-necessary.
+##########  Installation   ##########
 
-####### Additional possibly useful notes #######
+Download or svn checkout from 
+
+   scm.r-forge.r-project.org/svnroot/automater/trunk/RoboTests/
+
+  ./configure  /path/to/R_HOME
+
+and install any tests to be run (see below).
+
+##########     Usage       ##########
+
+Tests to run should be organized in subdirectories below tests/. The names of subdirectories may correspond to an R package name, in which case the tests would typically be tests for that package, but that is not enforced in any way. These directories are referred to below as pkgtests for convenience. Also, the tests could come from the tests/ directory for the package, but more typically would be additional tests that are not part of the package they are testing.
+
+The tests should be self contained R code segments that load any necessary packages and execute R commands. Most importantly, they should do
+
+  stop("some error message")
+
+if something does not run correctly. There can be multiple test files in a directory. The names are arbitrary but should end in ".R". There should also be a file "Makefile" and optionally a file "Makevars.in"
+A simple example is provided in tests/setRNG available with the R-forge checkout. This example is configured to  run if the package setRNG in site-library is changed. The Makefile in this example should work for most other pkgtests/ directories. The file Makevars.in will need minor modification to indicate different dependencies for other pkgtests/ directories.
+
+There is a mechanism to take the list of package dependencies from a file called DESCRIPTION based on the standard R package syntax for that file. See  tests/BB/Makevars.in for an example of that.
  
+There is also a mechanism for extracting tests from different locations. This 
+is done by a Makefile in the directory  pkgtests/UpdateTests/. 
+BB/UpdateTests/Makefile and EvalEst/UpdateTests/Makefile provide examples of 
+pulling tests automatically from the R-forge source tar.gz for packages. 
+These examples use the source tar.gz for the package itself, but that is not 
+necessary. A more usual situation might be to pull the tests from another 
+package that depends on this package.
+ 
+TSMySQL/UpdateTests/Makefile provides an example of pulling tests automatically 
+from the R-forge svn archive for a package. 
+
+
+##########    cron job ?      ##########
+
+
+########## Additional possibly useful notes ##########
+
 ####  getting reverse dependencies of a package. 
   (Based on Rd email from Uwejan 18,2012 )
 

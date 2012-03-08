@@ -1,7 +1,7 @@
 #! /bin/sh
 
-version="RoboTest configure 0.1"
-usage="Usage: configure [--help | --version] ~/RVERSION/R-2.14.1"
+version="RoboTest configure 0.2"
+usage="Usage: configure [--help | --version] path/to/R_HOME"
 
 if [ $# -ne 1 ]; then 
     echo "${usage}"; exit 1 
@@ -22,7 +22,7 @@ if [ ! -f ${RVERSION}/bin/R ] ; then
    echo " ${RVERSION}/bin/R does not exists. 
           Need full path to R version as argument." ; exit 1;fi
 
-echo           "creating       Makevars ..."
-echo ROBOHOME=`pwd`/          >Makevars
-echo RVERSION=${RVERSION}/   >>Makevars
-echo "include \${ROBOHOME}/Makevars.in" >>Makevars
+echo                           "creating       tests/Makevars ..."
+echo ROBOHOME=`pwd`/                          >tests/Makevars
+echo RVERSION=${RVERSION}/                   >>tests/Makevars
+echo "include \${ROBOHOME}tests/Makevars.in" >>tests/Makevars
