@@ -105,7 +105,7 @@ $(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
 		R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C  \
 	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
 	@echo Now acroread $@  to check, then possibly
-	@echo cp $@   to forge/PROJECT/$(PAC)/inst/doc
+	@echo  commit $@ in the svn archive.
 
 $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) .Rbuildignore \
            DESCRIPTION man $(RD:%=man/%) $(VIGNS:%=vignettes/%.Stex) \
