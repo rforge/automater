@@ -1,0 +1,7 @@
+Loading required package: setRNG
+Random number generator tests ...Warning message:
+In RNGkind(kind = kind, normal.kind = normal.kind) :
+  Buggy version of Kinderman-Ramage generator used
+> proc.time()
+   user  system elapsed 
+  0.356   0.024   0.375 

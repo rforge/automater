@@ -1,5 +1,8 @@
   require("setRNG")
-  Sys.info()
+
+
+#  Sys.info() #This can be useful for debugging, but output changes, so it does
+#   not work if .Rout.save is compared.
  
 
 cat("Random number generator tests ...")
