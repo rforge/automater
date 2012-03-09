@@ -5,9 +5,22 @@
 #
 ##########################################################################
 
-# The Makefile in each package directory needs to be edited to indicate 
-#   package prereqs
+# Note that the Makefile in each package directory needs to be edited 
+#         to indicate package prereqs
+
+##########################################################################
+
+# These are optional files for R packages. Set (some of) these if you
+#  want your package builds to fail when they do not exist, e.g.
+#OPTIONAL_R_FILES=.Rbuildignore  NEWS  inst/CITATION  
+#OPTIONAL_R_FILES=.Rbuildignore  NEWS 
+
 
 #RENV should indicate any necessary local environment settings for R execution.
 # (It may not be necessary).
+
+# PREFIX is for installing versions for personal regular use. 
+#   however, it is generally better to install from CRAN so that
+#   you are actually using the released version like everyone else.
+PREFIX?=/path/to/my/R-xxx-library
 

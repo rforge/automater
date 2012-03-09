@@ -45,7 +45,11 @@ The configure script also generates files Makefile, Makerules and Makevars
 using Makefile.in, Makerules.in, Makevars.in, and Makevars.local. It should be 
 possible to specify any local settings in Makevars.local, so the Make*.in 
 files do not require local modification. Often there will be no need for a 
-Makevars.local file.
+Makevars.local file but the setting of OPTIONAL_R_FILES may be useful. This
+allows you to specify that you expect your packages to have any of the files
+.Rbuildignore, NEWS, and inst/CITATION, which are optional in R packages. If
+these are specified then make will look for them and building the final tarball
+will be redone if they are changed. (See the file Makevars.local.example.)
 
 The configure script is run in the qc directory by
 
@@ -56,6 +60,10 @@ rerun it if packages are added or the PREREQ_PACS changes in any of the
 package directory Makefiles, since the Makepac.Depends file then needs
 to be rebuilt.
 
+Another environment variable setting, not set in the Makefiles, which can
+sometimes be useful is SKIPPAC. If any package names are listed in this variable
+then those package will not be considered, even though they may exist in 
+the qc/ directory.
 
 ###############  Usage ############### 
 
@@ -186,3 +194,34 @@ The target
 should be run in a package directory. It echos the R code stripped from a
 vignette (to allow simple copy and paste) and then starts R as in make debug 
 above. (This is simplistic debugging but sometimes useful.)
+
+
+###############  Interpretation of make error messages ############### 
+
+When make fails it indicates what target failed or what rule it could not 
+figure out. While these are often immediately understandable, especially 
+with experience, this can be a bit confusing in the beginning (possibly an
+understatement). The ultimate way to find what is going wrong is to look at the
+rule (in makerules.in) that is being executed and see why it failed. The "@"
+at the beginning of lines in a target prevent echoing the line when it is
+executed. This is useful, to hide extra output when things work, but when things
+fail it can be helpful to remove the "@". However, BEWARE that the lines in the
+targets begin with a tab character, NOT spaces, and if you remove the tabs then
+make messes up in a way that can be very difficult to understand.
+
+With luck, the most likely messages you will get are here: 
+
+   make[1]: *** No rule to make target `.Rbuildignore', needed by ...  Stop.
+
+This means that your package does not have a file .Rbuildignore but your
+setting of OPTIONAL_R_FILES in Makevars.local specifies it, so make should fail
+if it does not exist. Either put a .Rbuildignore in the package directory, or
+change the setting of OPTIONAL_R_FILES.
+
+   make[1]: *** No rule to make target `NEWS', needed by ...  Stop.
+
+This means that your package does not have a file NEWS but your
+setting of OPTIONAL_R_FILES in Makevars.local specifies it, so make should fail
+if it does not exist. Either put a NEWS in the package directory, or
+change the setting of OPTIONAL_R_FILES.
+

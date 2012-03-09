@@ -1,7 +1,9 @@
 #################################################################
 #
 #  Most Local Setup should be done in the file Makevars.local
-#    but see   Additional Local Setup    below          
+#        (and note especially OPTIONAL_R_FILES)
+#
+#    But, see   Additional Local Setup    below          
 #
 #################################################################
 
@@ -36,16 +38,6 @@ DEMOS=${shell test -d demo   && (cd demo;  ls *.[rR] ) }
 #
 #################################################################
 
-# export R_LIBS causes a problem in sh (in Solaris), but bash needs it.
-#eg            R_LIBS=$(TMP): in sh on Solaris
-#  vs   export R_LIBS=$(TMP): in bash
-
-# PREFIX is for installing versions for personal regular use. 
-#   however, it is generally better to install from CRAN so that
-#   I am actually using the released version like everyone else.
-PREFIX?=/home/mfa/gilp/R-xxx-library
-
-
 #SWEAVE indicates location of latex sty for generating pdf
 SWEAVE=$(R_HOME)/share/texmf/Sweave
 
@@ -53,10 +45,10 @@ SWEAVE=$(R_HOME)/share/texmf/Sweave
 #ECHOLINE="<<<<"$(shell date)">>>> making $(PAC)/$@, changed prereqs $? ..."
 ECHOLINE="<<<<"$(shell date)">>>> making $(PAC)/$@"
 
-# This is for doing timing comparisons. When using this it is necessary to 
+# This is for timing comparisons. When using this it is necessary to first 
 #    mkdir $(QCLIB)) 
 # before running make
-TIMELINE=; echo $(shell uname -n) $(shell date "+%Y/%m/%d %H:%M:%S.%N %Z") \
-  " starting $@ $(PAC) [in $(QC)]"  >>$(QC)/TIMING
-TIMELINE2= echo $(shell uname -n) $(shell date "+%Y/%m/%d %H:%M:%S.%N %Z") \
-  " finished $@ $(PAC) [in $(QC)]"  >>$(QC)/TIMING
+# TIMELINE=; echo $(shell uname -n) $(shell date "+%Y/%m/%d %H:%M:%S.%N %Z") \
+#   " starting $@ $(PAC) [in $(QC)]"  >>$(QC)/TIMING
+# TIMELINE2= echo $(shell uname -n) $(shell date "+%Y/%m/%d %H:%M:%S.%N %Z") \
+#   " finished $@ $(PAC) [in $(QC)]"  >>$(QC)/TIMING

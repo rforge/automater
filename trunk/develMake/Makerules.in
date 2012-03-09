@@ -35,7 +35,7 @@ FORCE:
 # above should work but does not properly follow links
 
 $(PREREQ_PACS:%=$(QCLIB)/%): FORCE
-	(cd $(subst $(QCLIB)/,$(QC)/,$@) ; $(MAKE) ) 
+	@(cd $(subst $(QCLIB)/,$(QC)/,$@) ; $(MAKE) ) 
 
 
 $(QCLIB)/$(PAC): $(PAC)_$(VERSION).tar.gz
@@ -98,8 +98,8 @@ vignettes: $(VIGNS:%=inst/doc/%.pdf)
 
 $(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
 	@echo $(ECHOLINE) $(TIMELINE)
-	$(MKDIR) inst/doc 
-	cp   $<  inst/doc 
+	@$(MKDIR) inst/doc 
+	@cp   $<  inst/doc 
 	(cd inst/doc ; \
 	        R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)     \
 		R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C  \
@@ -107,9 +107,9 @@ $(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
 	@echo Now acroread $@  to check, then possibly
 	@echo  commit $@ in the svn archive.
 
-$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) .Rbuildignore \
-           DESCRIPTION man $(RD:%=man/%) $(VIGNS:%=vignettes/%.Stex) \
-	   NEWS #inst/CITATION  
+# vignettes are optional too, but are automatically missing if they do not exist
+$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
+	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(RM) $(CURDIR)/src/*.o $(CURDIR)/src/*.so 
 	@#  This may cause problem in parallel make
@@ -129,12 +129,12 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) .Rbuildignore \
 	# exit 0 above  
 	#mv $(PAC).Rcheck $(FLAGS) using -o now instead of --outdir
 	# for bug in R-2.12.0  
-	grep -v 'Error in as.character' $(FLAGS)/RCMDcheck.out >$(FLAGS)/zRCMDcheck.out
-	grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/zRCMDcheck.out >$(FLAGS)/RCMDcheck.out
-	grep -v 'Error in as.character' $(FLAGS)/$(PAC).Rcheck/00check.log >$(FLAGS)/$(PAC).Rcheck/00check.logz
-	grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/$(PAC).Rcheck/00check.logz >$(FLAGS)/$(PAC).Rcheck/00check.log
+	@grep -v 'Error in as.character' $(FLAGS)/RCMDcheck.out >$(FLAGS)/zRCMDcheck.out
+	@grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/zRCMDcheck.out >$(FLAGS)/RCMDcheck.out
+	@grep -v 'Error in as.character' $(FLAGS)/$(PAC).Rcheck/00check.log >$(FLAGS)/$(PAC).Rcheck/00check.logz
+	@grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/$(PAC).Rcheck/00check.logz >$(FLAGS)/$(PAC).Rcheck/00check.log
 	# end for bug in R-2.12.0  
-	test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
+	@test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
 	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 1 )
 	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheck.out`" || \
 	          (grep -v "OK"  $(FLAGS)/RCMDcheck.out; $(ONWARNING))
