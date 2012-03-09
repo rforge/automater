@@ -4,30 +4,14 @@ directories. The make files facilitate testing and building of the packages.
 The make system should be especially helpful when there are dependency 
 relationships among the packages in the qc directory. 
 
-The configure script run by
 
-  ./configure  
+###############  Configuration ############### 
 
-looks in directories under qc and uses the existence of a DESCRIPTION file to 
-identify the directory as a package. It scans Makefiles in these directories
-(see below) for the setting of a PREREQ_PACS variable, and uses these to 
-build the file Makepac.Depends, which controls the order in which packages 
-should be built. The dependencies indicated by PREREQ_PACS should only 
-indicate the packages in the qc directory, as distinct from the Depends 
-indicate in the DESCRIPTION file which may have other package dependencies.
-If PREREQ_PACS is not complete then a package build will typically fail when 
-it encounters a missing requirement. However, make -k (see below) might build
-the required package in a subsequnent step, and invoking make again will then
-complete without error. If you notice this behaviour then check that 
-PREREQ_PACS has been properly specified for the package that fails.
-
-The configure also generates files Makefile, Makerules and Makevars using  
-Makefile.in, Makerules.in, Makevars.in, and Makevars.local. It should be 
-possible to specify any local settings in Makevars.local, so the make*.in 
-files do not require local modification.
-
-The Makefiles in each package directory are relatively simple. This is an
-example for package tframePlus, which depends on package tframe:
+With the qc directory in place, first put package subdirectories below it. These
+subdirectories can be source package files, svn checked out copies, or links 
+to either of these. Then put a Makefile in each package directory. These 
+Makefiles are relatively simple. This is an example for package tframePlus, 
+which depends on package tframe:
 
 PREREQ_PACS=tframe
 QC=${shell cd ../ ; pwd}
@@ -39,13 +23,52 @@ If there is more than one item in PREREQ_PACS then the list should be separated
 by spaces. In the includes above it would usually be possible to use, for 
 example, ../Makevars but if  the directory under qc is actually a soft link, 
 then on some systems this goes up the real path and fails to find Makevars, so 
-setting QC avoids this problem.
+setting QC avoids this problem. Other lines in the Makefile can usually be
+identical to the above example.
 
-Make can be run in individual subdirectories or in the qc directory. It builds
-and installs the packages in an R library called QCLIB, which is used when
-testing other packages. Files in the tests/ directory in each package are run 
-first, using an unchecked install in a directory called FLAGS/ that is created
-in each package directory. The tests can be run in parallel by using
+The dependencies indicated by PREREQ_PACS should only indicate the packages 
+in the qc directory, as distinct from the Depends indicate in the DESCRIPTION 
+file which may have other package dependencies.
+
+The configure script looks in directories under qc and uses the existence 
+of a DESCRIPTION file to identify the directory as a package. It scans 
+Makefiles in these directories for the setting of a PREREQ_PACS variable, 
+and uses these to build the file Makepac.Depends, which controls the order in 
+which packages should be built. If PREREQ_PACS is not complete then a package 
+build will typically fail when it encounters a missing requirement. However, 
+make -k (see below) might build the required package in a subsequnent step, 
+and invoking make again will then complete without error. If you notice this 
+behaviour then check that PREREQ_PACS has been properly specified for the 
+package that fails.
+
+The configure script also generates files Makefile, Makerules and Makevars
+using Makefile.in, Makerules.in, Makevars.in, and Makevars.local. It should be 
+possible to specify any local settings in Makevars.local, so the Make*.in 
+files do not require local modification. Often there will be no need for a 
+Makevars.local file.
+
+The configure script is run in the qc directory by
+
+  ./configure  
+
+It should be possible to rerun this script anytime. It will be necessary to 
+rerun it if packages are added or the PREREQ_PACS changes in any of the 
+package directory Makefiles, since the Makepac.Depends file then needs
+to be rebuilt.
+
+
+###############  Usage ############### 
+
+Make can be run in individual subdirectories or in the qc directory by the
+simple command
+
+   make
+
+Files in the tests/ directory in each package are run first, using an unchecked
+install of the package in a directory called FLAGS/ that is created in each 
+package directory.  Make then builds and installs the package in an R library, 
+qc/QCLIB, which is used for testing other packages. The tests can be run in 
+parallel by using
 
    make -j
 
@@ -62,7 +85,7 @@ by running tests, checking, and building. See below for a description of some
 other make targets.
 
 If the package builds and checks succesfully then a tar.gz source package
-file suitable for puting on CRAN is left in the FLAGS directory. In order to
+file suitable for putting on CRAN is left in the FLAGS directory. In order to
 avoid having extra clutter in this file, it is useful to have a .Rbuildignore
 file in the package directory. An example of possible lines for this file is
 
@@ -80,7 +103,23 @@ inst/doc/(^|.*)\.stdout$
 (^|.*)\.ps$
 
 
-If the package is checked out from svn then it may also be useful to edit the
+###############  svn considerations ############### 
+
+The qc directory itself can be a version checked out from the R-forge svn
+repository. Directories below it may also be checked out from other 
+repositories, but do not expect svn commands in the qc directory to
+recognize this. The make target
+
+  make svnstatus
+
+descends into each package directory and runs svn status. If you need to do
+other svn commands in a package then you should cd into the package directory.
+(If you are editing several related packages from an R-forge project, it may be
+easier to check out the pkg/ directory somewhere other than under qc/ and then
+make links under qc/ to the individual packages. Then svn commits in the pkg/
+directory will commit changes in all the packages.) 
+
+If the packages are checked out from svn then it may also be useful to edit the
 svn properties to ignore some files. You might want to
 
    export SVN_EDITOR=vi  #or vim or nano -w 
@@ -96,6 +135,7 @@ Rplots*.ps
 Rplots*.pdf
 FLAGS
 
+
 ###############  other make targets ############### 
 
 Some other make targets are provided for convenience:
@@ -106,26 +146,26 @@ descends into each package directory and greps several files output by the make
 process to look for errors, warnings, and notes. If this reports
  "grep: FLAGS/RCMDcheck.out: No such file or directory"
 in some directories, that is an indication that make did not complete the
-building and checking of that package.
+building and checking of that package. (Usually it is fairly clean when make 
+has failed, but "make -k" with a large number of packages can sometimes obscure
+the failures, so "make issues" is useful in this case.)
 
-  make svnstatus
-
-descends into each package directory and runs svn status.
-
+The target
 
   make install 
 
 descends into each package directory and, if the build and check have been
 successful, installs the package into the library specified by the environment
-variable PREFIX.
-
+variable PREFIX. This is indended for the case when the package is to be put in
+place for general use at a site, without necessarily putting it on CRAN first.
+The target
 
   make install-site
 
-descends into each package directory and, if the build and check have been
-successful, installs the package into the site-library for the R version
+is similar but installs the package into the site-library for the R version
 currently in use.
 
+The target
 
   make debug 
 
@@ -136,9 +176,13 @@ specifically, it does
    R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) \
 	   $(RENV) R --vanilla
 
+(The variable RENV can be set in the file Makevars.local if there is a need for
+any special local environment setting, for example, a load library path.)
+
+The target
 
   make debug-vign
 
 should be run in a package directory. It echos the R code stripped from a
 vignette (to allow simple copy and paste) and then starts R as in make debug 
-above. (This is simplistic debugging but sumtimes useful.)
+above. (This is simplistic debugging but sometimes useful.)
