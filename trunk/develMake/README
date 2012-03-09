@@ -202,14 +202,14 @@ When make fails it indicates what target failed or what rule it could not
 figure out. While these are often immediately understandable, especially 
 with experience, this can be a bit confusing in the beginning (possibly an
 understatement). The ultimate way to find what is going wrong is to look at the
-rule (in makerules.in) that is being executed and see why it failed. The "@"
+rule (in Makerules.in) that is being executed and see why it failed. The "@"
 at the beginning of lines in a target prevent echoing the line when it is
 executed. This is useful, to hide extra output when things work, but when things
 fail it can be helpful to remove the "@". However, BEWARE that the lines in the
 targets begin with a tab character, NOT spaces, and if you remove the tabs then
 make messes up in a way that can be very difficult to understand.
 
-With luck, the most likely messages you will get are here: 
+With luck, the most likely messages you will get are: 
 
    make[1]: *** No rule to make target `.Rbuildignore', needed by ...  Stop.
 
