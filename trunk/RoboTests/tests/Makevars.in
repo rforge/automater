@@ -17,9 +17,11 @@ MKDIR=mkdir -p
 
 TESTS=${wildcard *.[rR] }
 
-VERSION=$(shell cat FLAGS/version )
+# this may not exist ontil the first update, 
+VERSION=$(shell if [ -f FLAGS/version ] ; then cat FLAGS/version ; fi )
 
-WGET_RFORGE="https://r-forge.r-project.org/src/contrib/$(VERSION).tar.gz"
+CRAN=http://cran.at.r-project.org/src/contrib
+
 SVN_RFORGE="svn://svn.r-forge.r-project.org/svnroot/$(PROJECT)/pkg/$(PKG)"
 
 

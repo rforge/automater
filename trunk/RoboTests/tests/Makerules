@@ -47,25 +47,22 @@ updateclean: clean
 #        ... updating tests from an R-forge source PKG/tests
 ################################################################
 
-FLAGS/$(PKG): FLAGS/$(PKG).tar
-	(cd FLAGS ; tar xf $(PKG).tar )
-	touch $@
+FLAGS/$(PKG): FLAGS/$(VERSION).tar.gz
+	@(cd FLAGS ; gunzip -c $(VERSION).tar.gz | tar xf - )
+	@#this touch is because tar.gz is newer than the pkg dir, as it was
+	@# construct in that order, but unpacking the reverse is needed.
+	@touch $@ --reference FLAGS/$(VERSION).tar.gz
 
-FLAGS/$(PKG).tar: FLAGS/$(PKG).tar.gz
-	gunzip -c FLAGS/$(PKG).tar.gz >$@
-	touch $@
+FLAGS/$(VERSION).tar.gz: FLAGS/version
+	@(cd FLAGS ; wget --timestamping "$(CRAN)/$(VERSION).tar.gz" )
+	@# do not touch, preserve time stamp
 
-FLAGS/$(PKG).tar.gz: FLAGS/version
-	(cd FLAGS ; wget --timestamping $(WGET_RFORGE) )
-	@# the version number complicates things
-	(cd FLAGS ; mv  $(VERSION).tar.gz  $(PKG).tar.gz )
-	touch $@
-
+.PHONY: FLAGS/version
 FLAGS/version:
 	$(MKDIR) FLAGS
-	(cd FLAGS ; wget  -o version.log -O index.html "https://r-forge.r-project.org/src/contrib" )
+	(cd FLAGS ; wget  -o version.log -O index.html "$(CRAN)" )
 	cat FLAGS/index.html | grep 'href="$(PKG)_' | \
-	perl  -pe 's/(.*)tar.gz">(.*).tar.gz(.*)/$$2/go' > FLAGS/version
+	    perl  -pe 's/(.*)tar.gz">(.*).tar.gz(.*)/$$2/go' > FLAGS/version
 	touch $@
 
 ################################################################
@@ -75,4 +72,3 @@ FLAGS/version:
 FLAGS/SVN/$(PKG): 
 	$(MKDIR) FLAGS/SVN/$(PKG)
 	(cd FLAGS/SVN ; svn checkout $(SVN_RFORGE) )
-	touch $@

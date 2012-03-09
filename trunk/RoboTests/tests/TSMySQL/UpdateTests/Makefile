@@ -14,14 +14,19 @@ PROJECT=tsdbi
 
 VPATH=FLAGS/
 
-include    ../Makevars.in
-include ../../Makevars
+#  ../ sometimes goes up real path not the link if this directory
+#     is a soft link, so next works even it that case.
+TSTPKG=${shell cd ../ ; pwd}
+TST=${shell cd ../../ ; pwd}
+
+-include    $(TSTPKG)/Makevars.in
+include     $(TST)/Makevars
 
 default: update
 
-include ../../Makerules
+include $(TST)/Makerules
 
 update: FLAGS/SVN/$(PKG)
-	cp FLAGS/SVN/$(PKG)/tests/*.[Rr]  ../
-	cp FLAGS/SVN/$(PKG)/DESCRIPTION   ../
+	cp FLAGS/SVN/$(PKG)/tests/*.[Rr]  $(TSTPKG)
+	cp FLAGS/SVN/$(PKG)/DESCRIPTION   $(TSTPKG)
 	touch FLAGS/update

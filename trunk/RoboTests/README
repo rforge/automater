@@ -15,30 +15,57 @@ Download or svn checkout from
 
 and install any tests to be run (see below).
 
-##########     Usage       ##########
+##########   Tests Setup      ##########
 
-Tests to run should be organized in subdirectories below tests/. The names of subdirectories may correspond to an R package name, in which case the tests would typically be tests for that package, but that is not enforced in any way. These directories are referred to below as pkgtests for convenience. Also, the tests could come from the tests/ directory for the package, but more typically would be additional tests that are not part of the package they are testing.
+Tests to run should be organized in subdirectories below tests/. The names 
+of subdirectories may correspond to an R package name, in which case the 
+tests would typically be tests for that package, but that is not enforced 
+in any way. These directories are referred to below as pkgtests for 
+convenience. Also, the tests could come from the tests/ directory for the 
+package, but more typically would be additional tests that are not part of 
+the package they are testing.
 
-The tests should be self contained R code segments that load any necessary packages and execute R commands. The names are arbitrary but should end in ".R". They should usually do
+The tests should be self contained R code segments that load, with library() 
+or requre(), any necessary packages and execute R commands. The names are 
+arbitrary but should end in ".R". They should usually do
 
   stop("some error message")
 
-if something does not run correctly. When the files are run successfully, a file with a corresponding name but extension ".Rout" will be generated. If a file with the extension  ".Rout.save" exists then the output file is compared with it, with some usual expected differences removed, and an make error is indicated if there is any difference. In the case of an error the output file will have a name with extension ".Rout.fail" The comaprison uses diff, so will not be useful generally for checking numerical results to high precision, because of small differences on different platforms and with different libraries. The stop() mechanism after some comparison within a tolerance is generally better for this. See the setRNG example discussed more below.
+if something does not run correctly. When the files are run successfully, 
+a file with a corresponding name but extension ".Rout" will be generated. 
+If a file with the extension  ".Rout.save" exists then the output file is 
+compared with it, with some usual expected differences removed, and an 
+make error is indicated if there is any difference. In the case of an error 
+the output file will have a name with extension ".Rout.fail" The comaprison 
+uses diff, so will not be useful generally for checking numerical results 
+to high precision, because of small differences on different platforms and 
+with different libraries. The stop() mechanism after some comparison within 
+a tolerance is generally better for this. See the setRNG example discussed 
+more below.
 
-There can be multiple test files in a directory. The pkgtests/ directory should also have a file "Makefile" and optionally a file "Makevars.in". A simple example is provided in tests/setRNG available with the R-forge checkout. This example is configured to  run if the package setRNG in site-library is changed. The Makefile in this example should work for most other pkgtests/ directories. The file Makevars.in will need minor modification to indicate different dependencies for other pkgtests/ directories.
+There can be multiple test files in a directory. The pkgtests/ directory 
+should also have a file "Makefile" and optionally a file "Makevars.in". 
+A simple example is provided in tests/setRNG available with the R-forge 
+checkout. This example is configured to  run if the package setRNG in 
+site-library is changed. The Makefile in this example should work for 
+most other pkgtests/ directories. The file Makevars.in will need minor 
+modification to indicate different dependencies for other pkgtests/ 
+directories.
 
-There is a mechanism to take the list of package dependencies from a file called DESCRIPTION based on the standard R package syntax for that file. See  tests/BB/Makevars.in for an example of that.
+There is a mechanism to take the list of package dependencies from a file 
+called DESCRIPTION based on the standard R package syntax for that file. 
+See  tests/BB/Makevars.in for an example of that.
  
-There is also a mechanism for extracting tests from different locations. This 
-is done by a Makefile in the directory  pkgtests/UpdateTests/. 
+There is also a mechanism for extracting tests from different locations. 
+This is done by a Makefile in the directory  pkgtests/UpdateTests/. 
 BB/UpdateTests/Makefile and EvalEst/UpdateTests/Makefile provide examples of 
-pulling tests automatically from the R-forge source tar.gz for packages. 
+pulling tests automatically from the CRAN source tar.gz for packages. 
 These examples use the source tar.gz for the package itself, but that is not 
 necessary. A more usual situation might be to pull the tests from another 
 package that depends on this package.
  
-TSMySQL/UpdateTests/Makefile provides an example of pulling tests automatically 
-from the R-forge svn archive for a package. 
+TSMySQL/UpdateTests/Makefile provides an example of pulling tests 
+automatically from the R-forge svn archive for a package. 
 
 ##########     Usage       ##########
 
@@ -48,11 +75,13 @@ The tests can be run by the command
 or
    make tests
 
-in the top level directory, the tests/ directory, or the individual package directories. In the later case on the tests in that directory are run.
+in the top level directory, the tests/ directory, or the individual package 
+directories. In the later case on the tests in that directory are run.
 
    make update ; make test
 
-will update any test directories that implement automatic test updates, and then run tests. 
+will update any test directories that implement automatic test updates, and 
+then run tests. 
 
 ##########    cron job ?      ##########
 

@@ -15,17 +15,19 @@ VPATH=FLAGS/
 
 #  ../ sometimes goes up real path not the link if this directory
 #     is a soft link, so next works even it that case.
-PKG=${shell cd ../ ; pwd}
+TSTPKG=${shell cd ../ ; pwd}
 TST=${shell cd ../../ ; pwd}
 
--include ${PKG}/Makevars.in
-include  ${TST}/Makevars
+-include  ${TSTPKG}/Makevars.in
+include   ${TST}/Makevars
 
 default: update
 
-include ${RT}/Makerules
+include ${TST}/Makerules
 
+# touch --reference keeps the time stamp the same as package source so
+#  updates do not get triggered if the source files have not changed.
 update: FLAGS/$(PKG)
-	cp FLAGS/$(PKG)/tests/*.[Rr]  ${PKG}
-	cp FLAGS/$(PKG)/DESCRIPTION   ${PKG}
-	touch FLAGS/update
+	@cp -a FLAGS/$(PKG)/tests/*.[Rr]  ${TSTPKG}
+	@cp -a FLAGS/$(PKG)/DESCRIPTION   ${TSTPKG}
+	@touch FLAGS/update --reference $<

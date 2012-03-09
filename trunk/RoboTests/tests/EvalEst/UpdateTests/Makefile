@@ -13,14 +13,21 @@ PKG=EvalEst
 
 VPATH=FLAGS/
 
-include    ../Makevars.in
-include ../../Makevars
+#  ../ sometimes goes up real path not the link if this directory
+#     is a soft link, so next works even it that case.
+TSTPKG=${shell cd ../ ; pwd}
+TST=${shell cd ../../ ; pwd}
+
+-include  ${TSTPKG}/Makevars.in
+include   ${TST}/Makevars
 
 default: update
 
-include ../../Makerules
+include ${TST}/Makerules
 
+# touch --reference keeps the time stamp the same as package source so
+#  updates do not get triggered if the source files have not changed.
 update: FLAGS/$(PKG)
-	cp FLAGS/$(PKG)/tests/*.[Rr]  ../
-	cp FLAGS/$(PKG)/DESCRIPTION   ../
-	touch FLAGS/update
+	@cp -a FLAGS/$(PKG)/tests/*.[Rr]  ${TSTPKG}
+	@cp -a FLAGS/$(PKG)/DESCRIPTION   ${TSTPKG}
+	@touch FLAGS/update --reference $<
