@@ -49,7 +49,7 @@ $(QCLIB)/$(PAC): $(PAC)_$(VERSION).tar.gz
 	@R_LIBS_SITE=$(RSITE) R CMD INSTALL -l $(QCLIB) \
 	     $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 
-$(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% unchecked/$(PAC) \
+$(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) \
            $(PREREQ_PACS:%=$(QCLIB)/%)  
 	@echo $(ECHOLINE)  $(TIMELINE)
 	@$(RM) $@.tmp 
@@ -60,28 +60,28 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% unchecked/$(PAC) \
 	@$(TIMELINE2)
 
 
-unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
+$(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@echo $(ECHOLINE)  $(TIMELINE)
 	@echo "Using R=$(R_HOME)"
 	@echo -n "        VERSION and date-stamp:"
 	@R --slave --version | grep "R version"
-	@$(RM) $@ $(FLAGS)/unchecked/$(PAC).tmp
-	@$(MKDIR) $(FLAGS)/unchecked/$(PAC).tmp 
+	@$(RM) $@.tmp
+	@$(MKDIR) $@.tmp 
 	@#if .o and .so exist then some compiling is skipped, so warnings missed
 	@$(RM) src/*.o src/*.so
 	@# install from source to avoid building  vignette, etc
 	@R_LIBS=$(QCLIB)  R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C R CMD INSTALL \
-	  --no-docs --library=$(FLAGS)/unchecked/$(PAC).tmp  $(CURDIR) \
-	      >$(FLAGS)/install.log.tmp 2>&1
-	@#(grep -i warning $(FLAGS)/install.log.tmp ;  touch /dev/null )
-	@(grep "couldn't" $(FLAGS)/install.log.tmp ;  touch /dev/null )
-	@test  -z  "`grep -i 'warning' $(FLAGS)/install.log.tmp`"  || \
-	      (egrep -B 4 -i 'warning' $(FLAGS)/install.log.tmp ; $(ONWARNING) )
-	@mv $(FLAGS)/install.log.tmp $(FLAGS)/install.log #not target but for convenience
-	@$(RM) $@ $(FLAGS)/unchecked/$(PAC)
-	@mv $(FLAGS)/unchecked/$(PAC).tmp $(FLAGS)/unchecked/$(PAC)
+	  --no-docs --library=$@.tmp  $(CURDIR) \
+	      >$(FLAGS)/unchecked/install.log
+	@#Note: if the above is note signalling error (as has happened in some
+	@#R versions) add 2>&1 to end of above and grep for more problems below.
+	@(grep "couldn't" $(FLAGS)/unchecked/install.log ;  touch /dev/null )
+	@test  -z  "`grep -i 'warning' $(FLAGS)/unchecked/install.log`"  || \
+	      (egrep -B 4 -i 'warning' $(FLAGS)/unchecked/install.log ; $(ONWARNING) )
+	@$(RM) $@
+	@mv $@.tmp $@
 	@# touch here is important because mv leaves date stamp older than prereq
-	@touch $(FLAGS)/unchecked/$(PAC)
+	@touch $@
 	@$(TIMELINE2)
 
 
@@ -122,18 +122,11 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
 	@# not sure if --no-vignettes could be specified here.What does this test 
 	@# do relative to building the vignette (which was just done in unchecked)
-	(R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) \
-	     _R_CHECK_CODOC_S4_METHODS_=true R CMD check --no-tests  \
-	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@) >$(FLAGS)/RCMDcheck.out; exit 0 )
-	# for bug in R-2.12.0 
-	# exit 0 above  
-	#mv $(PAC).Rcheck $(FLAGS) using -o now instead of --outdir
-	# for bug in R-2.12.0  
-	@grep -v 'Error in as.character' $(FLAGS)/RCMDcheck.out >$(FLAGS)/zRCMDcheck.out
-	@grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/zRCMDcheck.out >$(FLAGS)/RCMDcheck.out
-	@grep -v 'Error in as.character' $(FLAGS)/$(PAC).Rcheck/00check.log >$(FLAGS)/$(PAC).Rcheck/00check.logz
-	@grep -v 'checking for unstated dependencies in tests ... NOTE' $(FLAGS)/$(PAC).Rcheck/00check.logz >$(FLAGS)/$(PAC).Rcheck/00check.log
-	# end for bug in R-2.12.0  
+	R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE) \
+	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	    R CMD check --no-tests  \
+	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
+		    >$(FLAGS)/RCMDcheck.out
 	@test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
 	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 1 )
 	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheck.out`" || \

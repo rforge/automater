@@ -185,7 +185,10 @@ specifically, it does
 	   $(RENV) R --vanilla
 
 (The variable RENV can be set in the file Makevars.local if there is a need for
-any special local environment setting, for example, a load library path.)
+any special local environment setting, for example, a load library path.) The
+make debug target can be useful for things as simple as checking what libraries
+and packages are being used. The do this run "make debug" and then, in the R
+session that is started, look at the output of library().
 
 The target
 
@@ -211,6 +214,7 @@ make messes up in a way that can be very difficult to understand.
 
 With luck, the most likely messages you will get are: 
 
+######
    make[1]: *** No rule to make target `.Rbuildignore', needed by ...  Stop.
 
 This means that your package does not have a file .Rbuildignore but your
@@ -218,10 +222,71 @@ setting of OPTIONAL_R_FILES in Makevars.local specifies it, so make should fail
 if it does not exist. Either put a .Rbuildignore in the package directory, or
 change the setting of OPTIONAL_R_FILES.
 
+
+######
    make[1]: *** No rule to make target `NEWS', needed by ...  Stop.
 
 This means that your package does not have a file NEWS but your
 setting of OPTIONAL_R_FILES in Makevars.local specifies it, so make should fail
 if it does not exist. Either put a NEWS in the package directory, or
 change the setting of OPTIONAL_R_FILES.
+
+
+######
+   Error: processing vignette 'xxx.Rnw' failed with diagnostics:
+    chunk ... 
+   Error in library(whatever) : there is no package called 'whatever'
+
+
+This is pointing out that you cannot build the vignette because of a missing
+library. If you think the library should not be missing, consult "make debug"
+above, and then you may need to adjust your default R search path. There are 
+a couple of solutions if the the package really is missing. One is to install 
+package "whatever" so the vignette can be built. The other is to put the 
+vignette  .pdf file in inst/doc/ and the line
+
+BuildVignettes: false
+
+in the DESCRIPTION file, so when "R CMD build" is run it does not attempt to 
+build the vignette.
+
+(But note: the target
+
+   make vignette
+
+which is not run by default, will need the required package, and may only 
+work if you have changed to the new package structure with the .Rnw and .Stex 
+files in a vignette/ directory, and only the .pdf files in inst/doc.)
+
+######
+   make: *** [FLAGS/unchecked/pkgxxx] Error 1
+
+This signals a problem in the building the initial version of the package, 
+to be used for running tests. I the problem is not obvious from the additional
+make output, see the file pkgxxx/FLAGS/unchecked/install.log for more details.
+
+######
+   make: *** [pkgxxx_2011-11.20.tar.gz] Error 1
+
+This signals a problem in the building or final check of the package 
+source .tar.gz file. If it is a problem with the final check, there will 
+be additional information in the file pkgxxx/FLAGS/RCMDcheck.out, where 
+the output of the previuos make command line has been re-directed.
+
+############ Hints  ############
+
+Be careful that make -k keeps going to other packages, if there are no 
+dependencies, so the error message can be buried. If you run make again 
+without the -k, after it completes with the -k, then for each package you 
+will get indications 
+
+Nothing to be done for `default'
+
+if the targets really have completed ok. If not, then it will try to build. 
+If it does build, then run make again and you should get the nothing to be 
+done message. If running make -k and then make a couple of times really is 
+fixing a problem, this suggests a dependency that has not been correctly 
+mapped (or a problem with develMake updating a target that has not been 
+properly completed).
+
 
