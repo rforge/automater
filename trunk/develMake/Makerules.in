@@ -73,7 +73,7 @@ $(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@R_LIBS=$(QCLIB)  R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C R CMD INSTALL \
 	  --no-docs --library=$@.tmp  $(CURDIR) \
 	      >$(FLAGS)/unchecked/install.log
-	@#Note: if the above is note signalling error (as has happened in some
+	@#Note: if the above is not signalling error (as has happened in some
 	@#R versions) add 2>&1 to end of above and grep for more problems below.
 	@(grep "couldn't" $(FLAGS)/unchecked/install.log ;  touch /dev/null )
 	@test  -z  "`grep -i 'warning' $(FLAGS)/unchecked/install.log`"  || \
