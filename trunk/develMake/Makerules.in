@@ -126,7 +126,7 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
 	@# do relative to building the vignette (which was just done in unchecked)
 	R_LIBS=$(QCLIB) $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
-	    R CMD check --no-tests  \
+	    R CMD check --no-tests --as-cran \
 	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
 		    >$(FLAGS)/RCMDcheck.out
 	@test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
