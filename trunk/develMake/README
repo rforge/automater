@@ -65,6 +65,18 @@ sometimes be useful is SKIPPAC. If any package names are listed in this variable
 then those package will not be considered, even though they may exist in 
 the qc/ directory.
 
+When make runs R it will be started with R_LIBS set to use the unchecked and
+QCLIB libraries (more below). R_LIBS_SITE will not be set unless there is an
+environment variable RSITETEST set, in which case RSITETEST will be used to 
+specify the setting of R_LIBS_SITE. The effect of not setting RSITETEST, 
+and thus not setting R_LIBS_SITE is that the default site-library will be used. 
+For example, setting RSITETEST to $R/site-library-fresh-notdevel
+will cause this library to be used in place of the default $R/site-library.
+Two possible reasons for setting RSITETEST are to ensure specific versions of
+other packages are used from the site library, and to help ensure that 
+dependencies amoung packages in the qc/ directory are not being satisfied 
+by packages in the site-library.  
+
 ###############  Usage ############### 
 
 Make can be run in individual subdirectories or in the qc directory by the
@@ -85,6 +97,8 @@ which will be faster on multicore machines. Also
    make -k
 
 will complete all targets that do not depend on something that fails.
+
+The target
 
   make clean
 
@@ -188,7 +202,7 @@ specifically, it does
 any special local environment setting, for example, a load library path.) The
 make debug target can be useful for things as simple as checking what libraries
 and packages are being used. The do this run "make debug" and then, in the R
-session that is started, look at the output of library().
+session that is started, look at the output of library() or .libPaths().
 
 The target
 

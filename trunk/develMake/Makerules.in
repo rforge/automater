@@ -3,10 +3,12 @@
 
 # As of ~ R-2.5.0 (or before) it is necessary to set both R_LIBS  *and*
 # R_LIBS_SITE=$(RSITE) or RHOME/site-library gets picked up in .libPaths()
-ifndef RSITE
-        RSITE=$(QCLIB):$(RSITETEST)
+ifdef RSITETEST
+  RSITE=R_LIBS_SITE=$(RSITETEST)
+else
+  RSITE=
 endif
-
+ 
 ONWARNING=exit 1
 #ONWARNING=echo WARNING Ignored.
 
@@ -46,7 +48,7 @@ $(QCLIB)/$(PAC): $(PAC)_$(VERSION).tar.gz
 	@if [ -e $(QCLIB)/00LOCK ]; then sleep 20; fi
 	@if [ -e $(QCLIB)/00LOCK ]; then sleep 30; fi
 	@if [ -e $(QCLIB)/00LOCK ]; then sleep 40; fi
-	@R_LIBS_SITE=$(RSITE) R CMD INSTALL -l $(QCLIB) \
+	@$(RSITE) R CMD INSTALL -l $(QCLIB) \
 	     $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 
 $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) \
@@ -54,7 +56,7 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) 
 	@echo $(ECHOLINE)  $(TIMELINE)
 	@$(RM) $@.tmp 
 	@$(MKDIR) $(FLAGS)/tests
-	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) $(RENV) \
+	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) $(RSITE) $(RENV) \
 	    R CMD BATCH  --vanilla tests/$(notdir $@)  $@.tmp
 	@mv  $@.tmp  $@
 	@$(TIMELINE2)
@@ -70,7 +72,7 @@ $(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@#if .o and .so exist then some compiling is skipped, so warnings missed
 	@$(RM) src/*.o src/*.so
 	@# install from source to avoid building  vignette, etc
-	@R_LIBS=$(QCLIB)  R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C R CMD INSTALL \
+	@R_LIBS=$(QCLIB)  $(RSITE) $(RENV) LC_ALL=C R CMD INSTALL \
 	  --no-docs --library=$@.tmp  $(CURDIR) \
 	      >$(FLAGS)/unchecked/install.log
 	@#Note: if the above is not signalling error (as has happened in some
@@ -102,7 +104,7 @@ $(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
 	@cp   $<  inst/doc 
 	(cd inst/doc ; \
 	        R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)     \
-		R_LIBS_SITE=$(RSITE) $(RENV) LC_ALL=C  \
+		$(RSITE) $(RENV) LC_ALL=C  \
 	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
 	@echo Now acroread $@  to check, then possibly
 	@echo  commit $@ in the svn archive.
@@ -118,11 +120,11 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
 	@$(MKDIR) $(FLAGS)/unchecked 
 	@#cd $(FLAGS)/unchecked && $(RM) $(PAC)_$(VERSION).tar.gz 
 	@cd $(FLAGS)/unchecked &&  R_LIBS=$(QCLIB) \
-	    R_LIBS_SITE=$(RSITE)  $(RENV) LC_ALL=C  R CMD build --compact-vignettes $(CURDIR)
+	    $(RSITE)  $(RENV) LC_ALL=C  R CMD build --compact-vignettes $(CURDIR)
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
 	@# not sure if --no-vignettes could be specified here.What does this test 
 	@# do relative to building the vignette (which was just done in unchecked)
-	R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE) \
+	R_LIBS=$(QCLIB) $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check --no-tests  \
 	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
@@ -230,7 +232,7 @@ Rprof: $(TESTS:%=$(FLAGS)/tests/%)
 	@if [ -n "$(DEMOS)" ] ; then  for f in $(DEMOS)""; do  \
 	   (@echo "Rprof(filename = 'Rprof.out', append = TRUE)" >$(FLAGS)/Rprof.in ;\
 	    @echo "source('$$f')" >>$(FLAGS)/Rprof.in ;\
-	    $@cd $(FLAGS) &&  R_LIBS=$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) \
+	    $@cd $(FLAGS) &&  R_LIBS=$(QCLIB) $(RSITE)  $(RENV) \
 	          R CMD BATCH --vanilla -q Rprof.in ) ; done ; fi
 	@# previously had export R_LIBS above (but that does not seem right)
 	R CMD Rprof Rprof.out
@@ -258,16 +260,16 @@ svnstatus:    ;@(svn status ;  touch /dev/null)
 
 debug:
 	@echo  starting R with Makefile environment
-	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) R_LIBS_SITE=$(RSITE) \
+	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) $(RSITE) \
 	   $(RENV) R --vanilla 
 
 debug-vign:
 	@echo  starting R with Makefile environment. Copy and paste
 	@cat $(FLAGS)/Vignette/R.in
 	@cd $(FLAGS)/Vignette && R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) \
-	  R_LIBS_SITE=$(RSITE)  $(RENV)  R --vanilla    
+	  $(RSITE)  $(RENV)  R --vanilla    
 
 gdb:
 	@echo  starting R -d gdb  type >run then after segfault bt
-	R_LIBS=$(FLAGS):$(QCLIB) R_LIBS_SITE=$(RSITE)  $(RENV) R -d gdb 
+	R_LIBS=$(FLAGS):$(QCLIB) $(RSITE)  $(RENV) R -d gdb 
 
