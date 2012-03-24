@@ -7,6 +7,8 @@
 #
 #################################################################
 
+#better data compression can be obtained using --resave-data 
+BUILD_OPTIONS=--compact-vignettes --resave-data
 
 R_HOME=${shell echo "Sys.getenv('R_HOME'); q()" |  R --slave | sed -n 's/\[1\] //p'| sed -n 's/"//gp'}
 
