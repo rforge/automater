@@ -10,7 +10,8 @@ all: $(PACKAGES)
 
 include Makepac.Depends
 
-install install-site issues errors warnings notes version svnstatus: 
+install install-site issues errors warnings notes version \
+svnstatus svnupdate ascran: 
 	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
 
 clean reallyclean:	  

@@ -9,6 +9,11 @@
 
 #better data compression can be obtained using --resave-data 
 BUILD_OPTIONS=--compact-vignettes --resave-data
+# tests are run separately first
+# --as-cran should not normally be specified because packages will fail to
+#  build if their version is the same as on CRAN.
+# BUT there is a target "ascran" which should be run before submitting to CRAN
+CHECK_OPTIONS=--no-tests
 
 R_HOME=${shell echo "Sys.getenv('R_HOME'); q()" |  R --slave | sed -n 's/\[1\] //p'| sed -n 's/"//gp'}
 

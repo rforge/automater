@@ -109,6 +109,35 @@ $(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
 	@echo Now acroread $@  to check, then possibly
 	@echo  commit $@ in the svn archive.
 
+ascran:$(PAC)_$(VERSION).tar.gz
+	@echo $(ECHOLINE) $(TIMELINE)
+	$(RM) $(FLAGS)/$(PAC).Rcheck
+	R_LIBS=$(QCLIB) $(RSITE) \
+	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/RCMDcheckASCRAN.out
+	@test -z "`grep 'Error' $(FLAGS)/RCMDcheckASCRAN.out`" || \
+	          (grep -v "OK" $(FLAGS)/RCMDcheckASCRAN.out; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheckASCRAN.out`" || \
+	          (grep -v "OK"  $(FLAGS)/RCMDcheckASCRAN.out; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/RCMDcheckASCRAN.out`" || \
+	          (grep -v "OK" $(FLAGS)/RCMDcheckASCRAN.out; exit 0 )
+	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK"  $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/$(PAC).Rcheck/00check.log`"   || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 0 )
+	@test -z "`grep 'missing link' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
+	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
+	@touch $(FLAGS)/$@
+	@$(TIMELINE2)
+
 # vignettes are optional too, but are automatically missing if they do not exist
 $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
 	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
@@ -126,7 +155,7 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
 	@# do relative to building the vignette (which was just done in unchecked)
 	R_LIBS=$(QCLIB) $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
-	    R CMD check --no-tests --as-cran \
+	    R CMD check $(CHECK_OPTIONS) \
 	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
 		    >$(FLAGS)/RCMDcheck.out
 	@test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
@@ -257,6 +286,7 @@ errors:
 	   ; touch /dev/null)
 
 svnstatus:    ;@(svn status ;  touch /dev/null)
+svnupdate:    ;@(svn update ;  touch /dev/null)
 
 debug:
 	@echo  starting R with Makefile environment
