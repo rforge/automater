@@ -111,7 +111,7 @@ $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 	           mail -s "$(RPATH) building" $(RSUPPORT) 
 	@$(RM) $(RPATH)
 	@gunzip -c $< | tar xf -
-	(cd $(RPATH) ; ./configure --prefix=$(RPATH) --enable-R-shlib )
+	(cd $(RPATH) ; ./configure --prefix=$(RPATH) $(CONFIG_OPTIONS) )
 	(cd $(RPATH) ; make )
 	@touch $@
 

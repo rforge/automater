@@ -1,19 +1,20 @@
-RUSERS=somebody@somewhere
-RSUPPORT=somebody@somewhere
+#RUSERS=somebody@somewhere
+#RSUPPORT=somebody@somewhere
 
 # Some tests may need environment variable settings when R is executed.
 # (cron jobs may not get setting done in normal sessions, eg in .bashrc )
-RENV=POSTGRES_HOST=192.168.xxx.xxx POSTGRES_DATABASE=xxxx POSTGRES_USER=xxxx POSTGRES_PASSWD=xxxx
+#RENV=POSTGRES_HOST=192.168.xxx.xxx POSTGRES_DATABASE=xxxx POSTGRES_USER=xxxx POSTGRES_PASSWD=xxxx
+
 # Setting the path in RENV before the call to $(R) is only needed by
 # some packages configurations (e.g. fame) which needs it to find R.
-RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
+#RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
+
+#OTHERREPOS="http://www.omegahat.org/R"
+#OTHERREPOSPKGS=RCurl SSOAP
 
 # you will need this set to do  "make devel"
 # DEVELREPOS="http://R-Forge.R-project.org"
 # OTHERDEVELREPOS=
-
-OTHERREPOS="http://www.omegahat.org/R"
-OTHERREPOSPKGS=RCurl SSOAP
 
 # The DEVEL distinction is only for packages which are developed at your site,
 # so you can make a distinction between these packages and fresh version of
@@ -22,12 +23,14 @@ OTHERREPOSPKGS=RCurl SSOAP
 
 FRESHnotDEVEL:=quadprog quantmod gtools gdata date urca PerformanceAnalytics \
 mgcv fBasics sna copula optimx \
-DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite fame RODBC XML \
-Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate features googleVis
+DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite RPostgreSQL fame RODBC XML \
+Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate googleVis \
+fftw polynom
+#fseries not available (for R version 2.14.1)
 
 DEVEL:=tframe tframePlus dse EvalEst CDNmoney GPArotation tsfa numDeriv BB \
-TSdbi TSMySQL TSpadi TSfame TSodbc TSSQLite TShistQuote TSgetSymbol TSxls  \
-TSzip TSPostgreSQL
+TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol  TSPostgreSQL \
+TSpadi TSxls TSzip
 
 SITE:=$(FRESHnotDEVEL) $(DEVEL)
 FRESH:=$(FRESHnotDEVEL) $(DEVEL)
