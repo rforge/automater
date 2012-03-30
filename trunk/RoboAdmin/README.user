@@ -46,17 +46,10 @@ The second will cause R to look first in site-library-fresh and then in
 site-library, using the first place a specified package is found.
 
 
-### site-library-devel ###
-Some unreleased versions of R packages are installed in the 
-site-library-devel directory of the distribution.  These will be updated from 
-time-to-time, may well be broken at certain times, and you are almost certainly 
-guaranteed the version of a package is NOT the same as the last time you used 
-the library. This library will only be maintained for the most recent version 
-of R. You will not have access to this library by default, but can access it 
-by specifying, for example,
-  
-  export R_LIBS_SITE=$RHOME/site-library-devel/:$RHOME/site-library-fresh/\
-:$RHOME/site-library/
+### site-library-devel site-library-fresh-notdevel###
+
+These libraries are for onsite package development. 
+See README.admin for more details.
 
 
 
