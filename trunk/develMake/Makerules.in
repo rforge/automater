@@ -96,18 +96,18 @@ VIGNS=${subst .Stex,,${shell test -d vignettes  && (cd vignettes; ls *.Stex )}}
 
 vignette:vignettes
 
-vignettes: $(VIGNS:%=inst/doc/%.pdf)
+vignettes: $(VIGNS:%=$(FLAGS)/vignettes/%.pdf)
 
-$(VIGNS:%=inst/doc/%.pdf):inst/doc/%.pdf: vignettes/%.Stex
+$(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@echo $(ECHOLINE) $(TIMELINE)
-	@$(MKDIR) inst/doc 
-	@cp   $<  inst/doc 
-	(cd inst/doc ; \
-	        R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)     \
-		$(RSITE) $(RENV) LC_ALL=C  \
+	@$(MKDIR) $(FLAGS)/vignettes 
+	@cp   $<  $(FLAGS)/vignettes 
+	@# Note: not using R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)
+	(cd $(FLAGS)/vignettes ; \
+	        R_LIBS=$(QCLIB) $(RSITE) $(RENV) LC_ALL=C  \
 	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
 	@echo Now acroread $@  to check, then possibly
-	@echo  commit $@ in the svn archive.
+	@echo  mv $@ inst/doc and commit in the svn archive.
 
 ascran:$(PAC)_$(VERSION).tar.gz
 	@echo $(ECHOLINE) $(TIMELINE)
