@@ -14,9 +14,12 @@ ONWARNING=exit 1
 
 version:
 	@echo $(PAC) $(VERSION) 
-
+	
 
 build.Makepac.Depends: DESCRIPTION
+	@if [ -n "${filter ${IMPORTS}, ${DEPENDS}}" ] ; then \
+	   echo "Packages should not be in both Imports and Depends, check:\
+	    ${filter ${IMPORTS}, ${DEPENDS}} in $(PAC)/DESCRIPTION"; fi
 	@echo '$(PAC): $(PREREQ_PACS); @cd $(PAC) && $$(MAKE)' >>$(QC)/Makepac.Depends
 
 

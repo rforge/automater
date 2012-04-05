@@ -8,7 +8,7 @@ include Makevars
 
 all: $(PACKAGES) 
 
-include Makepac.Depends
+-include Makepac.Depends
 
 Makepac.Depends:$(PACKAGES:%=$(QC)/%/DESCRIPTION)
 	@echo "creating $(QC)//Makepac.Depends ..."

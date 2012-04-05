@@ -28,18 +28,18 @@ PACKAGES=${filter-out $(SKIPPAC), ${shell  ls ${QC}/*/DESCRIPTION | \
   perl -pe 's|${QC}/||g' | perl -pe 's/\/DESCRIPTION//g'  }}
 
 
-DEPENDS=${shell  grep "Depends:" DESCRIPTION | \
-  perl -pe 's/Depends\://' |   perl -pe 's/,//g' }
-
-SUGGESTS=${shell  grep "Suggests:" DESCRIPTION | \
-  perl -pe 's/Suggests\://' |  perl -pe 's/,//g' }
-
-IMPORTS=${shell  grep "Imports:" DESCRIPTION | \
-  perl -pe 's/Imports\://' |  perl -pe 's/,//g' }
-
 # filter removes version specifications as well any packages not in ${PACKAGES}
+DEPENDS=${filter ${PACKAGES}, ${shell  grep "Depends:" DESCRIPTION | \
+  perl -pe 's/Depends\://' |   perl -pe 's/,//g' }}
+
+SUGGESTS=${filter ${PACKAGES}, ${shell  grep "Suggests:" DESCRIPTION | \
+  perl -pe 's/Suggests\://' |  perl -pe 's/,//g' }}
+
+IMPORTS=${filter ${PACKAGES}, ${shell  grep "Imports:" DESCRIPTION | \
+  perl -pe 's/Imports\://' |  perl -pe 's/,//g' }}
+
 # use sort here to remove duplicates (order does not matter).
-PREREQ_PACS=${filter ${PACKAGES}, ${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} }}
+PREREQ_PACS=${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} }
 
 # The default order should not be too important because the flow is really 
 #   controlled by target prereqs.
