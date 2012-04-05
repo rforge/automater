@@ -39,7 +39,8 @@ IMPORTS=${filter ${PACKAGES}, ${shell  grep "Imports:" DESCRIPTION | \
   perl -pe 's/Imports\://' |  perl -pe 's/,//g' }}
 
 # use sort here to remove duplicates (order does not matter).
-PREREQ_PACS=${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} }
+#NOTPARALLEL can be set in pkg/Makefile
+PREREQ_PACS=${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} ${NOTPARALLEL}}
 
 # The default order should not be too important because the flow is really 
 #   controlled by target prereqs.

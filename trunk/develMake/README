@@ -52,6 +52,27 @@ again will then complete without error. If you notice this
 behaviour, or if something seems wrong, look at qc/Makepac.Depends and 
 then fix the DESCRIPTION files in the packages if necessary.
 
+Sometimes two packages cannot be built at the same time, for example, if 
+they are writing to the same test database with the same records. To 
+handle this situation a variable  NOTPARALLEL can be set in one of the 
+package Makefiles, which adds any specified (space separated) packages to 
+the list of prereqs for that package. This effectively prevents the packages
+from being tested in parallel. For example, in the package TSodbc I specify
+
+NOTPARALLEL=TSMySQL TSPostgreSQL 
+
+because TSodbc is sometimes using the same test database as the packages 
+TSMySQL or TSPostgreSQL.
+
+Another use of NOTPARALLEL is when one of a choice of several other packages
+is needed for some package. For example, TScompare needs one or more of 
+TSMySQL, TSSQLite, TSPostgreSQL, TSodbc, TSfame, or TSpadi, to  do meaningful 
+testing. In the DESCRIPTION file of TScompare these are specified using 
+"Enhances:", because "or" is not possible  in the specification of "Depends:"
+or "Suggests:". However, to ensure that at least one of them is built and 
+tested before TScompare, I specify these with NOTPARALLEL in the Makefile 
+for TScompare.
+
 Another environment variable setting, not set in the Makefiles, which can
 sometimes be useful is SKIPPAC. If any package names are listed in this variable
 then those package will not be considered, even though they may exist in 
