@@ -10,55 +10,47 @@ relationships among the packages in the qc directory.
 With the qc directory in place, first put package subdirectories below it. These
 subdirectories can be source package files, svn checked out copies, or links 
 to either of these. Then put a Makefile in each package directory. These 
-Makefiles are relatively simple. This is an example for package tframePlus, 
-which depends on package tframe:
+Makefiles are relatively simple. This is an example :
 
-PREREQ_PACS=tframe
 QC=${shell cd ../ ; pwd}
 include $(QC)/Makevars 
 default:   $(DEFAULT)
 include $(QC)/Makerules
 
-If there is more than one item in PREREQ_PACS then the list should be separated
-by spaces. In the includes above it would usually be possible to use, for 
+In the includes above it would usually be possible to use, for 
 example, ../Makevars but if  the directory under qc is actually a soft link, 
 then on some systems this goes up the real path and fails to find Makevars, so 
-setting QC avoids this problem. Other lines in the Makefile can usually be
+setting QC avoids this problem. Lines in the Makefile can usually be
 identical to the above example.
-
-The dependencies indicated by PREREQ_PACS should only indicate the packages 
-in the qc directory, as distinct from the Depends indicate in the DESCRIPTION 
-file which may have other package dependencies.
-
-The configure script looks in directories under qc and uses the existence 
-of a DESCRIPTION file to identify the directory as a package. It scans 
-Makefiles in these directories for the setting of a PREREQ_PACS variable, 
-and uses these to build the file Makepac.Depends, which controls the order in 
-which packages should be built. If PREREQ_PACS is not complete then a package 
-build will typically fail when it encounters a missing requirement. However, 
-make -k (see below) might build the required package in a subsequnent step, 
-and invoking make again will then complete without error. If you notice this 
-behaviour then check that PREREQ_PACS has been properly specified for the 
-package that fails.
-
-The configure script also generates files Makefile, Makerules and Makevars
-using Makefile.in, Makerules.in, Makevars.in, and Makevars.local. It should be 
-possible to specify any local settings in Makevars.local, so the Make*.in 
-files do not require local modification. Often there will be no need for a 
-Makevars.local file but the setting of OPTIONAL_R_FILES may be useful. This
-allows you to specify that you expect your packages to have any of the files
-.Rbuildignore, NEWS, and inst/CITATION, which are optional in R packages. If
-these are specified then make will look for them and building the final tarball
-will be redone if they are changed. (See the file Makevars.local.example.)
 
 The configure script is run in the qc directory by
 
   ./configure  
 
-It should be possible to rerun this script anytime. It will be necessary to 
-rerun it if packages are added or the PREREQ_PACS changes in any of the 
-package directory Makefiles, since the Makepac.Depends file then needs
-to be rebuilt.
+The configure script looks in directories under qc and uses the existence 
+of a DESCRIPTION file to identify the directory as a package. It generates 
+files Makefile, Makerules and Makevars using Makefile.in, Makerules.in, 
+Makevars.in, and Makevars.local. 
+
+It should be possible to specify any local settings in Makevars.local, so the 
+Make*.in files do not require local modification. Often there will be no need 
+for a Makevars.local file but the setting of OPTIONAL_R_FILES may be useful.
+This allows you to specify that you expect your packages to have any of the files
+.Rbuildignore, NEWS, and inst/CITATION, which are optional in R packages. If
+these are specified then make will look for them and building the final tarball
+will be redone if they are changed. (See the file Makevars.local.example.)
+
+The dependencies among packages in the qc directory will be determined by the
+Depends, Suggests, and Imports lines indicated in the DESCRIPTION 
+file for each package. Any packages there that do not correspond to 
+directories in the qc directory will be removed. Make generates a file
+qc/Makepac.Depends which maps out the dependencies. This controls the order
+in which packages must be built. If the order is wrong, build will typically 
+fail when it encounters a missing requirement. However, make -k (see below) 
+might build the required package in a subsequnent step, and invoking make 
+again will then complete without error. If you notice this 
+behaviour, or if something seems wrong, look at qc/Makepac.Depends and 
+then fix the DESCRIPTION files in the packages if necessary.
 
 Another environment variable setting, not set in the Makefiles, which can
 sometimes be useful is SKIPPAC. If any package names are listed in this variable
@@ -102,9 +94,9 @@ The target
 
   make clean
 
-removes the QCLIB, the FLAGS directories, and various files that get generated
-by running tests, checking, and building. See below for a description of some
-other make targets.
+removes Makepac.Depends, the QCLIB, the FLAGS directories, and various files 
+that get generated by running tests, checking, and building. See below for 
+a description of some other make targets.
 
 If the package builds and checks succesfully then a tar.gz source package
 file suitable for putting on CRAN is left in the FLAGS directory. In order to

@@ -45,8 +45,6 @@ fi
 
 echo QC=$qc                       >>Makevars
 echo PAC="\$(notdir \$(CURDIR))"  >>Makevars
-echo ALLPACKAGES=$PKGS            >>Makevars
-echo PACKAGES="\$(filter-out \$(SKIPPAC), \$(ALLPACKAGES))" >>Makevars
 echo FLAGS=FLAGS        >>Makevars
 echo TMP=/tmp           >>Makevars
 echo TST=TST            >>Makevars
@@ -64,8 +62,3 @@ echo "include $qc/Makerules.in"    >Makerules
 #  (And Makerules is not used in this Makefile.)
 echo "creating $qc/Makefile ..."
 echo "include  $qc/Makefile.in"    >Makefile
-
-echo "creating $qc/Makepac.Depends ..."
-(cd $qc && grep "PREREQ_PACS=" */Makefile | \
-         sed 's/\/Makefile:PREREQ_PACS=/: /g' | \
-         sed 's/\(.*\)/\1; @cd $@ \&\& $(MAKE)/g' >$qc/Makepac.Depends )

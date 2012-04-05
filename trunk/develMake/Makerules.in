@@ -15,12 +15,13 @@ ONWARNING=exit 1
 version:
 	@echo $(PAC) $(VERSION) 
 
-# This depends on the
-# variable $(PREREQ_PACS) being set in each subdirectory Makefile.
-# It also seems necessary that $(PREREQ_PACS) have a complete list of package
-# prereqs, not just the top level (e.g. dse & tframe, not just dse which 
-# implicitly means tframe), otherwise install goes into an infinite recursion.
 
+build.Makepac.Depends: DESCRIPTION
+	@echo '$(PAC): $(PREREQ_PACS); @cd $(PAC) && $$(MAKE)' >>$(QC)/Makepac.Depends
+
+
+#.PHONY: $(PACKAGES) 
+# .PHONY above rather than FORCE should work, but so far I have not had luck
 FORCE:
 
 # this prevents parallel jobs at the package level from clobbering one another
@@ -37,6 +38,7 @@ FORCE:
 # above should work but does not properly follow links
 
 $(PREREQ_PACS:%=$(QCLIB)/%): FORCE
+	@#echo $(PAC)... 
 	@(cd $(subst $(QCLIB)/,$(QC)/,$@) ; $(MAKE) ) 
 
 

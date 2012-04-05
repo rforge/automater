@@ -24,6 +24,22 @@ VERSION=${shell grep Version DESCRIPTION | sed 's/Version: //' }
 # VPATH indicates locations to search to determine if targets are up to date.
 VPATH=$(FLAGS):$(QCLIB)
 
+PACKAGES=${filter-out $(SKIPPAC), ${shell  ls ${QC}/*/DESCRIPTION | \
+  perl -pe 's|${QC}/||g' | perl -pe 's/\/DESCRIPTION//g'  }}
+
+
+DEPENDS=${shell  grep "Depends:" DESCRIPTION | \
+  perl -pe 's/Depends\://' |   perl -pe 's/,//g' }
+
+SUGGESTS=${shell  grep "Suggests:" DESCRIPTION | \
+  perl -pe 's/Suggests\://' |  perl -pe 's/,//g' }
+
+IMPORTS=${shell  grep "Imports:" DESCRIPTION | \
+  perl -pe 's/Imports\://' |  perl -pe 's/,//g' }
+
+# filter removes version specifications as well any packages not in ${PACKAGES}
+# use sort here to remove duplicates (order does not matter).
+PREREQ_PACS=${filter ${PACKAGES}, ${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} }}
 
 # The default order should not be too important because the flow is really 
 #   controlled by target prereqs.

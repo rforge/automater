@@ -10,12 +10,19 @@ all: $(PACKAGES)
 
 include Makepac.Depends
 
+Makepac.Depends:$(PACKAGES:%=$(QC)/%/DESCRIPTION)
+	@echo "creating $(QC)//Makepac.Depends ..."
+	@echo "" >$(QC)/Makepac.Depends
+	@for f in $(PACKAGES); do \
+	  (cd $(QC)/$$f ; $(MAKE) build.Makepac.Depends ); done
+
+
 vignettes install install-site issues errors warnings notes version \
 svnstatus svnupdate ascran: 
 	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
 
 clean reallyclean:	  
-	@$(RM) $(QCLIB)
+	@$(RM) $(QCLIB)  $(QC)/Makepac.Depends
 	@#for f in $(PACKAGES)  ; do $(MAKE) -C $${f} $@ || exit 1; done
 	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
 
