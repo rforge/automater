@@ -29,17 +29,17 @@ The following object(s) are masked from ‘package:base’:
 **************        disconnecting ets
 Loading required package: tseries
 Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=11&e=26&f=2011&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=3&e=05&f=2012&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.........
-downloaded 209 Kb
+.......... ....
+downloaded 214 Kb
 
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=11&e=26&f=2011&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=3&e=05&f=2012&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -47,14 +47,14 @@ opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... .....
-downloaded 265 Kb
+.......... .........
+downloaded 269 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=08%2F19%2F10&date=12%2F26%2F11&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=11%2F28%2F10&date=04%2F05%2F12&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
-.......... .......... .....
-downloaded 25 Kb
+.......... .......... .......... ..
+downloaded 32 Kb
 
 Warning message:
 closing unused connection 4 (http://quote.yahoo.com) 
@@ -71,10 +71,13 @@ The following object(s) are masked from ‘package:zoo’:
 
     time<-
 
+Note: Method with signature "ts#matrix" chosen for function "coerce",
+ target signature "mts#matrix".
+ "ANY#matrix" would also be valid
 NULL
 [1] NA
 **************        disconnecting test
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 80.461   1.304 117.755 
+ 29.881   0.228  37.260 
