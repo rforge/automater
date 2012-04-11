@@ -28,8 +28,8 @@ Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate googleVis \
 fftw polynom
 #fseries not available (for R version 2.14.1)
 
-DEVEL:=tframe tframePlus dse EvalEst CDNmoney GPArotation tsfa numDeriv BB \
-TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol  TSPostgreSQL \
+DEVEL:=tframe tfplot tframePlus dse EvalEst CDNmoney GPArotation tsfa numDeriv \
+BB TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol  TSPostgreSQL \
 TSpadi TSxls TSzip
 
 SITE:=$(FRESHnotDEVEL) $(DEVEL)
