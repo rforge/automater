@@ -1,8 +1,19 @@
 The make files in this directory are meant to be in a directory above R package
 directories. The make files facilitate testing and building of the packages. 
 (The directory will be called "qc" below, but this name can be anything.) 
-The make system should be especially helpful when there are dependency 
+This make system should be especially helpful when there are dependency 
 relationships among the packages in the qc directory. 
+
+You may already have done this, to be reading this README file but, if not, 
+the qc directory is checked out of the automateR project anonomously by
+
+  svn checkout \
+   svn://svn.r-forge.r-project.org/svnroot/automater/trunk/develMake qc
+
+or with a developer name by
+
+  svn checkout \
+   svn+ssh://developername@svn.r-forge.r-project.org/svnroot/automater/trunk/develMake qc
 
 
 ###############  Configuration ############### 
