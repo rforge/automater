@@ -88,11 +88,16 @@ To install packages in the existing R site-library do
 
   make site
 
-To update the packages in  site-library-fresh do
+While the policy is to not update packages in the site-library (see
+README.user) it is sometimes necesssary to add packages to the site-library
+after it has been initially installed. To accomplish this first add the package
+to the SITE variable in Makevars.site (and probably to FRESH too) and then do
+
+  make path-to-R/site-library/NewPackage
+
+To install or update the packages in  site-library-fresh do
 
   make fresh
-
-(Note, the policy is to not update packages in the site-library. )
 
 To run any tests you have specified in the tests/ directory
 
