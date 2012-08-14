@@ -107,6 +107,8 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(MKDIR) $(FLAGS)/vignettes 
 	@cp   $<  $(FLAGS)/vignettes 
+	@if [ -e $(CURDIR)/vignettes/*.bib ]; then \
+	     cp   $(CURDIR)/vignettes/*.bib  $(FLAGS)/vignettes; fi
 	@# Note: not using R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)
 	(cd $(FLAGS)/vignettes ; \
 	        R_LIBS=$(QCLIB) $(RSITE) $(RENV) LC_ALL=C  \
