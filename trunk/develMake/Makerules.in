@@ -146,7 +146,7 @@ ascran:$(PAC)_$(VERSION).tar.gz
 	@$(TIMELINE2)
 
 # vignettes are optional too, but are automatically missing if they do not exist
-$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION man \
+$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(RM) $(CURDIR)/src/*.o $(CURDIR)/src/*.so 
