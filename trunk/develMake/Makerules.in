@@ -116,10 +116,12 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@echo Now acroread $@  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
 
-ascran:$(PAC)_$(VERSION).tar.gz
+as-cran:FLAGS/RCMDcheckASCRAN.out
+
+FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@echo $(ECHOLINE) $(TIMELINE)
-	$(RM) $(FLAGS)/$(PAC).Rcheck
-	R_LIBS=$(QCLIB) $(RSITE) \
+	@# $(RM) $(FLAGS)/$(PAC).Rcheck
+	@R_LIBS=$(QCLIB) $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/RCMDcheckASCRAN.out
 	@test -z "`grep 'Error' $(FLAGS)/RCMDcheckASCRAN.out`" || \
@@ -145,6 +147,7 @@ ascran:$(PAC)_$(VERSION).tar.gz
 	@touch $(FLAGS)/$@
 	@$(TIMELINE2)
 
+
 # vignettes are optional too, but are automatically missing if they do not exist
 $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
@@ -153,6 +156,8 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	@#  This may cause problem in parallel make
 	@if [ -e $(CURDIR)/src/Makefile ]; then \
 	     cd $(CURDIR)/src  && $(MAKE) distclean; fi
+	@test -z "`grep 'BuildVignettes' DESCRIPTION | grep -i 'false'`" || \
+	          (cp vignettes/*  inst/doc )
 	@$(MKDIR) $(FLAGS)/unchecked 
 	@#cd $(FLAGS)/unchecked && $(RM) $(PAC)_$(VERSION).tar.gz 
 	@cd $(FLAGS)/unchecked &&  R_LIBS=$(QCLIB) \

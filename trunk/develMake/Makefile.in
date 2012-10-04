@@ -18,7 +18,7 @@ Makepac.Depends:$(PACKAGES:%=$(QC)/%/DESCRIPTION)
 
 
 vignettes install install-site issues errors warnings notes version \
-svnstatus svnupdate ascran: 
+svnstatus svnupdate as-cran: 
 	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
 
 clean reallyclean:	  
