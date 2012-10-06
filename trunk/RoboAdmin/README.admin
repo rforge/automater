@@ -184,11 +184,13 @@ m h * * * (echo running on `uname -n` ; cd RoboAdmin ; ./getDates ; make ;
 output, so mail will be sent if any MAILTO address has been specified. 
 Alternately
 
-m h * * * (cd RoboAdmin ; ./getDates ; make  >cron.out 2>&1 ; make testsite 
-  >>cron.out 2>&1 ; make testfresh >>cron.out 2>&1)  || 
+m h * * * (cd RoboAdmin ; ./getDates ; 
+  make  >cron.make.out 2>&1 ; 
+  make testsite  >cron.testsite.out 2>&1 ; 
+  make testfresh >cron.testfresh.out 2>&1)  || 
   echo "Error occurred.  See $HOME/RoboAdmin/cron.out for details"
 
-or
+(all on one line) or
 
 m h  * * * ( cd RoboAdmin ; ./getDates ; make >cron.out 2>&1 ; 
   make site-library-fresh-notdevel >>cron.out 2>&1 ; 
