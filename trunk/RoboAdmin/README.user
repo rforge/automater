@@ -30,10 +30,10 @@ newer site-library with a newer version of R.) This site-library is
 also available by default. 
 
 ### site-library-fresh ###
-Some (possibly packages in the site-library list) R packages, from CRAN and 
-other repositories, are installed in the site-library-fresh directory of the 
-distribution.  These will be updated from 
-time-to-time, so you cannot be guaranteed the version of a package is the same 
+Some packages (possibly all packages in site-library) 
+are installed in the site-library-fresh directory of the R version.
+These will be updated from time-to-time, so you will have the latest version,
+but you cannot be guaranteed the version of a package is the same 
 as the last time you used the library. Generally, this library will only be
 updated for the most recent version of R. You will not have access
 to this library by default, but can access it by specifying, for example,
@@ -46,9 +46,9 @@ The second will cause R to look first in site-library-fresh and then in
 site-library, using the first place a specified package is found.
 
 
-### site-library-devel site-library-fresh-notdevel###
+### site-library-fresh-notdevel###
 
-These libraries are for onsite package development. 
+This library is for on-site package development. 
 See README.admin for more details.
 
 
@@ -56,7 +56,7 @@ See README.admin for more details.
 ##########  R VERSION NOTES ##########
 
 The R build is done on a specific system and may work on similar systems that
-mount the file system in a network environment, but may not work on sytems
+mount the file system in a network environment, but may not work on systems
 with a different OS. This can be of concern
 when the OS is being upgraded, and some machines have different versions than 
 others.  The most recent version of R will typically be built on a newer
