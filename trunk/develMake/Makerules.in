@@ -147,7 +147,6 @@ FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@touch $(FLAGS)/$@
 	@$(TIMELINE2)
 
-
 # vignettes are optional too, but are automatically missing if they do not exist
 $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
@@ -163,9 +162,13 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	@cd $(FLAGS)/unchecked &&  R_LIBS=$(QCLIB) \
 	    $(RSITE)  $(RENV) LC_ALL=C  R CMD build $(BUILD_OPTIONS) $(CURDIR)
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
-	@# not sure if --no-vignettes could be specified here.What does this test 
-	@# do relative to building the vignette (which was just done in unchecked)
-	R_LIBS=$(QCLIB) $(RSITE) \
+	@# possibly --no-vignettes could be specified here (since building 
+	@#    the vignette was just done in unchecked)
+	@# previously this 
+	@# R_LIBS=$(QCLIB) $(RSITE) but changed because check generates note 
+	@#   about packages not available for checking (Rd and enhances
+	@#    references) which makes it harder to identify issues.
+	R_LIBS=$(QCLIB):$(R_LIBS_SITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(CHECK_OPTIONS) \
 	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
