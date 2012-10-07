@@ -10,22 +10,22 @@
 #RENV=FAME=$(FAME) PATH=$(RPATH)/bin:$(PATH)
 
 #OTHERREPOS="http://www.omegahat.org/R"
-#OTHERREPOSPKGS=RCurl SSOAP
+#OTHERREPOSPKGS=SSOAP
 
 # The DEVEL distinction is only for packages which are developed at your site,
-# so you can make a distinction between these packages and fresh version of
+# so you can make a distinction between these packages and fresh versions of
 # other packages  they need. If this situation does not apply, you can just 
 # set SITE and FRESH.
 
 
-DEVEL:=tframe tframePlus dse EvalEst GPArotation tsfa numDeriv BB \
-TSdbi TSMySQL TSpadi TSfame TSodbc TSSQLite TShistQuote TSgetSymbol TSxls  \
-TSzip TSPostgreSQL
+DEVEL:=setRNG tframe tfplot tframePlus dse EvalEst GPArotation tsfa numDeriv BB \
+TSdbi TSMySQL TSfame TSodbc TSSQLite TShistQuote TSgetSymbol TSPostgreSQL \
+TSxls TSzip TScompare CDNmoney 
 
-SITE:=$(DEVEL) CDNmoney quadprog quantmod gtools gdata date urca \ PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
+SITE:=$(DEVEL) quadprog quantmod gtools gdata date urca \ 
+PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
 DBI tseries zoo xts its tis WriteXLS RMySQL RPostgreSQL RSQLite fame RODBC XML \
 Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate features \
 googleVis RCurl RJSONIO fftw polynom igraph randomForest foreach iterators doMC 
-#blotter
 
 FRESH:=$(SITE)
