@@ -1,14 +1,16 @@
 # The Makefile in individual package directories should define the 
 # default - usually using $(DEFAULT)
 
-# As of ~ R-2.5.0 (or before) it is necessary to set both R_LIBS  *and*
-# R_LIBS_SITE=$(RSITE) or RHOME/site-library gets picked up in .libPaths()
 ifdef RSITETEST
   RSITE=R_LIBS_SITE=$(RSITETEST)
 else
   RSITE=
 endif
  
+ifndef R_LIBS_SITE_FRESH
+  R_LIBS_SITE_FRESH=$(R_LIBS_SITE)
+endif
+
 ONWARNING=exit 1
 #ONWARNING=echo WARNING Ignored.
 
@@ -61,7 +63,7 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) 
 	@echo $(ECHOLINE)  $(TIMELINE)
 	@$(RM) $@.tmp 
 	@$(MKDIR) $(FLAGS)/tests
-	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) $(RSITE) $(RENV) \
+	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) $(RENV) \
 	    R CMD BATCH  --vanilla tests/$(notdir $@)  $@.tmp
 	@mv  $@.tmp  $@
 	@$(TIMELINE2)
@@ -111,7 +113,7 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	     cp   $(CURDIR)/vignettes/*.bib  $(FLAGS)/vignettes; fi
 	@# Note: not using R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)
 	(cd $(FLAGS)/vignettes ; \
-	        R_LIBS=$(QCLIB) $(RSITE) $(RENV) LC_ALL=C  \
+	        R_LIBS=$(QCLIB)  $(RSITE) $(RENV) LC_ALL=C  \
 	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
 	@echo Now acroread $@  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
@@ -121,7 +123,7 @@ as-cran:FLAGS/RCMDcheckASCRAN.out
 FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@echo $(ECHOLINE) $(TIMELINE)
 	@# $(RM) $(FLAGS)/$(PAC).Rcheck
-	@R_LIBS=$(QCLIB) $(RSITE) \
+	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/RCMDcheckASCRAN.out
 	@test -z "`grep 'Error' $(FLAGS)/RCMDcheckASCRAN.out`" || \
@@ -144,7 +146,7 @@ FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
 	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
 	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
-	@touch $(FLAGS)/$@
+	@touch $@
 	@$(TIMELINE2)
 
 # vignettes are optional too, but are automatically missing if they do not exist
@@ -159,16 +161,18 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	          (cp vignettes/*  inst/doc )
 	@$(MKDIR) $(FLAGS)/unchecked 
 	@#cd $(FLAGS)/unchecked && $(RM) $(PAC)_$(VERSION).tar.gz 
-	@cd $(FLAGS)/unchecked &&  R_LIBS=$(QCLIB) \
-	    $(RSITE)  $(RENV) LC_ALL=C  R CMD build $(BUILD_OPTIONS) $(CURDIR)
+	@cd $(FLAGS)/unchecked &&  \
+	    R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH)  $(RENV) LC_ALL=C  \
+	        R CMD build $(BUILD_OPTIONS) $(CURDIR)
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
 	@# possibly --no-vignettes could be specified here (since building 
 	@#    the vignette was just done in unchecked)
 	@# previously this 
-	@# R_LIBS=$(QCLIB) $(RSITE) but changed because check generates note 
-	@#   about packages not available for checking (Rd and enhances
-	@#    references) which makes it harder to identify issues.
-	R_LIBS=$(QCLIB):$(R_LIBS_SITE) \
+	@# R_LIBS=$(QCLIB) $(RSITE) but changed here and above because check
+	@#   check generates note about packages not available for checking (Rd
+	@#    and enhances: in DESCRIPTION references) which makes it 
+	@#    harder to identify issues.
+	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(CHECK_OPTIONS) \
 	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
@@ -276,7 +280,7 @@ Rprof: $(TESTS:%=$(FLAGS)/tests/%)
 	@if [ -n "$(DEMOS)" ] ; then  for f in $(DEMOS)""; do  \
 	   (@echo "Rprof(filename = 'Rprof.out', append = TRUE)" >$(FLAGS)/Rprof.in ;\
 	    @echo "source('$$f')" >>$(FLAGS)/Rprof.in ;\
-	    $@cd $(FLAGS) &&  R_LIBS=$(QCLIB) $(RSITE)  $(RENV) \
+	    $@cd $(FLAGS) &&  R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) \
 	          R CMD BATCH --vanilla -q Rprof.in ) ; done ; fi
 	@# previously had export R_LIBS above (but that does not seem right)
 	R CMD Rprof Rprof.out
@@ -305,16 +309,16 @@ svnupdate:    ;@(svn update ;  touch /dev/null)
 
 debug:
 	@echo  starting R with Makefile environment
-	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) $(RSITE) \
+	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) \
 	   $(RENV) R --vanilla 
 
 debug-vign:
 	@echo  starting R with Makefile environment. Copy and paste
 	@cat $(FLAGS)/Vignette/R.in
-	@cd $(FLAGS)/Vignette && R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB) \
-	  $(RSITE)  $(RENV)  R --vanilla    
+	@cd $(FLAGS)/Vignette && \
+	    R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE)  $(RENV)  R --vanilla    
 
 gdb:
 	@echo  starting R -d gdb  type >run then after segfault bt
-	R_LIBS=$(FLAGS):$(QCLIB) $(RSITE)  $(RENV) R -d gdb 
+	R_LIBS=$(FLAGS):$(QCLIB)  $(RSITE)  $(RENV) R -d gdb 
 

@@ -93,13 +93,26 @@ When make runs R it will be started with R_LIBS set to use the unchecked and
 QCLIB libraries (more below). R_LIBS_SITE will not be set unless there is an
 environment variable RSITETEST set, in which case RSITETEST will be used to 
 specify the setting of R_LIBS_SITE. The effect of not setting RSITETEST, 
-and thus not setting R_LIBS_SITE is that the default site-library will be used. 
+and thus not setting R_LIBS_SITE is that the default site-library will be used
+for most testing (see exception below). 
 For example, setting RSITETEST to $R/site-library-fresh-notdevel
 will cause this library to be used in place of the default $R/site-library.
 Two possible reasons for setting RSITETEST are to ensure specific versions of
 other packages are used from the site library, and to help ensure that 
-dependencies amoung packages in the qc/ directory are not being satisfied 
+dependencies among packages in the qc/ directory are not being satisfied 
 by packages in the site-library.  
+
+The exception to this is that testing the final tar.gz, and the as-cran version of
+that final test,  use the environment variable R_LIBS_SITE_FRESH (which is 
+set to R_LIBS_SITE if R_LIBS_SITE_FRESH is not set). The reason for this
+is that the final testing will produce "Notes" about any packages not available
+that are referenced in Rd files or in the "Enhances:" item of the DESCRIPTION
+file. This makes it impossible to generate a "clean" result testing a package on
+which another package depends, using only the QCLIB and 
+site-library-fresh-notdevel libraries, if there any of these "foreward" references 
+in the package. By using R_LIBS_SITE_FRESH  most of these package
+referenced should be available, even though they may depend on the package
+being tested.
 
 ###############  Usage ############### 
 
