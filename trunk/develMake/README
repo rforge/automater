@@ -80,9 +80,14 @@ is needed for some package. For example, TScompare needs one or more of
 TSMySQL, TSSQLite, TSPostgreSQL, TSodbc, TSfame, or TSpadi, to  do meaningful 
 testing. In the DESCRIPTION file of TScompare these are specified using 
 "Enhances:", because "or" is not possible  in the specification of "Depends:"
-or "Suggests:". However, to ensure that at least one of them is built and 
-tested before TScompare, I specify these with NOTPARALLEL in the Makefile 
-for TScompare.
+or "Suggests:". To ensure that at least one of them is built and 
+tested before TScompare, I could specify these with NOTPARALLEL in the Makefile 
+for TScompare. (In fact, I add some of them to "Suggests:" because they are 
+used for testing TScompare.)
+
+Beware that NOTPARALLEL should not specify any packages for which the package
+being built is a dependency. This would create circular dependencies in the
+file Makepac.Depends, which can cause make to generate infinite recursive calls.
 
 Another environment variable setting, not set in the Makefiles, which can
 sometimes be useful is SKIPPAC. If any package names are listed in this variable
