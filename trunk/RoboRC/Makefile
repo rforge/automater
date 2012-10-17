@@ -79,12 +79,7 @@ $(ROBOHOME)/R-src/$(LATEST).tar.gz: R-src/latestdt
 	@touch $@
 
 	
-### site-library  ## typically installed with new R version and not updated 
 site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
-	@echo making $@ ...
-	@test -z "$(RUSERS)" || \
-	  echo "New packages have been installed in $(RPATH)/site-library" | \
-	           mail -s "R site-library packages installed" $(RUSERS) 
 	@touch FLAGS/$@
 
 $(SITE:%=$(RPATH)/site-library/%): installR
@@ -99,16 +94,9 @@ $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%): installR
 	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
-update-site-library: site-library #Note - normal policy is not to do this
-	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(RPATH)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
-	test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
-	@touch FLAGS/$@
-
 .PHONY: tests clean reallyclean
 
-tests: 
+tests: site-library
 	@(cd tests ; $(MAKE) $@)
 
 clean:

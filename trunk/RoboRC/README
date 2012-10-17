@@ -5,13 +5,34 @@ after the new R is released. Make recognizes this and stops, but there is not
 yet a mechanism to stop before the tarball is downloaded. To prevent this extra
 netork traffic the cron job should be removed until it is again needed.
 
+If there is a change in base R or recommended packages that affects the output
+of a test (e.g. a new or different note from the methods package) then the
+different output will cause a test to fail. To update the output to be used
+for comparison change the file 
+   /path/to/RoboAdmin/tests/whichever/whichever.Rout.save
+but note that this will then cause testing in RoboAdmin (testfresh) to fail
+until the new R release.
+
 ****************  DESCRIPTION  ****************
 
 This Makefile based system installs R release candidates and runs tests 
 from the RoboAdmin direcory. The location of that directory should be passed as
 an argument to configure:
 
-./configure   path/to/RoboAdmin
+./configure   /path/to/RoboAdmin
+
+The /path/to/RoboAdmin is used to set variable ROBOADMIN in Makevars, and this
+is used to determine where tests/ files should be >copied< from. Beware that
+these files are copied every time the testing is done, so changes in the
+RoboAdmin test files will be incorporated in the RC testing next time it is run,
+and changes in the corresponding RoboRC/tests/RoboAdmin/tests/* directory
+will be >lost<.
+
+Note also that only site-library/ is installed (as done by RoboAdmin) but this
+is installed with the latest packages, so is more like site-library-fresh/. 
+Thus make in RoboRC/tests only does "make testsite" in the subdirectories. 
+If you run make default in the subdirectories, this will look for 
+site-library-fresh/ and fail.
 
 The testing can be run automatically with a crontab entry like
 
