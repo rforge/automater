@@ -39,13 +39,14 @@ testfresh: $(TESTS:%=%outfresh)
 $(TESTS:%=%outfresh):%outfresh: %   $(FRESH_PKGS:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
-	R_LIBS_SITE=$(RPATH)/site-library-fresh \
+	@R_LIBS_SITE=$(RPATH)/site-library-fresh \
 	    R_LIBS=$(RPATH)/library  $(RB)  $< $@.fail
 	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  cat $(subst fresh,,$@.save) | $(RdiffPlus) >$@.save.tmp ; \
 	  cat   $@.fail               | $(RdiffPlus) >$@.fail.tmp ; \
 	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
 	@$(RM) $@.save.tmp $@.fail.tmp 
+	@echo completed $@ 
 	@mv $@.fail $@
 
 testdevel: $(TESTS:%=%outdevel)
