@@ -1,6 +1,17 @@
 #RUSERS=somebody@somewhere
 #RSUPPORT=somebody@somewhere
 
+#CONFIG_OPTIONS does not need to be set, but can add specific options.
+#  --prefix=$(RPATH) could be in CONFIG_OPTIONS but is passed separately 
+#CONFIG_OPTIONS=--enable-R-shlib
+#Atlas
+#see  http://cran.at.r-project.org/doc/manuals/R-admin.html#ATLAS
+#CONFIG_OPTIONS=--enable-R-shlib --with-blas="-lptf77blas -lpthread -latlas"
+#Goto
+#see  http://cran.at.r-project.org/doc/manuals/R-admin.html#Goto-BLAS
+# and http://cran.at.r-project.org/doc/manuals/R-admin.html#Shared-BLAS
+#CONFIG_OPTIONS=--enable-R-shlib --with-blas="-lgoto2"
+
 # Some tests may need environment variable settings when R is executed.
 # (cron jobs may not get setting done in normal sessions, eg in .bashrc )
 #RENV=POSTGRES_HOST=192.168.xxx.xxx POSTGRES_DATABASE=xxxx POSTGRES_USER=xxxx POSTGRES_PASSWD=xxxx
