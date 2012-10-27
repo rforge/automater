@@ -8,8 +8,8 @@ Loading required package: RPostgreSQL
 **************************************************************
 * WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
 **************************************************************
- [1] "i"    "t"    "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"   
-[11] "w"   
+ [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
+[11] "t"   
 [1] TRUE
 Examples to put (fictitious) data in tables
 *************  Examples  Using TSdbi*************
@@ -63,4 +63,4 @@ closing unused connection 4 (http://quote.yahoo.com)
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 50.343   0.396 150.561 
+ 49.939   0.400 150.786 

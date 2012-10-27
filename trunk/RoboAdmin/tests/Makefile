@@ -4,7 +4,7 @@ default:checksite checkfresh checkdevel
 
 tests: testsite 
 
-.PHONT: testsite testfresh testdevel clean
+.PHONY: testsite testfresh testdevel clean
 
 clean:
 	@for f in ${DIRS}"" ; do \

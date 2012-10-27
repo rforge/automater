@@ -21,7 +21,7 @@ define RdiffPlus
   grep -v "closing unused connection" 
 endef
 
-$(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
+$(TESTS:%=%out):%out: %   $(DEPENDS_PKGS:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
 	@R_LIBS=$(RPATH)/library \
@@ -38,7 +38,7 @@ $(TESTS:%=%out):%out: %   $(SITE_PKGS:%=$(RPATH)/site-library/%)
 testfresh: $(TESTS:%=%outfresh)
 
 
-$(TESTS:%=%outfresh):%outfresh: %   $(FRESH_PKGS:%=$(RPATH)/site-library-fresh/%) 
+$(TESTS:%=%outfresh):%outfresh: % $(DEPENDS_PKGS:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
 	@R_LIBS_SITE=$(RPATH)/site-library-fresh \
@@ -51,22 +51,7 @@ $(TESTS:%=%outfresh):%outfresh: %   $(FRESH_PKGS:%=$(RPATH)/site-library-fresh/%
 	@echo completed $@ 
 	@mv $@.fail $@
 
-testdevel: $(TESTS:%=%outdevel)
-
-$(TESTS:%=%outdevel):%outdevel: %   $(DEVEL_PKGS:%=$(RPATH)/site-library-devel/%) \
-                   $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)  
-	@$(RM) $@ 
-	@echo making $@ ...
-	R_LIBS_SITE=$(RPATH)/site-library-devel:$(RPATH)/site-library-fresh-notdevel \
-	    R_LIBS=$(RPATH)/library   $(RB)  $< $@.fail
-	@if [ -f $(subst devel,,$@.save) ]; then  \
-	  cat $(subst devel,,$@.save) | $(RdiffPlus) >$@.save.tmp ; \
-	  cat     $@.fail             | $(RdiffPlus) >$@.fail.tmp ; \
-	  $(Rdiff) $@.save.tmp  $@.fail.tmp 1 ; fi
-	@$(RM) $@.save.tmp $@.fail.tmp 
-	@mv $@.fail $@
-
 clean:
 	$(RM) *.Rout *.Routfresh *.Routdevel Rplots.pdf *.fail
-	$(RM) *.Rout.fail.tmp *.Routfresh.fail.tmp *.Routdevel.fail.tmp
-	$(RM) *.Rout.save.tmp *.Routfresh.save.tmp *.Routdevel.save.tmp
+	$(RM) *.Rout.fail.tmp *.Routfresh.fail.tmp 
+	$(RM) *.Rout.save.tmp *.Routfresh.save.tmp 

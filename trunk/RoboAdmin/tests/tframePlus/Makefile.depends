@@ -4,10 +4,4 @@
 #main package(s) and depends, suggests, imports that are in site-library
 # (but note those in base)
 
-SITE_PKGS=tframePlus tframe timeSeries zoo xts its tis timeSeries WriteXLS
-
-FRESH_PKGS=$(SITE_PKGS)
-
-DEVEL_PKGS=tframePlus tframe
-
-FRESHnotDEVEL_PKGS=timeSeries zoo xts its tis timeSeries WriteXLS_PKGS
+DEPENDS_PKGS=tframePlus tframe timeSeries zoo xts its tis timeSeries WriteXLS

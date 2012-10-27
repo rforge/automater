@@ -4,6 +4,4 @@
 #main package(s) and depends, suggests, imports that are in site-library
 # (but note those in base)
 
-SITE_PKGS=fame tis 
-
-SITEFRESH_PKGS=$(SITE_PKGS)
+DEPENDS_PKGS=fame tis 
