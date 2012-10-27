@@ -29,14 +29,14 @@ PACKAGES=${filter-out $(SKIPPAC), ${shell  ls ${QC}/*/DESCRIPTION | \
 
 
 # filter removes version specifications as well any packages not in ${PACKAGES}
-DEPENDS=${filter ${PACKAGES}, ${shell  grep "Depends:" DESCRIPTION | \
-  perl -pe 's/Depends\://' |   perl -pe 's/,//g' }}
+DEPENDS=${filter  ${PACKAGES},${shell perl -pe 's/,[\s]*\n/, /g' DESCRIPTION |\
+  grep "Depends:"  | perl -pe 's/Depends\://' |   perl -pe 's/,//g' }}
 
-SUGGESTS=${filter ${PACKAGES}, ${shell  grep "Suggests:" DESCRIPTION | \
-  perl -pe 's/Suggests\://' |  perl -pe 's/,//g' }}
+SUGGESTS=${filter ${PACKAGES},${shell perl -pe 's/,[\s]*\n/, /g' DESCRIPTION |\
+  grep "Suggests:" | perl -pe 's/Suggests\://' |  perl -pe 's/,//g' }}
 
-IMPORTS=${filter ${PACKAGES}, ${shell  grep "Imports:" DESCRIPTION | \
-  perl -pe 's/Imports\://' |  perl -pe 's/,//g' }}
+IMPORTS=${filter  ${PACKAGES},${shell perl -pe 's/,[\s]*\n/, /g' DESCRIPTION |\
+  grep "Imports:"  | perl -pe 's/Imports\://' |  perl -pe 's/,//g' }}
 
 # use sort here to remove duplicates (order does not matter).
 #NOTPARALLEL can be set in pkg/Makefile
