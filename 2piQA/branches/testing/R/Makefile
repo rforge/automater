@@ -33,15 +33,24 @@ availableR=${shell R --slave  --version  | grep 'R version'}
 committedR=${shell head -1 R-version }
 Rdate=${shell tail -1 R-version }
 
+# locking could be done in the next but may be more touble than it is worth.
+# if the commit does not happen then the lock will remain and cause problems
+# on all other servers. On the other hand, if not locked then the commit may 
+# fail because some other server commited first (talking a few seconds between 
+# update and commit here). This would only cause this server to fail on this 
+# target attempt, but will be automatically fixed next time.
+#svn lock   $@ -m 'updating R-version to $(availableR).' ;
+
 #  THIS IS ASSUMING DIFFERENT VERSION IS NEWER VERSION!!!!
 R-version:
+	@svn update
 	@if [ '$(committedR)' = '$(availableR)' ]; then \
 	    touch --date "$(Rdate)"  $@ ;\
  	  else \
  	    echo changed R version ;\
- 	    R '$(availableR)'                >$@ ;\
+	    echo '$(availableR)'             >$@ ;\
  	    date "+%Y/%m/%d %H:%M:%S.%N %Z" >>$@ ;\
-	    echo NEED TO svn commit ;\
+	    svn commit $@ -m 'R-version updated to $(availableR).' ;\
  	  fi
 
 

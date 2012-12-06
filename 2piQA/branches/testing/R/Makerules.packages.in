@@ -16,13 +16,14 @@ PKGdate=${shell tail -1 $(PAC)-version }
 
 #  THIS IS ASSUMING DIFFERENT VERSION IS NEWER VERSION!!!!
 $(PAC)-version:
+	@svn update
 	@if [ '$(committedPKG)' = '$(availablePKG)' ]; then \
 	    touch --date "$(PKGdate)"  $@ ;\
  	  else \
  	    echo changed $(PAC) version ;\
  	    echo '$(availablePKG)'           >$@ ;\
  	    date "+%Y/%m/%d %H:%M:%S.%N %Z" >>$@ ;\
-	    echo NEED TO svn commit ;\
+	    svn commit $@ -m '$@n updated to $(availablePKG).' ;\
  	  fi
 
 

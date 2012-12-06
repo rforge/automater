@@ -16,7 +16,6 @@ $(TESTS:%=STATUS-%-$(OS)):STATUS-%-$(OS): %   ../../R-version  ../$(PAC)-version
 	@echo doing $@
 	@# the date not the content of this file that causes this target to run 
 	@#grep check-needed $@ >/dev/null #could be used to throw error on content
-	#svn lock $@ -m "testing in progress"
 	@# the next never finishes with an error because of last touch /dev/null
 	@($(RENV) R CMD BATCH  --vanilla $<  $<out-$(OS) ; \
 	    export success=$$? ;  \
@@ -24,10 +23,9 @@ $(TESTS:%=STATUS-%-$(OS)):STATUS-%-$(OS): %   ../../R-version  ../$(PAC)-version
 	         echo "passed" >RESULT-$<-$(OS)  ;    \
 	    else echo "failed" >RESULT-$<-$(OS)  ;fi ;\
 	    touch /dev/null)
-	@echo "up-to-date" >$@ 
-	#svn commit -m "ran $<"
+	@echo "$(shell date) ON  $(shell uname --all)" >>$@ 
+	@svn commit -m "ran $<"
 
 clean:
 	$(RM) *-$(OS) R-version Rplots*.pdf *.ps
-	#svn unlock
-	#svn update
+	svn update
