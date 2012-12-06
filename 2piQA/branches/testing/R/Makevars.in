@@ -1,0 +1,6 @@
+# variables used in Makefiles at all levels
+
+OS=${shell uname}
+
+RM=rm -r -f
+
