@@ -1,0 +1,4 @@
+> installed.packages()["dse", c("Package","Version")]
+   Package    Version 
+     "dse" "2012.6-1" 
+> 
