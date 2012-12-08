@@ -1,9 +1,18 @@
-#  see qc/ re filter-out  if needed
 SNIPPETS=${shell  ls */*/DESCRIPTION | perl -pe 's/\/DESCRIPTION//g'  }
 PACKAGES=${shell  ls -a -d */.. | perl -pe 's/\/..//g'  }
 
+IMPORTS=${filter  ${PACKAGES},${shell perl -pe 's/,[\s]*\n/, /g' DESCRIPTION |\
+  grep "Imports:"  | perl -pe 's/Imports\://' |  perl -pe 's/,//g' }}
+
+#RESOURCES-MASK=${filter-out   RESOURCES-ONLY
+# use sort here to remove duplicates (order does not matter).
+#    ${sort ${DEPENDS} ${SUGGESTS} ${IMPORTS} ${NOTPARALLEL}}
+
+#PACKAGES=${filter  ${ALLPACKAGES},
 
 include Makevars.in
+include Makevars.site
+
 
 .PHONY:	R-version $(SNIPPETS) 
 

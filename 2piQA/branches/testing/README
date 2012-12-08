@@ -26,6 +26,21 @@ R/pkg1/summary  - data and files for web page graphs
 
 #######  svn structure for testing ####### 
   
+R/		contains package directories with snippets in each
+
+R/Makefile
+
+R/Makefile.packages.template
+
+R/Makevars-PKG.site.example   example of site special restriction to be put 
+             in R/pkg1/Makevars-PKG.site
+...MORE
+
+R/pkg1/			where pkg is a package name
+R/pkg1/Makevars-$(PAC).site 	optional file with site settings for pkg1 
+         if necessary. See example above
+
+
 R/pkg1/snippets/snippetA  where snippetA is the snippet name
   -DESCRIPTION file by author the snippet
       Description:      -of snippet
@@ -43,13 +58,19 @@ R/pkg1/snippets/snippetA  where snippetA is the snippet name
        
       SystemRequirements: -if more restictive than package.
 
-   -code  files.R
+   -snippet.R   code to run test with, where 'snippet' can be any name.
 
-   -STATUS-files.R-$(OS): indicating  up-to-date or check-needed.
-      If a check is needed and the file has an svn lock, then it is in progress.
-      This will be set to check-needed if the R version or package 
-      version change, or the snippet is modified. But NOTE it is the date not
-      the content of these files that causes triggering of re-make.
+   -STATUS-snippet.R-$(OS): indicates details of the server that ran the test.
+      The time stamp of this file also indicates if the test is up-to-date 
+      or not, by the usual make mechanism: If its time stamp is more recent
+      than R-version, PKG-version, and snippet.R, then it is up-to-date.
+      Otherwise, the test will be run.
+      (The test may be in-progess on another server, but svn lock is more
+       trouble than it is worth. If the lock is not removed because of
+       some failure, then other servers cannot take over. On the other hand,
+       if a commit is done sooner by another server, then only the one
+       server's extra test will fail to commit, and everything should continue
+       normally.)
 
    -RESULT-files.R-$(OS) has a line with "passed" or "failed" to indicate the
       result of the test.
@@ -57,12 +78,12 @@ R/pkg1/snippets/snippetA  where snippetA is the snippet name
 #######  check farm notes ####### 
 
 1/ (start by cron)  -  
-      (cd RoboAdmin ; make)  checks if new packages are avalable
+      (cd RoboAdmin ; make) install new packages if avalable (use site-library-fresh)
       (cd R ; make)
 
 
 2/ Check that R is up-to-date (If not run nothing) and
-   package versions are up-to-date (if not elimiate running package snippets)
+   package versions are up-to-date (if not eliminate running package snippets)
       make up-to-date  # which runs in package directories
       
    These version stamp files contain two lines. The first is the version number
