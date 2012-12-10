@@ -1,4 +1,0 @@
-> installed.packages()["stats", c("Package","Version")]
- Package  Version 
- "stats" "2.15.2" 
-> 
