@@ -21,9 +21,13 @@ RESOURCES-REQUIREMENTS:=$(RESOURCES-PKG-REQUIREMENTS) $(RESOURCES-SNIP-REQUIREME
 
 OS-NOT-SUPPORTED:=$(OS-PKG-NOT-SUPPORTED)$(OS-SNIP-NOT-SUPPORTED)
 
-skipIfNotEmpty:=$(PACKAGE-NOT-AVAILABLE)$(OS-NOT-SUPPORTED)$(filter $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))
+# if ONLY is empty then tests should be skipped
+ONLY:=$(if $(RESOURCES-ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES-ONLY)),RUN)
 
-skipIfEmpty:=$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES) NONE)
+skipIfNotEmpty:=$(PACKAGE-NOT-AVAILABLE)$(OS-NOT-SUPPORTED)
+
+# if ONLY indicates tests can be run, then run if resources are available
+skipIfEmpty:=$(if $(ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES) NONE),)
 
 TESTS:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))
 
@@ -37,15 +41,16 @@ default: $(TESTS:%=STATUS-%-$(OS))
 
 test: 
 	@echo skipIfEmpty$(skipIfEmpty)
+	@echo ONLY $(ONLY)
 	@echo skipIfNotEmpty$(skipIfNotEmpty)
+	@echo '$(if $(skipIfEmpty),$(RFILES),)'
+	@echo '$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))'
 	@echo TESTS$(TESTS)
-	@echo PACKAGE-NOT-AVAILABLE$(PACKAGE-NOT-AVAILABLE)
-	@echo OS_TYPE$(OS_TYPE)
-	@echo OS_SUPPORT$(OS_SUPPORT)
-	@echo OS-NOT-SUPPORTED$(OS-NOT-SUPPORTED)
 	@echo 'RESOURCES-REQUIREMENTS $(RESOURCES-REQUIREMENTS)' 
 	@echo 'RESOURCES $(RESOURCES)' 
 	@echo 'RESOURCES-ONLY $(RESOURCES-ONLY)' 
+	@echo 1'$(filter     $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
+	@echo 2'$(filter-out $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
 
 $(TESTS:%=STATUS-%-$(OS)):STATUS-%-$(OS): %   ../../R-version  ../$(PAC)-version
 	@echo doing $@
