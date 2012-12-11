@@ -29,7 +29,7 @@ $(PACKAGES): R-version
 
 $(SNIPPETS): R-version $(PACKAGES)
 	@if [ ! -e $@/Makefile ]; then \
-	    cp Makefile.snip.template $@/Makefile ; fi
+	    cp Makefile.snippet.template $@/Makefile ; fi
 	@#(cd $@ && $(MAKE)  -k || exit 1 )
 	@$(MAKE) -k  --directory=$@
 
