@@ -5,5 +5,8 @@ if [ $# -ne 1 ]; then
    exit 1
  fi
 
-svn propset svn:ignore "Makefile"  $1
+svn propset svn:ignore "
+Makefile   
+Makevars.auto"  $1
+
 svn commit $1 -m "set package directory $1 properties to ignore some files."
