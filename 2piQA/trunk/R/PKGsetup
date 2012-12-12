@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then 
+   echo usage PKGsetup  packageName
+   exit 1
+ fi
+
+svn propset svn:ignore "
+Makefile   
+Makevars.auto"  $1
+
+svn commit $1 -m "set package directory $1 properties to ignore some files."

@@ -1,0 +1,71 @@
+# For use in the snippets dirs
+RFILES:=${shell ls *.[rR] }
+
+include   ../Makevars.auto
+#sets PAC PACKAGE-NOT-AVAILABLE RESOURCES-PKG-REQUIREMENTS OS-PKG-NOT-SUPPORTED 
+
+#overrides are set in:
+-include   ../Makevars.$(PAC)
+
+
+#RESOURCES are set in:
+include ../../Makevars.site
+
+
+#Note that SNIP resources and restrictions apply to all *.R files in the dir/
+#(snippet specific restrictions are discouraged)
+#RESOURCES-SNIP-REQUIREMENTS OS-SNIP-NOT-SUPPORTED are set in:
+-include      Makevars.$(SNIP)
+
+RESOURCES-REQUIREMENTS:=$(RESOURCES-PKG-REQUIREMENTS) $(RESOURCES-SNIP-REQUIREMENTS)
+
+OS-NOT-SUPPORTED:=$(OS-PKG-NOT-SUPPORTED)$(OS-SNIP-NOT-SUPPORTED)
+
+# if ONLY is empty then tests should be skipped
+ONLY:=$(if $(RESOURCES-ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES-ONLY)),RUN)
+
+skipIfNotEmpty:=$(PACKAGE-NOT-AVAILABLE)$(OS-NOT-SUPPORTED)
+
+# if ONLY indicates tests can be run, then run if resources are available
+skipIfEmpty:=$(if $(ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES) NONE),)
+
+TESTS:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))
+
+default: $(TESTS:%=STATUS-%-$(OS))
+
+
+# snippet should throw an error if it fails, but that is not a failure of 
+#  the make. The generated RESULT keeps track of tests that pass or fail.
+#  Make keeps track of whether the test has been run or not with STATUS.
+
+
+test: 
+	@echo skipIfEmpty$(skipIfEmpty)
+	@echo ONLY $(ONLY)
+	@echo skipIfNotEmpty$(skipIfNotEmpty)
+	@echo '$(if $(skipIfEmpty),$(RFILES),)'
+	@echo '$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))'
+	@echo TESTS$(TESTS)
+	@echo 'RESOURCES-REQUIREMENTS $(RESOURCES-REQUIREMENTS)' 
+	@echo 'RESOURCES $(RESOURCES)' 
+	@echo 'RESOURCES-ONLY $(RESOURCES-ONLY)' 
+	@echo 1'$(filter     $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
+	@echo 2'$(filter-out $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
+
+$(TESTS:%=STATUS-%-$(OS)):STATUS-%-$(OS): %   ../../R-version  ../$(PAC)-version
+	@echo doing $@
+	@# the date not the content of the file causes this target to run 
+	@#grep check-needed $@ >/dev/null #could be used to throw error on content
+	@# the next never finishes with an error because of last touch /dev/null
+	@($(RENV) R CMD BATCH  --vanilla $<  $<out-$(OS) ; \
+	    export success=$$? ;  \
+	    if [ 0 -eq $$success ]  ; then \
+	         echo "passed" >RESULT-$<-$(OS)  ;    \
+	    else echo "failed" >RESULT-$<-$(OS)  ;fi ;\
+	    touch /dev/null)
+	@echo "$(shell date) ON  $(shell uname --all)" >>$@ 
+	@svn commit -m "ran $<"
+
+clean:
+	$(RM) *-$(OS) R-version Rplots*.pdf *.ps
+	svn update
