@@ -1,20 +1,16 @@
 DIRS=${shell ls -p -d -1 * | grep "/" }
 
-default:checksite checkfresh checkdevel
+default tests: testsite testfresh 
 
-tests: testsite 
-
-.PHONY: testsite testfresh testdevel clean
+.PHONY: testsite testfresh clean
 
 clean:
 	@for f in ${DIRS}"" ; do \
-	   if [ ! -f $$f/Makefile ]; then cp Makefile.default $$f/Makefile; fi ;\
 	   (cd $$f ; $(MAKE) $@ );  \
 	   done ; 
 
 testsite:
 	@for f in ${DIRS}"" ; do \
-	   if [ ! -f $$f/Makefile ]; then cp Makefile.default $$f/Makefile; fi ;\
 	   (cd $$f ; $(MAKE) testsite );  \
 	   done ; 
 	@for f in ${DIRS}"" ; do \
@@ -27,7 +23,6 @@ testsite:
 
 testfresh:
 	@for f in ${DIRS}"" ; do \
-	   if [ ! -f $$f/Makefile ]; then cp Makefile.default $$f/Makefile; fi ;\
 	   (cd $$f ; $(MAKE) $@ );  \
 	   done ; 
 	@for f in ${DIRS}"" ; do \
@@ -35,18 +30,5 @@ testfresh:
 	      echo see errors in $$f/*.Routfresh.fail. Tail: ;\
 	      tail -5 $$f/*.Routfresh.fail ;\
 	      grep "there is no package" $$f/*fresh.fail ;\
-	      fi ;\
-	   done ; 
-
-testdevel:
-	@for f in ${DIRS}"" ; do \
-	   if [ ! -f $$f/Makefile ]; then cp Makefile.default $$f/Makefile; fi ;\
-	   (cd $$f ; $(MAKE) $@ );  \
-	   done ; 
-	@for f in ${DIRS}"" ; do \
-	   if [ -f $$f/*.Routdevel.fail ]; then \
-	      echo see errors in $$f/*.Routdevel.fail. Tail:  ;\
-	      tail -5 $$f/*.Routdevel.fail ;\
-	      grep "there is no package" $$f/*devel.fail ;\
 	      fi ;\
 	   done ; 

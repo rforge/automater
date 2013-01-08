@@ -150,9 +150,13 @@ $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 
 update-site-library-fresh: site-library-fresh
 	@echo making $@ ...
-	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
+	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
+	  >FLAGS/$@.out
+	@(egrep '(trying|installing)'  FLAGS/$@.out >>site-library-fresh.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" || $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' 
+	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \ 
+	  >>FLAGS/$@.out2
+	@(egrep '(trying|installing)'  FLAGS/$@.out2 >>site-library-fresh.log ; touch /dev/null)
 	@#touch FLAGS/$@ do not touch. always update
 
 
@@ -175,17 +179,18 @@ $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
 
 update-site-library-fresh-notdevel: site-library-fresh-notdevel
 	@echo making $@ ...
-	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
+	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
+	  >FLAGS/$@.out
+	@(egrep '(trying|installing)'  FLAGS/$@.out >>site-library-fresh-notdevel.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
+	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \ 
+	  >>FLAGS/$@.out2
+	@(egrep '(trying|installing)'  FLAGS/$@.out2 >>site-library-fresh-notdevel.log ; touch /dev/null)
 
 
 .PHONY: tests testsite testfresh  clean reallyclean
 
-#  make tests    only does testsite 
-# usually would also want 
-#  make  testfresh
-
+#  make tests   does testsite and testfresh
 tests testsite testfresh: 
 	@(cd tests ; $(MAKE) $@)
 

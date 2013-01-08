@@ -35,7 +35,8 @@ are installed in the site-library-fresh directory of the R version.
 These will be updated from time-to-time, so you will have the latest version,
 but you cannot be guaranteed the version of a package is the same 
 as the last time you used the library. Generally, this library will only be
-updated for the most recent version of R. You will not have access
+updated for the most recent version of R. For older versions of R it remains
+static once an newer version of R is installed. You will not have access
 to this library by default, but can access it by specifying, for example,
   
   export R_LIBS_SITE=$RHOME/site-library-fresh/

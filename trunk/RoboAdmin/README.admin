@@ -37,9 +37,10 @@ Installing R can then be done in a cron job (more below) or manually by
  make
 
 To do local testing of the installation (recommended) it will be necessary to add
-directories and files in the tests/ directory. Some examples are provided, and in 
-some cases these *.R.example files can be simply copied to *.R files. If you would 
-like to contribute other examples, please contact 
+directories and files in the tests/ directory. Some examples are provided in the
+directory tests-examples. You might want to maintain these directories of your
+own site tests in an archive, in which case they should be checked out under the
+tests/ directory. If you would like to contribute other examples, please contact 
    automater-suggestions@lists.r-forge.r-project.org
 or pgilbert.ttv9z@ncf.ca.
 
@@ -66,8 +67,8 @@ really know what happens.
 The description in this file is generic. Keep site specific notes somewhere else
 (for example, as comments in Makevars.site).
   
-Make will update site-library-fresh even when a new R version is not installed.
-(This can be automated with a cron job, described below.) 
+Make will update site-library-fresh even when a new R version does not need to
+be installed. (This can be automated with a cron job, described below.) 
 
 To add more packages to the list installed in the different libraries, modify 
 the variables in the Makevars.site file. The package will be installed when 
@@ -75,10 +76,11 @@ the cron job runs, or can be done immediately with
 
   make
 
-The logic of these libraries is that site-library (packages defined by SITE)
-is the one users will normally want and, after R and the library packages are 
-installed, this library will remain unchanged other than to add any packages 
-added to the list (SITE). 
+The logic of these libraries is that site-library (packages defined by the SITE
+variable set in Makevars.site)is the one users will normally want if they 
+prefer that their package versions do not update frequently and, after R and 
+the library packages are installed, the versions in this library will remain 
+unchanged other than to add any packages added to the list (SITE). 
 
 Normal users might also use site-library-fresh (packages defined by FRESH), 
 in which packages will be updated regularly. See the README.user file for 
@@ -93,6 +95,8 @@ README.user) it is sometimes necesssary to add packages to the site-library
 after it has been initially installed. To accomplish this first add the package
 to the SITE variable in Makevars.site (and probably to FRESH too) and then do
 
+  make
+or
   make path-to-R/site-library/NewPackage
 
 To install or update the packages in  site-library-fresh do
@@ -102,32 +106,30 @@ To install or update the packages in  site-library-fresh do
 To run any tests you have specified in the tests/ directory
 
   make tests
-   
-or the equivalent
+
+This runs tests against both site-library and site-library-fresh. To run only 
+against site-library 
 
   make testsite
 
-This runs tests for using site-library. It will only run tests for 
-which a library has been updated, or for which tests that have been 
-changed or added. 
+To runs tests for using site-library-fresh.
 
   make testfresh
 
-runs tests for using site-library-fresh.
+These will only run tests for which a library has been updated, or for which 
+tests that have been changed or added. If no changes have been made, but you 
+want to run all tests then
 
-If no changes have been made, but you want to run all tests then
-
-  cd test
+  cd tests
   make clean
-  make testsite
-  make testfresh
+  make test
 
 #################################################################
-#####          Local Development Configuration              #####
+#####   Local R Package Development Configuration           #####
 #################################################################
 
 The library site-library-fresh-notdevel (packages defined by  FRESH and not 
-in DEVEL) are for the purpose of package development at your own site. 
+in DEVEL) are for the purpose of R package development at your own site. 
 These will not be used by normal users. 
 This library has packages needed for development but not actually 
 being developed. (The logic of this is to reduce the possibility 
@@ -145,7 +147,7 @@ as packages in site-library-fresh.
 A cron job can be used to check for a new versions of R and install it. 
 The cron job should run ./getDates and then make. Make will build and install a 
 new R version if it is available, based on the dates, then install site-library,
-site-library-fresh, sand site-library-fresh-notdevel. 
+site-library-fresh, and site-library-fresh-notdevel. 
 
 The cron job will check the version of the R release, which is relatively 
 quick when there is not a new release, and then update packages in the FRESH 
@@ -217,13 +219,15 @@ m h * * * (export http_proxy='http://wwwproxy:8080'; cd RoboAdmin ; ./getDates ;
 
 These scripts and Makefiles can be checked out and update with anonymous access
 to the svn archive. For example, to put files and subdirectories in the 
-directory Rprod (using a directory named RoboAdmin is assumed in most of the
-documentation) do 
+directory Rprod do 
 
   svn checkout \
      svn://scm.r-forge.r-project.org/svnroot/automater/trunk/RoboAdmin Rprod
 
-This may be complicated by firewalls and proxy servers.
+(Using a directory named RoboAdmin rather than Rprod is assumed in most of the
+documentation)
+
+The checkout may be complicated by firewalls and proxy servers.
 (At some sites this can be fixed by settings in  ~/.subversion/servers
   http-proxy-host=wwwproxy
   http-proxy-port=8080
@@ -257,7 +261,7 @@ svn checkout svn+ssh://userid@r-forge/svnroot/automater/trunk/RoboAdmin RoboAdmi
 #####      Problems with R and Package Installs            #####
 #################################################################
 
-Compiling R requires the a fortran and C compiler, X11 header files, 
+Compiling R requires a fortran and C compiler, X11 header files, 
 and some other things that are often not installed on a computer not 
 used for program development. Also, some packages require additional 
 support libraries. Following are notes about some Debian / Ubuntu
