@@ -205,3 +205,10 @@ reallyclean: clean
 	@echo so run ./getDates before make
 	$(RM) R-src/index.html R-src/latest R-src/latestdt
 
+#distro:
+#	mkdir   RoboAdmin_version
+#	svn update
+#	echo -n "revision number: " >>Manifest?
+#	svnversion  >>Manifest?
+#	copy stuff and cleanup
+#	tar cf RoboAdmin_version  | gzip 
