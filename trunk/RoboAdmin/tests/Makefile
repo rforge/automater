@@ -32,3 +32,9 @@ testfresh:
 	      grep "there is no package" $$f/*fresh.fail ;\
 	      fi ;\
 	   done ; 
+
+updateAll:
+	@for f in ${DIRS}"" ; do \
+	   (cd $$f ; svn update );  \
+	   (cd $$f ; svn status );  \
+	   done ; 

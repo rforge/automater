@@ -1,6 +1,8 @@
-# This default Makefile gets copied to any subdirectories that do not have
-#  a Makefile. It should work in most cases, but specilized situations can
-#  be handled by a customized Makefile in a subdirectory.
+# This Makerules.default can be included into the Makefile in any subdirectory.
+#  It should work in most cases, but specilized situations, that is, the 
+# Makefile only needs the single line
+# include ../Makerules.default
+# but special cases can be handled by a customized Makefile in a subdirectory.
 
 include ../../Makevars
 include ../../Makevars.site
