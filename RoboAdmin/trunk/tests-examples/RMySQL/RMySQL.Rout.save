@@ -1,0 +1,13 @@
+Loading required package: RMySQL
+Loading required package: DBI
+************** RMySQL  Examples ******************************
+**************************************************************
+* WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
+**************************************************************
+ [1] "A"    "B"    "D"    "I"    "M"    "Meta" "Q"    "S"    "T"    "U"   
+[11] "W"   
+[1] TRUE
+[1] TRUE
+> proc.time()
+   user  system elapsed 
+  0.963   0.047   1.745 

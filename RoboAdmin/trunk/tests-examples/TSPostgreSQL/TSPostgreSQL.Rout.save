@@ -1,0 +1,66 @@
+Loading required package: TSPostgreSQL
+Loading required package: tframe
+Loading required package: tframePlus
+Loading required package: DBI
+Loading required package: TSdbi
+Loading required package: RPostgreSQL
+************** RPostgreSQL  Examples ******************************
+**************************************************************
+* WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
+**************************************************************
+ [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
+[11] "t"   
+[1] TRUE
+Examples to put (fictitious) data in tables
+*************  Examples  Using TSdbi*************
+Loading required package: tfplot
+**************        with ts
+**************   done with ts
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+**************        with zoo
+**************   done with zoo
+**************        skipping ets tests
+Loading required package: tseries
+Loading required package: quadprog
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=25&f=2012&g=d&q=q&y=0&z=^gspc&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... ..
+downloaded 222 Kb
+
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=25&f=2012&g=d&q=q&y=0&z=ibm&x=.csv'
+Content type 'text/csv' length unknown
+opened URL
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... .......... .......... ..........
+.......... .......... ......
+downloaded 276 Kb
+
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F19%2F11&date=10%2F25%2F12&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+Content type 'text/html' length unknown
+opened URL
+.......... .......... .......... ...
+downloaded 33 Kb
+
+Warning message:
+closing unused connection 4 (http://quote.yahoo.com) 
+**************        disconnecting test
+[1] TRUE
+[1] TRUE
+> proc.time()
+   user  system elapsed 
+ 49.939   0.400 150.786 

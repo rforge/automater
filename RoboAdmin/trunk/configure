@@ -1,0 +1,5 @@
+#! /bin/sh
+
+echo     "creating    Makevars ..."
+echo ROBOHOME=`pwd`/  >Makevars
+echo "include \$(ROBOHOME)Makevars.in" >>Makevars

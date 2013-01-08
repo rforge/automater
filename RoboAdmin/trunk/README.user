@@ -1,0 +1,70 @@
+
+##########  R USER NOTES ##########
+
+R versions in this directory are installed approximately when the R version is 
+released.  A specific R version can be used by setting, for example,
+
+   export RHOME=/path/to/RoboAdmin/R-2.13.2/
+   export PATH=$RHOME/bin:$PATH
+
+or in csh    
+   setenv RHOME /path/to/RoboAdmin/R-2.13.2/
+   set path=($RHOME/bin $path )
+
+where /path/to/RoboAdmin needs to be set to the location where RoboAdmin has
+been installed on your system.
+
+The install process sends email notification to users when a new version has
+been install. To be added to the list you should contact the person who set 
+up this process on you system.
+
+The R recommended packages, which are distributed automatically with R, are 
+installed in the library directory of the distribution and not updated. (You 
+will get a newer library with a newer version of R.) This library is available
+by default.
+
+### site-library ###
+Other R packages, from CRAN and other repositories, are installed in the 
+site-library directory of the distribution and not updated.  (You will get a 
+newer site-library with a newer version of R.) This site-library is
+also available by default. 
+
+### site-library-fresh ###
+Some packages (possibly all packages in site-library) 
+are installed in the site-library-fresh directory of the R version.
+These will be updated from time-to-time, so you will have the latest version,
+but you cannot be guaranteed the version of a package is the same 
+as the last time you used the library. Generally, this library will only be
+updated for the most recent version of R. For older versions of R it remains
+static once an newer version of R is installed. You will not have access
+to this library by default, but can access it by specifying, for example,
+  
+  export R_LIBS_SITE=$RHOME/site-library-fresh/
+or 
+  export R_LIBS_SITE=$RHOME/site-library-fresh/:$RHOME/site-library/
+
+The second will cause R to look first in site-library-fresh and then in 
+site-library, using the first place a specified package is found.
+
+
+### site-library-fresh-notdevel###
+
+This library is for on-site package development. 
+See README.admin for more details.
+
+
+
+##########  R VERSION NOTES ##########
+
+The R build is done on a specific system and may work on similar systems that
+mount the file system in a network environment, but may not work on systems
+with a different OS. This can be of concern
+when the OS is being upgraded, and some machines have different versions than 
+others.  The most recent version of R will typically be built on a newer
+operating system (and it is sometimes difficult to build it on an old OS).
+Don't expect to get a new R on an old OS, or an old R on a new OS.
+
+
+##########  INSTALLATION INSTRUCTIONS ##########
+
+See the file README.admin (and the Makefile for details).
