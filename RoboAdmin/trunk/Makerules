@@ -156,7 +156,7 @@ update-site-library-fresh: site-library-fresh
 	  >FLAGS/$@.out 2>&1
 	@(egrep '(trying|installing to)'  FLAGS/$@.out >>site-library-fresh.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" || $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \ 
+	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out2 2>&1
 	@(egrep '(trying|installing to)'  FLAGS/$@.out2 >>site-library-fresh.log ; touch /dev/null)
 	@#touch FLAGS/$@ do not touch. always update
@@ -185,7 +185,7 @@ update-site-library-fresh-notdevel: site-library-fresh-notdevel
 	  >FLAGS/$@.out 2>&1
 	@(egrep '(trying|installing to)'  FLAGS/$@.out >>site-library-fresh-notdevel.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \ 
+	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out2 2>&1
 	@(egrep '(trying|installing to)'  FLAGS/$@.out2 >>site-library-fresh-notdevel.log ; touch /dev/null)
 
