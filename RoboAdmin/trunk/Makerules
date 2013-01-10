@@ -147,6 +147,7 @@ $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 	@$(MKDIR) $(RPATH)/site-library-fresh
 	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile") ;  q(status=0)' \
 	  >FLAGS/site-library-fresh.out 2>&1
+	@echo ${shell date}: >>site-library-fresh.log
 	@(egrep '(trying|installing to)'  FLAGS/site-library-fresh.out >>site-library-fresh.log ; touch /dev/null)
 	@#touch $@
 
@@ -154,6 +155,7 @@ update-site-library-fresh: site-library-fresh
 	@echo making $@ ...
 	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out 2>&1
+	@echo ${shell date}: >>site-library-fresh.log
 	@(egrep '(trying|installing to)'  FLAGS/$@.out >>site-library-fresh.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" || $(R) \
 	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
@@ -183,6 +185,7 @@ update-site-library-fresh-notdevel: site-library-fresh-notdevel
 	@echo making $@ ...
 	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out 2>&1
+	@echo ${shell date}: >>site-library-fresh-notdevel.log
 	@(egrep '(trying|installing to)'  FLAGS/$@.out >>site-library-fresh-notdevel.log ; touch /dev/null)
 	@test -z "$(OTHERREPOS)" ||  $(R) \
 	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
