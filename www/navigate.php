@@ -5,12 +5,11 @@
 <P>
 SCM links
 <ul>
-<li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboAdmin/?root=automater">RoboAdmin</a>
-<li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboRC/?root=automater">RoboRC</a>
-<li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboDev/?root=automater">RoboDev</a>
-<li><a href="https://r-forge.r-project.org/scm/viewvc.php/trunk/RoboTests/?root=automater">RoboTests</a>
+<li><a href="https://r-forge.r-project.org/scm/viewvc.php/RoboAdmin/trunk/?root=automater">RoboAdmin</a>
+<li><a href="https://r-forge.r-project.org/scm/viewvc.php/RoboRC/trunk/?root=automater">RoboRC</a>
+<li><a href="https://r-forge.r-project.org/scm/viewvc.php/RoboTests/trunk/?root=automater">RoboTests</a>
 <li><a
-href="https://r-forge.r-project.org/scm/viewvc.php/trunk/develMake/?root=automater">develMake</a>
+href="https://r-forge.r-project.org/scm/viewvc.php/develMake/trunk/?root=automater">develMake</a>
 </ul>
 
 

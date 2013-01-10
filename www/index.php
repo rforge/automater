@@ -27,11 +27,6 @@ specific tests to ensure everything works with the new version.
 site specific tests to ensure everything works with <i>R</i> release candidates.
 
 <P>
-<a href=RoboDev.php><b>RoboDev</b></a> provides tools that automatically run
-site specific tests to ensure everything works with the develeopment version 
-of <i>R</i>.
-
-<P>
 <a href=RoboTests.php><b>RoboTests</b></a> provides tools that automatically
 runs tests suites with a specific versions of <i>R</i> and record results
 from the different test suites.

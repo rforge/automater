@@ -15,3 +15,5 @@ are automatically re-run if they change, or if the libraries they
 depend on change. Test results are summarized (still under development).
 <P>
 See the README file in the top level directory for more details.
+<P>
+<b>RoboTests</b> is available by anonymous checkout from the code repository.

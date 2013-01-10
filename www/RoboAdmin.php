@@ -25,4 +25,7 @@ If they do want the latest available packages then they can do this by setting
 <i>site-library-fresh</i> to be used in their <i>R</i> session.
 <P>
 See the README files in the top level directory for more details, and the 
-sub-directories in the tests/ directory for examples of site specifice testing.
+sub-directories in the tests-examples/ directory for examples of site 
+specifice testing.
+<P>
+<b>RoboAdmin</b> is available by anonymous checkout from the code repository.

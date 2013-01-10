@@ -16,3 +16,5 @@ The system is especially helpful when there are dependency
 relationships among the packages.
 <P>
 See the README file in the top level directory for more details.
+<P>
+<b>develMake</b> is available by anonymous checkout from the code repository.
