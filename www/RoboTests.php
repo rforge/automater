@@ -16,4 +16,6 @@ depend on change. Test results are summarized (still under development).
 <P>
 See the README file in the top level directory for more details.
 <P>
-<b>RoboTests</b> is available by anonymous checkout from the code repository.
+<b>RoboTests</b> is available by anonymous checkout from the code repository by
+<P>
+<tt>svn checkout svn://scm.r-forge.r-project.org/svnroot/automater/RoboTests/trunk RoboTests</tt>

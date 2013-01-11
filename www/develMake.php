@@ -17,4 +17,7 @@ relationships among the packages.
 <P>
 See the README file in the top level directory for more details.
 <P>
-<b>develMake</b> is available by anonymous checkout from the code repository.
+<b>develMake</b> is available by anonymous checkout from the code repository by
+<P>
+<tt>svn checkout svn://scm.r-forge.r-project.org/svnroot/automater/develMake/trunk develMake</tt>
+

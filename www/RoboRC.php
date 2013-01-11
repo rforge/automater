@@ -15,4 +15,7 @@ and notifies a list of people automatically if these fail.
 <P>
 See the README file in the top level directory for more details.
 <P>
-<b>RoboRC</b> is available by anonymous checkout from the code repository.
+<b>RoboRC</b> is available by anonymous checkout from the code repository by
+<P>
+<tt>svn checkout svn://scm.r-forge.r-project.org/svnroot/automater/RoboRC/trunk RoboRC</tt>
+

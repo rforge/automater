@@ -28,4 +28,7 @@ See the README files in the top level directory for more details, and the
 sub-directories in the tests-examples/ directory for examples of site 
 specifice testing.
 <P>
-<b>RoboAdmin</b> is available by anonymous checkout from the code repository.
+<b>RoboAdmin</b> is available by anonymous checkout from the code repository  by
+<P>
+<tt>svn checkout svn://scm.r-forge.r-project.org/svnroot/automater/RoboAdmin/trunk RoboAdmin/</tt>
+

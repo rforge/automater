@@ -14,7 +14,7 @@ related to maintaining an <i>R</i> installation and site-specific testing of pac
 include any <i>R</i> packages, but the Subversion Repository has directories 
 with structures for automatically doing tasks related to installing and
 maintaining <i>R</i>, and regularly testing <i>R</i> code segments. 
-These rely on gmake and cron jobs and should work on any system that 
+These rely on GNU make and cron jobs and should work on any system that 
 supports these facilities (but has not been broadly tested).
 
 <P>
