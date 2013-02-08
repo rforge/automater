@@ -1,6 +1,16 @@
 # variables used in Makefiles at all levels
 
-OS=${shell uname}
+# set R and R_LIBS_SITE in Makevars.site
+MKR=R_LIBS_SITE=$(SITE_LIB)  $(R)/bin/R --slave  --vanilla
 
 RM=rm -r -f
 
+UPDATE=svn update --accept theirs-full
+
+COMMIT=svn commit -m 
+
+ADD=svn add  
+
+# this is not used on individual servers, only for wrapup assessSnippets
+# which needs to be run for the web site
+OSTYPES=Linux MySQL

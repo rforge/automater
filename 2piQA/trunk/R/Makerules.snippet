@@ -9,8 +9,10 @@ include   ../Makevars.auto
 
 
 #RESOURCES are set in:
-include ../../Makevars.site
+include ../../../Makevars.site
 
+#Requirements=${filter  ${PACKAGES},${shell perl -pe 's/,[\s]*\n/, /g' DESCRIPTION |\
+#  grep "SystemRequirements:"  | perl -pe 's/SystemRequirements\://' |  perl -pe 's/,//g' }}
 
 #Note that SNIP resources and restrictions apply to all *.R files in the dir/
 #(snippet specific restrictions are discouraged)
@@ -29,10 +31,15 @@ skipIfNotEmpty:=$(PACKAGE-NOT-AVAILABLE)$(OS-NOT-SUPPORTED)
 # if ONLY indicates tests can be run, then run if resources are available
 skipIfEmpty:=$(if $(ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES) NONE),)
 
+RESOURCES-OK:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),RESOURCES-OK,))
+TESTABLE:=$(shell cat TESTABLE-$(OS_TAG))
+
 TESTS:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))
 
-default: $(TESTS:%=STATUS-%-$(OS))
+default: STATUS_SUMMARY-$(OS_TAG) TESTABLE-$(OS_TAG)
 
+Makefile: ../../../Makefile.snippet.template
+	@cp $< $@
 
 # snippet should throw an error if it fails, but that is not a failure of 
 #  the make. The generated RESULT keeps track of tests that pass or fail.
@@ -41,31 +48,79 @@ default: $(TESTS:%=STATUS-%-$(OS))
 
 test: 
 	@echo skipIfEmpty$(skipIfEmpty)
-	@echo ONLY $(ONLY)
 	@echo skipIfNotEmpty$(skipIfNotEmpty)
-	@echo '$(if $(skipIfEmpty),$(RFILES),)'
-	@echo '$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))'
+	@echo $(PACKAGE-NOT-AVAILABLE)
+	@echo RFILES$(RFILES)
+	@echo RESOURCES-OK$(RESOURCES-OK)
+	if [ -z $(RESOURCES-OK) ]  ; then  echo zero$(RESOURCES-OK) ; fi
+	@echo TESTABLE$(TESTABLE)
+	if [ -z $(TESTABLE) ]  ; then  echo zero$(TESTABLE) ; fi
+	if [ "UNKNOWN" != "$(TESTABLE)" ]  ; then  echo UNKNOWN$(TESTABLE) ; fi
 	@echo TESTS$(TESTS)
 	@echo 'RESOURCES-REQUIREMENTS $(RESOURCES-REQUIREMENTS)' 
 	@echo 'RESOURCES $(RESOURCES)' 
 	@echo 'RESOURCES-ONLY $(RESOURCES-ONLY)' 
-	@echo 1'$(filter     $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
-	@echo 2'$(filter-out $(RESOURCES-REQUIREMENTS), $(RESOURCES-ONLY))' 
 
-$(TESTS:%=STATUS-%-$(OS)):STATUS-%-$(OS): %   ../../R-version  ../$(PAC)-version
-	@echo doing $@
+what-if: 
+	$(MAKE) --what-if=../$(PAC)-version  default
+
+# Note that TESTABLE-$(OS_TAG) here is to indicate that the resources are available on
+#   some server, not necessarily on the current one!!
+# Updates the file if this server has the resources via non-zero $(RESOURCES-OK), 
+# and the file still indicates UNKOWN via $(TESTABLE)
+
+.PHONY: TESTABLE-$(OS_TAG)
+
+TESTABLE-$(OS_TAG):  ../Makevars.auto
+	@# create if non existent, typically just for a new OS_TAG and it will 
+	@# need to be added to svn (see svnAdd-$(OS_TAG) in top level Makefile).
+	@if [ -z "$(TESTABLE)" ] ; then  echo "UNKNOWN" >$@  ; fi
+	@if [ "UNKNOWN" = "$(TESTABLE)" -a -n "$(RESOURCES-OK)" ] ; then \
+	       echo "$(PAC)-$(PAC-VERSION) $(shell date) ON  $(shell uname --all)" >$@  ; \
+	       $(COMMIT) "$@ update by  $(shell date) ON  $(shell uname --all)" ; fi 
+
+
+STATUS_SUMMARY-$(OS_TAG): $(TESTS:%=STATUS-%-$(OS_TAG))
+	@# with-filename is default if more than one file. 
+	@# This gives consistent fields in case of only one file.
+	@egrep --with-filename '(passed|failed)' STATUS-*-$(OS_TAG) \
+	  | perl -ane "print qq(@F[0,1]\n)">$@
+	@# this update is in case another farm server did a commit first
+	@$(UPDATE)
+	@$(COMMIT) "$(PAC)-version tests and summary" 
+	@# misc cleanup
+	@$(RM) Rplots*.pdf *.ps *.tmp
+
+
+$(TESTS:%=STATUS-%-$(OS_TAG)):STATUS-%-$(OS_TAG): % ../../../R-version ../$(PAC)-version
+	@echo doing $(PAC) $@
 	@# the date not the content of the file causes this target to run 
-	@#grep check-needed $@ >/dev/null #could be used to throw error on content
 	@# the next never finishes with an error because of last touch /dev/null
-	@($(RENV) R CMD BATCH  --vanilla $<  $<out-$(OS) ; \
+	@( $(MKR) <$<  >$<out-$(OS_TAG) ; \
 	    export success=$$? ;  \
 	    if [ 0 -eq $$success ]  ; then \
-	         echo "passed" >RESULT-$<-$(OS)  ;    \
-	    else echo "failed" >RESULT-$<-$(OS)  ;fi ;\
-	    touch /dev/null)
-	@echo "$(shell date) ON  $(shell uname --all)" >>$@ 
-	@svn commit -m "ran $<"
+	         echo -n " passed." >$@.tmp  ; \
+	    else echo -n " failed." >$@.tmp  ;fi ; touch /dev/null)
+	@echo " $(PAC)-$(PAC-VERSION) $(shell date) ON  $(shell uname --all)" >>$@.tmp 
+	@mv $@.tmp  $@
+
+####################################################################
+
+#     Targets below will not usually be run by farm servers
+
+####################################################################
+
+# SUMMARY.png should depend on TESTABLE-$(OS_TAG) as well as STATUS_SUMMARY-$(OS_TAG), 
+# for all OSTYPES, but TESTABLE-$(OS_TAG) is PHONY so adding it results in always remaking,
+# thus will assume it is good if STATUS_SUMMARY is good.
+
+# Note, this is to be run for web summary, individual servers have only one OS_TAG.
+
+# beware resulting file name is really controlled by R code
+SUMMARY.png: ../$(PAC)-version   ../../../assessSnip.R  $(OSTYPES:%=STATUS_SUMMARY-%) 
+	$(MKR) < ../../../assessSnip.R
+
 
 clean:
-	$(RM) *-$(OS) R-version Rplots*.pdf *.ps
-	svn update
+	$(RM) *-$(OS_TAG) R-version  *.pdf *.ps *.tmp
+	$(UPDATE)
