@@ -1,5 +1,0 @@
-# this gets copied into each snippet dir
-include ../../Makevars.in
-include ../../Makerules.snippet
-
-

@@ -1,4 +1,0 @@
-# this gets copied into each package dir
-
-include ../Makevars.in
-include ../Makerules.package

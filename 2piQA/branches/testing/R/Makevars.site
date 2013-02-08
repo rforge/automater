@@ -1,8 +1,0 @@
-RESOURCES=SQLLite MySQL PostgreSQL ODBC Perl  Perl_CSVXS \
-OTHER_ETSDB
-
-#MPI Oracle-license  Fame-license Bloomberg-license rpcgen PADI
-
-
-# for testing set
-#RESOURCES-ONLY=SQLLite  MySQL
