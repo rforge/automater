@@ -8,32 +8,15 @@
 default: latest-ok installR notifyUsersNewR \
   site-library notifyUsersNewLibs fresh 
 
-# If DEVEL is specified in Makevars.site then target "fresh" will also
-#    do target update-site-library-fresh-notdevel
-# This will typically be non-empty only if you have on site package development. 
-
-### site-library  is typically installed with new R version and not updated 
-
-site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
-	@echo Update of packages in $(RPATH)/site-library being done.
-	@test -z "$(RSUPPORT)" || \
-	  echo "New packages/versions are being installed in $(RPATH)/site-library.\
-	    If this message is repeated each time the cron job runs, then some \
-	    package in the SITE list is probably not available, or the package \
-	    install is failing." | \
-	      mail -s "R site-library package update" $(RSUPPORT) 
-	@touch FLAGS/$@
-
-
-### fresh should be updated regularly
-
-fresh: update-site-library-fresh update-site-library-fresh-notdevel
-
 #latest-ok is just to provide more meaningful error messages when getDates 
 # failed to get the version info. 
 
 #Do not make this a prereq, since phony is alway run
 .PHONY: latest-ok
+
+#####################
+## check for new R ##
+#####################
 
 latest-ok:
 	@echo making $@ ...
@@ -42,41 +25,6 @@ latest-ok:
 	@test -n "$(RPATH)" || \
 	   (echo "Error. latest indicator is empty. HTTP probably failed." ; \
 	    exit 1)
-
-# The logic of notifyUsers is to ensure users do not get 
-# sent notifications when things are failing. Eg, when a package is not
-# available for a new R, the cron attempts every day until 
-# the package maintainer fixes the package (or it is removed from the list of
-# packages in Makevars.site). To determine if a notification should be sent,
-# the current list of packages is compared against the packages at the last 
-# notification. This list is not kept in FLAGS so it does not get cleaned.
-# However, support should get messages in this case.
-
-notifyUsersNewR: installR
-	@test -z "$(RUSERS)" || \
-	    echo "A new R has been installed in $(RPATH)" | \
-	           mail -s "$(RPATH) now available" $(RUSERS) $(RSUPPORT)
-	@echo there is a new R
-	@touch FLAGS/$@
-
-
-notifyUsersNewLibs: site-library.NOTIFIED
-
-.PHONY: site-library.NOTIFIED
-site-library.NOTIFIED:
-	@$(R) 'installed.packages(lib.loc = "$(RPATH)/site-library")[,"Version", drop=FALSE] ; q(status=0)' \
-	     >FLAGS/$@.tmp
-	@# diff has a problem if $@ does not exist so
-	@test -e $@ || touch  $@
-	@# touch in next is to suppress error condition from diff
-	@(diff  FLAGS/$@.tmp  $@ >FLAGS/$@.diff ; touch /dev/null)
-	@if [ -s FLAGS/$@.diff ]; then  \
-	  echo site-library package updates detected;  \
-	  test -z "$(RUSERS)" || \
-	    echo "New packages/versions have been installed in $(RPATH)/site-library" | \
-	           mail -s "R site-library package updates" $(RUSERS) $(RSUPPORT) ;\
-	  mv FLAGS/$@.tmp  $@ ;  \
-	  fi
 
 installR: check
 	@echo making $@ ...
@@ -116,56 +64,106 @@ $(RPATH)/bin/Rcmd: $(ROBOHOME)/R-src/$(LATEST).tar.gz
 $(ROBOHOME)/R-src/$(LATEST).tar.gz: R-src/latestdt
 	@echo making $@ ...
 	(cd R-src ; wget -o Rwget.log "$(BASE)/$(LATEST).tar.gz")
-	
-### site-library  ### typically not updated
+
+
+#####################
+### Notifications  ##
+#####################
+
+# The logic of notifyUsers is to ensure users do not get 
+# sent notifications when things are failing. Eg, when a package is not
+# available for a new R, the cron attempts every day until 
+# the package maintainer fixes the package (or it is removed from the list of
+# packages in Makevars.site). To determine if a notification should be sent,
+# the current list of packages is compared against the packages at the last 
+# notification. This list is not kept in FLAGS so it does not get cleaned.
+# However, support should get messages in this case.
+
+notifyUsersNewR: installR
+	@test -z "$(RUSERS)" || \
+	    echo "A new R has been installed in $(RPATH)" | \
+	           mail -s "$(RPATH) now available" $(RUSERS) $(RSUPPORT)
+	@echo there is a new R
+	@touch FLAGS/$@
+
+
+notifyUsersNewLibs: site-library.NOTIFIED
+
+.PHONY: site-library.NOTIFIED
+site-library.NOTIFIED:
+	@$(R) 'installed.packages(lib.loc = "$(RPATH)/site-library")[,"Version", drop=FALSE] ; q(status=0)' \
+	     >FLAGS/$@.tmp
+	@# diff has a problem if $@ does not exist so
+	@test -e $@ || touch  $@
+	@# touch in next is to suppress error condition from diff
+	@(diff  FLAGS/$@.tmp  $@ >FLAGS/$@.diff ; touch /dev/null)
+	@if [ -s FLAGS/$@.diff ]; then  \
+	  echo site-library package updates detected;  \
+	  test -z "$(RUSERS)" || \
+	    echo "New packages/versions have been installed in $(RPATH)/site-library" | \
+	           mail -s "R site-library package updates" $(RUSERS) $(RSUPPORT) ;\
+	  mv FLAGS/$@.tmp  $@ ;  \
+	  fi
+
+
+
+#####################
+### site-library   ##
+#####################
+
+# site-library is typically installed with new R version and not updated
+
+site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
+	@echo Update of packages in $(RPATH)/site-library being done.
+	@echo ${shell date}  Installed $(RPATH)/$@  >>$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@test -z "$(RSUPPORT)" || \
+	  echo "New packages/versions are being installed in $(RPATH)/site-library.\
+	    If this message is repeated each time the cron job runs, then some \
+	    package in the SITE list is probably not available, or the package \
+	    install is failing." | \
+	      mail -s "R site-library package update" $(RSUPPORT) 
+	@touch FLAGS/$@
+
 
 $(SITE:%=$(RPATH)/site-library/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(RPATH)/site-library
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
+
 
 $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(RPATH)/site-library
-	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
-update-site-library: site-library #Note - normal policy is not to do this
-	@echo making $@ ...
-	$(R) 'update.packages(lib.loc="$(RPATH)/site-library", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
-	test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)'
-	@touch FLAGS/$@
 
-### site-library-fresh ##  updated as needed
+
+#########################
+##  site-library-fresh ##  
+#########################
  
 site-library-fresh: $(FRESH:%=$(RPATH)/site-library-fresh/%)
+	@echo ${shell date}  Installed $(RPATH)/$@  >>$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@touch FLAGS/$@
+
 
 $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(RPATH)/site-library-fresh
-	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile") ;  q(status=0)' \
+	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ;  q(status=0)' \
 	  >FLAGS/site-library-fresh.out 2>&1
-	@echo ${shell date}: >>site-library-fresh.log
-	@(egrep '(trying|installing \*source)'  FLAGS/site-library-fresh.out >>site-library-fresh.log ; touch /dev/null)
+	@(egrep '(trying|installing \*source)'  FLAGS/site-library-fresh.out \
+	    >>site-library-fresh.log ; touch /dev/null)
 	@#touch $@
 
-update-site-library-fresh: site-library-fresh
-	@echo making $@ ...
-	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
-	  >FLAGS/$@.out 2>&1
-	@echo ${shell date}: >>site-library-fresh.log
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out >>site-library-fresh.log ; touch /dev/null)
-	@test -z "$(OTHERREPOS)" || $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
-	  >FLAGS/$@.out2 2>&1
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 >>site-library-fresh.log ; touch /dev/null)
-	@#touch FLAGS/$@ do not touch. always update
+##################################
+## site-library-fresh-notdevel  ##
+##################################
 
-
-
-#### site-library-fresh-notdevel
 #  is only needed it you would like a fresh library that has only packages not
 #  under development at your site, so testing can be done more easily
 #  without risk of accidentally finding your package in the fresh library.
@@ -174,23 +172,46 @@ FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
 
 ### site-library-fresh-notdevel
 site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
+	@echo ${shell date}  Installed $(RPATH)/$@  >>$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@touch FLAGS/$@
 
 $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(RPATH)/site-library-fresh-notdevel
-	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(RPATH)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#touch $@
 
-update-site-library-fresh-notdevel: site-library-fresh-notdevel
+
+######################
+##     update       ##
+######################
+
+###  update policy ###
+### site-library                 not updated except in special circumstances
+### site-library-fresh           updated regularly
+### site-library-fresh-notdevel  updated regularly
+
+# If DEVEL is specified in Makevars.site then target "fresh" will also
+#    do target update-site-library-fresh-notdevel
+# This will typically be non-empty only if you have on site package development. 
+
+fresh: update-site-library-fresh   update-site-library-fresh-notdevel
+
+
+update-site-library update-site-library-fresh \
+update-site-library-fresh-notdevel:update-site-%: site-%
 	@echo making $@ ...
-	@$(R) 'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
+	@echo ${shell date} updating in $(RPATH)/$(subst update-,,$@) >>$(subst update-,,$@).log
+	@$(R) 'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out 2>&1
-	@echo ${shell date}: >>site-library-fresh-notdevel.log
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out >>site-library-fresh-notdevel.log ; touch /dev/null)
+	@(egrep '(trying|installing \*source)'  FLAGS/$@.out >>$(subst update-,,$@).log ; \
+	   touch /dev/null)
 	@test -z "$(OTHERREPOS)" ||  $(R) \
-	   'update.packages(lib.loc="$(RPATH)/site-library-fresh-notdevel", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
+	   'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out2 2>&1
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 >>site-library-fresh-notdevel.log ; touch /dev/null)
+	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 >>$(subst update-,,$@).log ; \
+	   touch /dev/null)
 
 
 .PHONY: tests testsite testfresh  clean reallyclean
