@@ -147,8 +147,8 @@ $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%): installR
 #########################
  
 site-library-fresh: $(FRESH:%=$(RPATH)/site-library-fresh/%)
-	@echo ${shell date}  Installed package(s} in $(RPATH)/$@  >>$@.log
-	@echo '      current list of ALL packages in $(RPATH)/$@' >>$@.log
+	@echo ${shell date}  'Installed package(s) in   $(RPATH)/$@' >>$@.log
+	@echo '         current list of ALL packages in $(RPATH)/$@' >>$@.log
 	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
 	@touch FLAGS/$@
 
@@ -174,8 +174,8 @@ FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
 
 ### site-library-fresh-notdevel
 site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
-	@echo ${shell date}  Installed package(s) in $(RPATH)/$@  >>$@.log
-	@echo '      current list of ALL packages in $(RPATH)/$@' >>$@.log
+	@echo ${shell date} ' Installed package(s) in $(RPATH)/$@'  >>$@.log
+	@echo '        current list of ALL packages in $(RPATH)/$@' >>$@.log
 	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
 	@touch FLAGS/$@
 
