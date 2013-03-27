@@ -115,9 +115,9 @@ site-library.NOTIFIED:
 
 site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%)
 	@echo Update of packages in $(RPATH)/site-library being done.
-	@echo ${shell date}  Installed package(s) in $(RPATH)/$@  >>$@.log
-	@echo '      current list of ALL packages in $(RPATH)/$@' >>$@.log
-	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@echo ${shell date}  Installed package(s) in $(RPATH)/$@  >>$(RPATH)/$@.log
+	@echo '      current list of ALL packages in $(RPATH)/$@' >>$(RPATH)/$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$(RPATH)/$@.log
 	@test -z "$(RSUPPORT)" || \
 	  echo "New packages/versions are being installed in $(RPATH)/site-library.\
 	    If this message is repeated each time the cron job runs, then some \
@@ -147,9 +147,11 @@ $(OTHERREPOSPKGS:%=$(RPATH)/site-library/%): installR
 #########################
  
 site-library-fresh: $(FRESH:%=$(RPATH)/site-library-fresh/%)
-	@echo ${shell date}  'Installed package(s) in   $(RPATH)/$@' >>$@.log
-	@echo '         current list of ALL packages in $(RPATH)/$@' >>$@.log
-	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@echo ${shell date} 'Installed package(s) in   $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@echo '        current list of ALL packages in $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$(RPATH)/$@.log
 	@touch FLAGS/$@
 
 
@@ -159,7 +161,7 @@ $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 	@$(R) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ;  q(status=0)' \
 	  >FLAGS/site-library-fresh.out 2>&1
 	@(egrep '(trying|installing \*source)'  FLAGS/site-library-fresh.out \
-	    >>site-library-fresh.log ; touch /dev/null)
+	    >>$(RPATH)/site-library-fresh.log ; touch /dev/null)
 	@#touch $@
 
 ##################################
@@ -174,9 +176,11 @@ FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
 
 ### site-library-fresh-notdevel
 site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
-	@echo ${shell date} ' Installed package(s) in $(RPATH)/$@'  >>$@.log
-	@echo '        current list of ALL packages in $(RPATH)/$@' >>$@.log
-	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$@.log
+	@echo ${shell date} ' Installed package(s) in $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@echo '        current list of ALL packages in $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$(RPATH)/$@.log
 	@touch FLAGS/$@
 
 $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
@@ -205,16 +209,17 @@ fresh: update-site-library-fresh   update-site-library-fresh-notdevel
 update-site-library update-site-library-fresh \
 update-site-library-fresh-notdevel:update-site-%: site-%
 	@echo making $@ ...
-	@echo ${shell date} updating in $(RPATH)/$(subst update-,,$@) >>$(subst update-,,$@).log
+	@echo ${shell date} updating in $(RPATH)/$(subst update-,,$@) \
+	   >>$(RPATH)/$(subst update-,,$@).log
 	@$(R) 'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out 2>&1
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out >>$(subst update-,,$@).log ; \
-	   touch /dev/null)
+	@(egrep '(trying|installing \*source)'  FLAGS/$@.out \
+	   >>$(RPATH)/$(subst update-,,$@).log ;  touch /dev/null)
 	@test -z "$(OTHERREPOS)" ||  $(R) \
 	   'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
 	  >FLAGS/$@.out2 2>&1
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 >>$(subst update-,,$@).log ; \
-	   touch /dev/null)
+	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 \
+	   >>$(RPATH)/$(subst update-,,$@).log ; touch /dev/null)
 
 
 .PHONY: tests testsite testfresh  clean reallyclean
