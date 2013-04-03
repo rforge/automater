@@ -130,14 +130,7 @@ site-library: $(SITE:%=$(RPATH)/site-library/%) $(OTHERREPOSPKGS:%=$(RPATH)/site
 $(SITE:%=$(RPATH)/site-library/%): installR
 	@echo making $@ ...
 	@$(MKDIR) $(RPATH)/site-library
-	$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
-	@#do not touch $@ or failed install looks like success to make
-
-
-$(OTHERREPOSPKGS:%=$(RPATH)/site-library/%): installR
-	@echo making $@ ...
-	@$(MKDIR) $(RPATH)/site-library
-	$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	@$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
 	@#do not touch $@ or failed install looks like success to make
 
 
@@ -215,11 +208,6 @@ update-site-library-fresh-notdevel:update-site-%: site-%
 	  >FLAGS/$@.out 2>&1
 	@(egrep '(trying|installing \*source)'  FLAGS/$@.out \
 	   >>$(RPATH)/$(subst update-,,$@).log ;  touch /dev/null)
-	@test -z "$(OTHERREPOS)" ||  $(Rnsl) \
-	   'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(OTHERREPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
-	  >FLAGS/$@.out2 2>&1
-	@(egrep '(trying|installing \*source)'  FLAGS/$@.out2 \
-	   >>$(RPATH)/$(subst update-,,$@).log ; touch /dev/null)
 
 
 .PHONY: tests testsite testfresh  clean reallyclean
