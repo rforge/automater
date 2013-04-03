@@ -15,6 +15,10 @@ VPATH = FLAGS
 
 #RENV can set path before the call to $(R). 
 #PATH to R is needed to install some packages (i.e. fame) 
+#As of R-3.0.0, R_LIBS_SITE needs to be set empty since package installs are checked
+#against dependency versions. If old packages are found in R_LIBS_SITE then the install
+#fails and indicates a newer install of the dependency is needed.
+Rnsl=$(RENV)  R_LIBS_SITE='' $(RPATH)/bin/R --vanilla --slave -e 
 R=$(RENV)  $(RPATH)/bin/R --vanilla --slave -e 
 Rf=$(RENV) $(RPATH)/bin/R --vanilla --slave -f 
 RB=$(RENV) $(RPATH)/bin/R CMD BATCH --vanilla --slave --no-save --no-restore 
