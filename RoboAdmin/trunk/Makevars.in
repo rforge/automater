@@ -2,7 +2,9 @@
 # ROBOHOME is created by configure so it has correct path name even when
 # used in subdirectories (i.e.  tests/ )
 
-BASE=http://cran.at.r-project.org/src/base/R-2
+#In the event of a major upgrade of R (top level digit) R-3 needs to be 
+# changed here and in getDates.
+BASE=http://cran.at.r-project.org/src/base/R-3
 REPOS="http://cran.r-project.org"
 
 # file R-src/latest is written by getDates script (run by cron job)

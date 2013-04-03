@@ -2,8 +2,10 @@
 
 rm -f R-src/index.html
 
+#In the event of a major upgrade of R (top level digit) R-3 needs to be 
+# changed here and in Makevars.in.
 # next creates index.html but could be -
-(cd R-src ; wget -o Rver.log -O index.html "http://cran.at.r-project.org/src/base/R-2")
+(cd R-src ; wget -o Rver.log -O index.html "http://cran.at.r-project.org/src/base/R-3")
 	
 # omit time from date as wget of tar.gz has UTC time not local time
 cat R-src/index.html | grep ".tar.gz" | tail -1 | perl \

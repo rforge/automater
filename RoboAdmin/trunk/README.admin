@@ -48,6 +48,9 @@ or pgilbert.ttv9z@ncf.ca.
 
 will run the tests. This can be added to the cron job.
 
+In the event of a major upgrade of R (top level digit) R-3 needs to be 
+changed in getDates and Makevars.in.
+
 #################################################################
 #####          End Quick Notes                              #####
 #################################################################
