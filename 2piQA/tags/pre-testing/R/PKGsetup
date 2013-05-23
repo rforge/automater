@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then 
+   echo usage PKGsetup  packageName
+   exit 1
+ fi
+
+#beware NO spaces on the end of lines in quotes
+svn propset svn:ignore "
+Makevars.auto
+LABEL.png"  Packages/$1
+
+SNIPPETS=`( cd Packages/$1 ; ls */DESCRIPTION | perl -pe 's/\/DESCRIPTION//g')`
+echo $SNIPPETS
+
+for f in $SNIPPETS 
+do
+( cd Packages/$1 ; \
+#beware NO spaces on the end of lines in quotes
+svn propset svn:ignore "
+*.png
+*.pdf
+*.ps"	$f )
+done
+  
+( cd Packages/$1 ; svn commit \
+   -m "set package $1 and snippets directories to ignore some files.")

@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# general script for ad hoc fixing of things in Packages directory. 
+
+# THIS SCRIPT IS FOR DEVELOPMENT PURPOSES. NOT FOR GENERAL USE !!!
+# Edit as necessary. Can be used to create SelfTest snippets from 
+#  SOURCE package */tests directory.
+
+if [ $# -ne 0 ]; then 
+   echo bad usage 
+   exit 1
+ fi
+
+
+#SOURCE=~/qc
+#PACS=`( cd $SOURCE ; ls */DESCRIPTION | perl -pe 's/\/DESCRIPTION//g')`
+
+TARGET=~/2piQA/R/Packages
+PACS=`( cd $TARGET ; ls -a -d */.. | perl -pe 's/\/..//g')`
+
+#echo $PACS
+
+for f in $PACS 
+do
+ # ls $TARGET/$f/*
+ # ls $SOURCE/$f/tests/*
+ 
+ # mkdir -p $TARGET/$f/SelfTest
+ # cp $SOURCE/$f/tests/*   $TARGET/$f/SelfTest 
+ # cp Makefile.snippet.template  $TARGET/$f/SelfTest/Makefile
+ # cp Makefile.packages.template $TARGET/$f/Makefile
+ 
+ # echo "Description: SelfTest of package $f generated from package tests/" \
+ #                                            >$TARGET/$f/SelfTest/DESCRIPTION 
+ # echo "Package: $f"                        >>$TARGET/$f/SelfTest/DESCRIPTION 
+ # echo "Author: author or maintainer of $f" >>$TARGET/$f/SelfTest/DESCRIPTION 
+
+ #svn add $TARGET/$f/SelfTest/DESCRIPTION
+# RFILES=`( cd $TARGET/$f/SelfTest ; ls *.[rR] )`
+ #  Also need other OSes here
+#  for r in $RFILES 
+#  do
+#    touch   $TARGET/$f/SelfTest/STATUS-${r}-Linux
+#    svn add $TARGET/$f/SelfTest/STATUS-${r}-Linux
+#    touch   $TARGET/$f/SelfTest/${r}out-Linux
+#    svn add $TARGET/$f/SelfTest/${r}out-Linux
+#  done
+#  svn commit $TARGET/$f/SelfTest/ -m "adding STATUS and Rout files for SelfTest"
+
+ # touch $TARGET/$f/$f-version
+ # svn add $TARGET/$f/$f-version
+
+ # ./PKGsetup  $f
+
+#beware NO spaces on the end of lines in quotes
+svn propset svn:ignore "
+Makevars.auto
+LABEL.png"   Packages/$f
+
+svn commit Packages/$1 -m "set package directory $1 properties to ignore LABEL.png."
+done

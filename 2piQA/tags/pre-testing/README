@@ -1,0 +1,249 @@
+QA  Quality Assessment  - 3rd party checks of packages  R,  SciPy ?, ...?
+
+copyright Paul Gilbert, 2012
+
+R/pkg1  where pkg1 is a package name
+
+  - If file OS_type exists it is used to indicate which OS types the  
+    package requires (unix or windows), and indicates that the 
+  package can only be installed on a platform with .Platform$OS.type 
+  having that value.  
+  
+  -If other dependencies (external to the R system) exist then they should be
+   listed in lines in the file SystemRequirements. If that file does not exist
+   then the package has no special system requirements.
+   
+#######  structure for reporting ####### 
+This is not done by the farm sites, so should probably not go under 2piQA/R/
+Possibly 2piQA/web/R  ??
+summary 
+ - data and files for web page graphs
+  -graph quadrant
+     I   - runs ok
+     II  - package maintainer considers it a feature request
+     III - fails (and package maintainer has not moved it to II or IV
+     IV  - package maintainer considers it an acceptable test (bug or ok)
+     X   - package maintainer can request that site maintainer declared the
+           test invalid (after discussion with test author who should fix
+	   things). A reason should be provided.
+   
+#######  the web interface  ####### 
+
+-handles interaction with users submitting snippets and package maintainers
+ moving quadrents as above, ets
+ 
+- putting snippets (and impled packages) into svn is handled by the back end
+of the web interface.
+ SNIPsetup
+  PKGsetup
+    
+- need pull down list of snippet RESOURCES-SNIP-REQUIREMENTS, and also package
+  RESOURCES-PKG-REQUIREMENTS if the package does not yet have any snippets.
+  (This latter is only because package SystemRequirements: filed is only
+  descriptive.)
+
+#### Files set by snippet submission ####
+
+R/pkg1/			where pkg is a package name
+
+R/Makevars-PKG.example   example of package special requirements which will  
+             indicates in R/pkg1/Makevars-PKG. SET WITH SNIPPET SUBMISSION
+	     BECAUSE PACKAGE FIELD SystemRequirements IS NOT USEFUL
+
+R/pkg1/snippets/snippetA  where snippetA is the snippet name
+  -DESCRIPTION file by author the snippet
+      Description:      -of snippet
+      Package:		-package to which the snippet tests are targetted.
+      Author: 		-of snippet
+      Depends:          -requirements of the snippet exceeding the package. Note
+      	if the files.R have very different requirements it may be better to put
+	them in different snippets.
+      License: 		-of snippet (GPL-2 default)
+      Copyright: 	-of snippet (copyleft)
+      OS_type:          -if more restictive than package. A justification will
+                         be required. (This is a requirement to run the snippet
+			 possibly comming from another package which is also
+			 needed).
+       
+      SystemRequirements: -if more restictive than package.
+
+   -snippet.R   code to run test with, where 'snippet' can be any name.
+
+
+
+#######  svn structure for testing at farm sites #######
+ 
+#### General ####
+
+Make files ending in .site indicate site specific overrides that will need to
+be set manually by a site administrator. These must not be put in the subversion
+archive, as they would then be checked out and used by all sites.
+CONSIDER ENFORCING SOME OF  THIS WITH PERMISSIONS OR LOCKS!!
+
+$(PAC) is used to indicate a string that is automatically expanded to the name
+of a package. PKG is used to indicate a string that is not expanded, but the
+file is used at the package level, not the R level or snippet level, in 
+the make system. $(SNIP) is used to indicate a string that is expanded to the 
+name of a snippet (the directory names below $(PAC) packages).
+
+Make files ending in .$(PAC) and $(SNIP) are generated either my the snippet
+submission system or by manual editing. These will be saved in the subversion 
+archive and apply to all sites. These are not always necessary, but will be 
+needed when information cannot be automatically determinded correctly by 
+the make system.
+
+Make files ending in .auto, are generated automatically by the make system, 
+and not put in subversion. They will typically have a warning in the beginning
+of the file indicating that they are auto-generated. In each package directory
+and in each snippet directory there will also be a file called "Makefile" that
+is automatically copied from Makefile.packages.template or 
+Makefile.snip.template. The templates are in the subversion archive but the
+automatic copies are not. (The R/Makefile is in subversion and is not
+automatically generated.) 
+
+Files R-version and $(PAC)/$(PAC)-version are automatically generated when a new
+version of R or a new package are availabled at some site, and then saved in
+subversion so all testing at all sites will migrate to the new version (or skip
+testing).
+
+
+
+R/	contains package directories with snippets in each. It also contains the
+	make files and templates needed to generate most of the testing 
+	structure for package and snippet directories, and some examples. (Part
+	of the structure is set up by the snippet submission web interface.)
+
+#### Files part of general structure (not to be modified) ####
+R/Makefile
+...MORE
+
+R/Makefile.packages.template
+
+#### Files set by farm site administrator ####
+
+R/Makevars-PKG.site.example   example of site special restriction to be put 
+             in R/pkg1/Makevars-PKG.site
+R/pkg1/Makevars-$(PAC).site 	optional file with site settings for pkg1 
+         if necessary. See example above
+
+
+#### Files generated by a farm site running snippets  (make) ####
+
+   -STATUS-snippet.R-$(OS): indicates details of the server that ran the test.
+      The time stamp of this file also indicates if the test is up-to-date 
+      or not, by the usual make mechanism: If its time stamp is more recent
+      than R-version, PKG-version, and snippet.R, then it is up-to-date.
+      Otherwise, the test will be run.
+      (The test may be in-progess on another server, but svn lock is more
+       trouble than it is worth. If the lock is not removed because of
+       some failure, then other servers cannot take over. On the other hand,
+       if a commit is done sooner by another server, then only the one
+       server's extra test will fail to commit, and everything should continue
+       normally.)
+
+   -RESULT-files.R-$(OS) has a line with "passed" or "failed" to indicate the
+      result of the test.
+
+   - *Rout files
+
+
+#######  check farm site notes ####### 
+
+0/ (start by cron)  -  
+   (cd RoboAdmin ; make) install new packages if avalable (use site-library-fresh)
+   (cd 2piQA/R ; make)
+
+
+1/ The make in 2piQA/R automatically does the following:
+   
+   -svn update  #to be sure it is working with latest copy of everything.
+
+   -Check version of installed R, compares it with the version recorded 
+     in R-version as from svn. If the installed version is older then nothing
+     is run. If the installed version is newer then svn commit the new 
+     R-version file to move all testing to new version.
+
+
+2/  copy template into the package directories and build some make structure
+       cp Makefile.packages..template  R/package/Makefile
+       cd R/package ; make
+
+   -Check version of installed packages, compare with the version recorded 
+     PKG/PKG-version files as from svn. If the installed version is older then
+     the PKG then tests are not run. If the installed version is newer, then 
+     svn commit the new PKG/PKG-version file to move all testing to new 
+     version.
+     
+     If a package is not installed this is detected automatically. If the 
+     package is installed but should not be used, for example, it 
+     does not work proper on this machine because system requirements are 
+     not met, this can be indicated by a flag in a Makevars-PKG.site file.
+     See 2piQA/R/Makevars-PKG.site.example for an example. These are used to
+     set a flag PACKAGE-NOT-AVAILABLE used to determine if snippets should 
+     be run.
+      
+   (RoboAdmin may be useful for maintaining R and packages up-to-date.)
+         
+   -The *-version stamp files contain two lines. The first is the version 
+    number and the second is the time stamp when it was generated by the 
+    first check farm machine to run and commit it. Because svn update uses 
+    the time of update, the make target sets the file date to the date and
+    time recorded in the file. If the server actual has a newer version of 
+    R or a package, then it will record the new version number and time 
+    stamp in the file and commit it.
+
+
+3/ generate list of snippets, filtered by 
+
+      PACKAGE-NOT-AVAILABLE as above.
+      
+      RESOURCES set in R/Makevars.site indicates resources available on the
+            server. (See R/Makevars.site.example).
+
+      RESOURCES-ONLY set in R/Makevars.site indicates if the server should only
+            do tests requiring these resources. Empty means no restrictions.
+	    It is generally not encouraged to use this, and the reduced demand
+	    on the server may be minimal since the snippets are all checked
+	    anyway, to see if they use this resource.
+
+      RESOURCES-PKG-REQUIREMENTS special package requirements indicated in the 
+           file $(PKG)/Makevars.$(PKG). This will be set when snippets are
+	   submitted. (See Makevars-PKG.example.) Empty means no special 
+	   resources are needed. It would be nice if this could be automatically
+	   generated from the package DESCRIPTION "SystemRequirements:" field,
+	   but that field seems only descriptive at this time, so cannot 
+	   be parsed.	    
+
+      RESOURCES-SNIP-REQUIREMENTS from R/pkg/snippet/Makevars.in indicating if 
+           the snippet requires some special resources in addition to those
+	   required by the package. Empty means no special resources
+	   are needed. This isSHOULD BE generated from the snippet DESCRIPTION field
+	   SystemRequirements.
+
+      OS-RESTRICTIONS from R/pkg/Makevars.in indicating if the package works
+           only on some OSes. Empty means no restrictions. This is generated
+	   from the package DESCRIPTION field OS_type.
+
+      OS-SNIP-RESTRICTIONS from R/pkg/snippet/Makevars.in indicating if 
+           the snippet works only on some OSes in addition to restrictions 
+	   imposed by the package. Empty means no restrictions. Snippet 
+	   authors should usually NOT need to set this and will be required to
+	   provide justification for doing so. It may, for example, be needed
+	   if the snippet uses other packages that have restrictions. This is 
+	   generated from the snippet DESCRIPTION field OS_type.
+
+4/ then for each snippet directory
+
+     cp Makefile.snippet.template  R/$(PAC)/$(SNIP)/Makefile
+     cd R/$(PAC)/$(SNIP)
+     svn update 
+     make 
+     
+     which checks which of the *.R files it could run, based on the above
+     filtering, and runs any that need to be run. This generates 
+     STATUS-*.R-$(OS), RESULT-*.R-$(OS), and *.Rout-$(OS) files. The first 
+     are the files which are used to siganl if a snippet needs to be run. 
+     The second are the results (snippet passes or fails) used to summarize
+     results and report them on the web site. The last are the details, which
+     may be useful for snippet and package authors trying to understand details
+     of what happened on different sites.
