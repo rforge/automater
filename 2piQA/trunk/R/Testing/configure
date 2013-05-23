@@ -1,0 +1,24 @@
+#! /bin/sh
+
+version="/2piQA configure  version 0.5"
+
+usage="Usage: configure [--help]  [--version] [OS   CENTRAL]"
+
+if [ 2 != $# ] ;then   echo "${usage}" ; exit 1 ; fi
+
+while test -n "${1}"; do
+  case ${1} in
+    -h|--help)
+      echo "${usage}"; exit 0 ;;
+    -v|--version)
+      echo "${version}"; exit 0 ;;
+    *)   break ;;
+  esac
+done
+
+echo "creating Makevars.site"
+echo "OS_TAG:=$1"      >Makevars.site
+echo "2piHOME:=`pwd`" >>Makevars.site
+echo "CENTRAL:=${2}"  >>Makevars.site
+
+cat Makevars.site.template >>Makevars.site

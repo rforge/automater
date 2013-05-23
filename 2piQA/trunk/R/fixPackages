@@ -12,50 +12,88 @@ if [ $# -ne 0 ]; then
  fi
 
 
-#SOURCE=~/qc
-#PACS=`( cd $SOURCE ; ls */DESCRIPTION | perl -pe 's/\/DESCRIPTION//g')`
+#TARGET=~/2piQA-dev/R/Packages
+#TARGET=Packages
+PACKAGES=`(cd Packages ; ls -a -d */.. | perl -pe 's/\/\.\.//g' )`
 
-TARGET=~/2piQA/R/Packages
-PACS=`( cd $TARGET ; ls -a -d */.. | perl -pe 's/\/..//g')`
+echo $PACKAGES
 
-#echo $PACS
+OS='Ubuntu32 Ubuntu64 Linux Mint64'
 
-for f in $PACS 
+svn propset svn:ignore "
+*-trigger"   Testing
+
+for o in $OS 
 do
- # ls $TARGET/$f/*
- # ls $SOURCE/$f/tests/*
- 
- # mkdir -p $TARGET/$f/SelfTest
- # cp $SOURCE/$f/tests/*   $TARGET/$f/SelfTest 
- # cp Makefile.snippet.template  $TARGET/$f/SelfTest/Makefile
- # cp Makefile.packages.template $TARGET/$f/Makefile
- 
- # echo "Description: SelfTest of package $f generated from package tests/" \
- #                                            >$TARGET/$f/SelfTest/DESCRIPTION 
- # echo "Package: $f"                        >>$TARGET/$f/SelfTest/DESCRIPTION 
- # echo "Author: author or maintainer of $f" >>$TARGET/$f/SelfTest/DESCRIPTION 
-
- #svn add $TARGET/$f/SelfTest/DESCRIPTION
-# RFILES=`( cd $TARGET/$f/SelfTest ; ls *.[rR] )`
- #  Also need other OSes here
-#  for r in $RFILES 
-#  do
-#    touch   $TARGET/$f/SelfTest/STATUS-${r}-Linux
-#    svn add $TARGET/$f/SelfTest/STATUS-${r}-Linux
-#    touch   $TARGET/$f/SelfTest/${r}out-Linux
-#    svn add $TARGET/$f/SelfTest/${r}out-Linux
-#  done
-#  svn commit $TARGET/$f/SelfTest/ -m "adding STATUS and Rout files for SelfTest"
-
- # touch $TARGET/$f/$f-version
- # svn add $TARGET/$f/$f-version
-
- # ./PKGsetup  $f
-
+for p in $PACKAGES 
+do
 #beware NO spaces on the end of lines in quotes
 svn propset svn:ignore "
 Makevars.auto
-LABEL.png"   Packages/$f
+Makefile
+*-trigger"   Testing/$o/$p
 
-svn commit Packages/$1 -m "set package directory $1 properties to ignore LABEL.png."
+  SNIPS=`( cd Packages/$p ; ls -a -d */.. | perl -pe 's/\/..//g')`
+  #echo $SNIPS
+  for s in $SNIPS 
+  do
+svn propset svn:ignore "
+Makefile
+*.png
+*.pdf"   Testing/$o/$p/$s
+  done
 done
+done
+  #  #for o in $OS 
+  #  #do
+  #    #touch   Testing/$o/$p/$p-version
+      #svn add Testing/$o/$p/$p-version
+      #svn mkdir Summary/$p/$s
+      #svn mkdir Testing/$o/$p
+      #svn mv $TARGET/$p/$s/$o   Testing/$o/$p/$s
+      #svn rm $TARGET/$p/$s/$o
+      #FILES=`( cd $TARGET/$p/$s/$o ; ls STATUS-*  | perl -pe 's/STATUS\-//g')`
+      #for g in $pILES 
+      #do
+      # ( cd  $TARGET/$p/$s/$o ; svn mv STATUS-$g  $g-STATUS )
+      #done
+    #done
+  #done
+  
+  #svn mv  $TARGET/$p/SelfTest/DESCRIPTION $TARGET/$p/SelfTest/DESCRIPTION.snippet
+  #  svn remove  $TARGET/$p/*/*-MySQL
+  # if [ ! -e  $TARGET/$p/DESCRIPTION ] ; then 
+  #   cp  /home/paul/qc/$p/DESCRIPTION   $TARGET/$p/ 
+  #   svn add  $TARGET/$p/DESCRIPTION
+  #   fi
+ # ls $TARGET/$p/*
+  
+ # echo "Description: SelfTest of package $p generated from package tests/" \
+ #                                            >$TARGET/$p/SelfTest/DESCRIPTION.snippet 
+ # echo "Package: $p"                        >>$TARGET/$p/SelfTest/DESCRIPTION.snippet 
+ # echo "Author: author or maintainer of $p" >>$TARGET/$p/SelfTest/DESCRIPTION.snippet
+
+ #svn add $TARGET/$p/SelfTest/DESCRIPTION.snippet
+# RFILES=`( cd $TARGET/$p/SelfTest ; ls *.[rR] )`
+ #  Also need other OSes here
+#  for r in $RFILES 
+#  do
+#    touch   $TARGET/$p/SelfTest/STATUS-${r}-Linux
+#    svn add $TARGET/$p/SelfTest/STATUS-${r}-Linux
+#    touch   $TARGET/$p/SelfTest/${r}out-Linux
+#    svn add $TARGET/$p/SelfTest/${r}out-Linux
+#  done
+#  svn commit $TARGET/$p/SelfTest/ -m "adding STATUS and Rout files for SelfTest"
+
+ # touch $TARGET/$p/$p-version
+ # svn add $TARGET/$p/$p-version
+
+ # ./PKGsetup  $p
+
+#beware NO spaces on the end of lines in quotes
+#svn propset svn:ignore "
+#Makevars.auto
+#LABEL.png"   Packages/$p
+#
+#svn commit Packages/$1 -m "set package directory $1 properties to ignore LABEL.png."
+#done

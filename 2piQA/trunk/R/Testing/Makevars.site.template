@@ -1,0 +1,46 @@
+# this is used by configure. It should set  Makevars.site with
+# something like one of the following (uncommented)
+#OS_TAG:=Linux
+#OS_TAG:=Ubuntu32
+#OS_TAG:=Ubuntu64
+#OS_TAG:=Mint32
+#OS_TAG:=Mint64
+
+# site setting of $R should indicate latest version home, either override, or
+ROBOHOME:=/home/paul/RoboAdmin
+R:=$(ROBOHOME)/$(shell cat $(ROBOHOME)/R-src/latest)/
+
+# This is used to set R_LIBS_SITE. 
+# It should be a library with latest versions of packages.
+SITE_LIB:=${R}/site-library-fresh
+
+#sqlite
+RESOURCES:=lib-sqlite mysql-client mysql-server postgresql \
+ postgresql-server odbc python perl libtext-csv-xs-perl libxml2 libcurl java OTHER_ETSDB \
+ gmp Perl Encode Text::CSV_XS 
+
+# last line above is for current randomness in specification
+
+#fftw3 (>= 3.1.2) perl  gmp, libxml2 libcurl (version 7.14.0 or higher) java
+# An ODBC3 driver manager and drivers.
+# Perl, Encode, Text::CSV_XS libxml2 (>= 2.6.3)
+# python and modules sys,json,mechanize,re,csv,urllib2
+# rpcgen, GNU make
+
+# fftw3 (>= 3.1.2), perl, gmp, libxml2, libcurl, (>= 7.14.0), java-runtime?
+# odbc3-driver, odbc3-manager
+# perl, ??encode, libtext-csv-xs-perl, libxml2 (>= 2.6.3)
+# python, python-sys, python-json, python-mechanize, python-re, python-csv, python-urllib2
+
+#MPI Oracle-license  Fame-license Bloomberg-license rpcgen PADI
+
+
+# Next can be set to restricting the server to only do tests which require
+# specific resources. However, the savings is not as much as might be imagined,
+# since a large part of the work is done anyway, before it is determined
+# whether the resource is needed. Setting this is generally discouraged.
+# Also, all OS_TAGs require all snippet tests are done by some resource,
+# so an OS_TAG will not be possible if the test farm servers are too
+# restrictive.  If this gets abused it will need to be disabled.
+
+#RESOURCES-ONLY:=SQLLite  MySQL

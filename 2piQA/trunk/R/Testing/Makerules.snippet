@@ -1,0 +1,183 @@
+# For use in the Testing/$(OSTAG)/pac/snippet dir
+
+SNIP:=$(notdir $(shell pwd ))
+
+RVERSION:=${shell $(MKR) --version | grep 'R version' }
+
+SRC:=$(2piHOME)/../Packages
+
+include   ../Makevars.auto
+#sets PAC PACKAGE-NOT-AVAILABLE PKG OS-PKG-NOT-SUPPORTED 
+#PKG-RESOURCE-REQUIREMENTS set in ../Makevars.auto
+#PKG-RESOURCES-NOT-AVAILABLE set in ../Makevars.auto
+#PKG-DEPENDS is set in ../Makevars.auto
+#PKG-DEPENDS-NOT-AVAILABLE is set in ../Makevars.auto
+#SNIP-RESOURCES-NOT-AVAILABLE is not yet set anywhere
+#SNIP-DEPENDS-NOT-AVAILABLE   is not yet set anywhere
+
+#overrides are set in:
+-include   ../Makevars.$(PAC)
+
+#RESOURCES are set in:
+include $(2piHOME)/Makevars.site
+
+# hide error message (when there are no files) by re-directing std error
+RFILES:=${shell (cd $(SRC)/$(PAC)/$(SNIP) ; ls *.[rR] 2>/dev/null ) }
+
+#Note that SNIP resources and restrictions apply to all *.R files in the dir/
+#(snippet specific restrictions are discouraged)
+#SNIP-RESOURCE-REQUIREMENTS OS-SNIP-NOT-SUPPORTED are set in:
+-include      Makevars.$(SNIP)
+
+OS-NOT-SUPPORTED:=$(OS-PKG-NOT-SUPPORTED)$(OS-SNIP-NOT-SUPPORTED)
+
+RESOURCES-REQUIREMENTS:=$(PKG-RESOURCE-REQUIREMENTS) $(SNIP-RESOURCE-REQUIREMENTS)
+RESOURCES-NOT-AVAILABLE:=$(PKG-RESOURCES-NOT-AVAILABLE)$(SNIP-RESOURCES-NOT-AVAILABLE)
+
+DEPENDS-NOT-AVAILABLE:=$(PKG-DEPENDS-NOT-AVAILABLE)$(SNIP-DEPENDS-NOT-AVAILABLE)
+
+# ONLY indicated tests that are allowed on server, RUN means any tests
+ONLY:=$(if $(RESOURCES-ONLY),$(filter $(RESOURCES-REQUIREMENTS),$(RESOURCES-ONLY)),RUN)
+skipIfEmpty:=$(ONLY)
+
+#  NEED TO ADD SNIP-DEPENDS-NOT-AVAILABLE TO THIS !!!
+skipIfNotEmpty:=$(OS-NOT-SUPPORTED)$(PACKAGE-NOT-AVAILABLE)$(DEPENDS-NOT-AVAILABLE)$(RESOURCES-NOT-AVAILABLE)
+
+RESOURCES-OK:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),RESOURCES-OK,))
+
+#TESTS are RFILES that can be run
+TESTS:=$(if $(skipIfNotEmpty),,$(if $(skipIfEmpty),$(RFILES),))
+
+default: WHYNOT.TXT STATUS_SUMMARY
+
+# snippet should throw an error if it fails, but that is not a failure of 
+#  the make. The generated -STATUS keeps track of tests that pass or fail.
+
+test: 
+	@echo 'skipIfEmpty: "$(skipIfEmpty)"'
+	@echo 'skipIfNotEmpty: "$(skipIfNotEmpty)"'
+	@echo $(PACKAGE-NOT-AVAILABLE)
+	@echo 'RFILES: "$(RFILES)"'
+	@echo 'RESOURCES-OK: "$(RESOURCES-OK)"'
+	if [ -z $(RESOURCES-OK) ]; then echo 'RESOURCES-OK: "$(RESOURCES-OK)"' ; fi
+	@echo 'TESTABLE "$(shell cat TESTABLE)"'
+	if [ "UNKNOWN" = "$(shell cat TESTABLE )" ] ; then \
+	   echo UN ; fi
+	@echo 'TESTS: "$(TESTS)"'
+	@echo 'RESOURCES-REQUIREMENTS: "$(RESOURCES-REQUIREMENTS)"' 
+	@echo 'RESOURCES: "$(RESOURCES)"' 
+	@echo 'RESOURCES-ONLY: "$(RESOURCES-ONLY)"' 
+	@echo xxx
+	@#echo 'INSTALLED: "$(INSTALLED)"' 
+	@#echo xxx
+	@echo 'DEPENDS: "$(PKG-DEPENDS) $(SNIP-DEPENDS)"'
+	@echo 'DEPENDS-NOT-AVAILABLE: "$(DEPENDS-NOT-AVAILABLE)"' 
+	@echo xxx
+	@echo 'RESOURCES-NOT-AVAILABLE: "$(RESOURCES-NOT-AVAILABLE)"' 
+	@echo 'PKG-RESOURCES-NOT-AVAILABLE: "$(PKG-RESOURCES-NOT-AVAILABLE)"'
+	@echo 'SNIP-RESOURCES-NOT-AVAILABLE: "$(SNIP-RESOURCES-NOT-AVAILABLE)"'
+
+.PHONY: WHYNOT.TXT
+
+# TESTABLE and WHYNOT.TXT are committed when an
+# UNKOWN indication can be replaced. Because they are PHONY they should not 
+# be prereqs for other things.
+
+# With make -j an locked svn condition has occured sometimes, but I think 
+# is fixed now. The condition does seem to cleanup on its own, especially if 
+#  make without -j is run.
+
+whynot: WHYNOT.TXT
+
+# Commit WHYNOT.TXT if it is empty (new package version), but otherwise
+# use the same logic as for writing TESTABLE and WHYNOT.TXT.
+# Could probably get rid of TESTABLE but it is used by assessSnip.R in Summary
+
+# Note that TESTABLE indicates that the resources are available on
+#   some server, not necessarily on the current one!!
+# Update the file if this server has the resources via non-zero $(RESOURCES-OK),
+# and the file still indicates UNKOWN 
+
+WHYNOT.TXT: ../../../../Packages/$(PAC)/$(PAC)-version  ../../../R-version
+	@echo 'This file indicates conditions needed for tests to run.' >$@.tmp
+	@echo '' >>$@.tmp
+	@echo "$(PAC)-$(PAC-VERSION) $(RVERSION) $(shell date) ON  $(shell uname --all)"\
+	         >>$@.tmp 
+	@echo '' >>$@.tmp
+	@echo 'Details:'                              >>$@.tmp
+	@if [ -z '$(RFILES)' ] ; then  \
+	   echo 'There are no snippet test files, so' >>$@.tmp;  fi
+	@if [ -z '$(TESTS)' ] ; then \
+	  echo 'This server cannot run snippet test files.'  >>$@.tmp; fi
+	@echo ''                                              >>$@.tmp
+	@echo '**Details regarding the package and snippet**' >>$@.tmp
+	@echo skipIfNotEmpty: '"$(skipIfNotEmpty)"'           >>$@.tmp
+	@echo skipIfEmpty: '"$(skipIfEmpty)"'                 >>$@.tmp
+	@echo 'RESOURCES-OK (not empty to run): "$(RESOURCES-OK)"'       >>$@.tmp
+	@echo 'DEPENDS: "$(PKG-DEPENDS) $(SNIP-DEPENDS)"'                >>$@.tmp
+	@echo 'Special resources requirements: $(RESOURCES-REQUIREMENTS)'>>$@.tmp
+	@echo ''                                                         >>$@.tmp
+	@echo '**Details regarding the most recent server attempt**'     >>$@.tmp
+	@if [ -n '$(PACKAGE-NOT-AVAILABLE)' ]  ;                   then  \
+	   echo 'The package is not available on the test server:'   >>$@.tmp;\
+	   echo '   "$(PACKAGE-NOT-AVAILABLE)"'                      >>$@.tmp;\
+	   echo ''                                                   >>$@.tmp; fi
+	@echo 'Packages needed but not available on the test server' >>$@.tmp
+	@echo '   (must be empty for the test to run):  '            >>$@.tmp
+	@echo '   "$(DEPENDS-NOT-AVAILABLE)"'                        >>$@.tmp
+	@echo ''                                                     >>$@.tmp 
+	@echo 'Special resources available on this server:'          >>$@.tmp
+	@echo '   "$(RESOURCES)"'                                    >>$@.tmp
+	@echo ''                                                     >>$@.tmp 
+	@echo 'Restrictions imposed by the server to run only tests' >>$@.tmp
+	@echo ' requiring some special resources (usually empty):'   >>$@.tmp
+	@echo '   "$(RESOURCES-ONLY)"'                               >>$@.tmp
+	@echo 'Special resources needed but not available on this test server' >>$@.tmp
+	@echo '   (must be empty for the test to run):  '            >>$@.tmp
+	@echo '   "$(RESOURCES-NOT-AVAILABLE)"'                      >>$@.tmp
+	@# create if empty; should happen only when snip is created.
+	@if [ ! -s  $@ ] ; then  cp $@.tmp $@; fi 
+	@# create if non existent (devel problem - this should not happen).
+	@if [ ! -e TESTABLE ] ; then  echo "UNKNOWN" >TESTABLE  ; fi
+	@#push TESTABLE and WHYNOT.TXT
+	@if [ "UNKNOWN" = "$(shell cat TESTABLE )" ] ; then \
+	   mv $@.tmp $@; \
+	   if [  -n "$(RESOURCES-OK)" ] ; then \
+	     echo "$(PAC)-$(PAC-VERSION) $(shell date) ON $(shell uname --all)" >TESTABLE ;\
+	     fi ;\
+	   $(RSYNC) -truq  .  $(CENTRAL)/$(OS_TAG)/$(PAC)/$(SNIP); fi
+	@$(RM) $@.tmp
+
+
+STATUS_SUMMARY: $(TESTS:%=%-STATUS) ../../../../Packages/$(PAC)/$(PAC)-version
+	@# with-filename is default if more than one file. 
+	@echo "$(PAC)-$(PAC-VERSION) $(RVERSION)" >$@
+	@# If to avoid error message when there are no test STATUS files.
+	@# perl gives consistent fields in case of only one file.
+	@if [ -z '$(PACKAGE-NOT-AVAILABLE)' -a -n '$(RFILES)' ] ; then  \
+	   egrep --with-filename '(passed|failed)' *-STATUS \
+	      | perl -ane "print qq(@F[0,1]\n)">>$@   ; fi
+	@# This update is in case another farm server did a commit first
+	@# Could do this update/commit for $@  *-STATUS  *.Rout
+	@#   but might as well insure TESTABLE and WHYNOT.TXT keep in sync
+	@#pull
+	@$(RSYNC) -tuq $(CENTRAL)/$(OS_TAG)/$(PAC)/$(SNIP)  . 
+	@# misc cleanup
+	@$(RM) Rplots*.pdf *.ps *.tmp
+	@#push
+	@$(RSYNC) -truq --exclude=Makefile . $(CENTRAL)/$(OS_TAG)/$(PAC)/$(SNIP) 
+
+
+$(TESTS:%=%-STATUS):%-STATUS: $(SRC)/$(PAC)/$(SNIP)/% \
+             ../../../../Packages/$(PAC)/$(PAC)-version ../../../R-version
+	@echo doing $(PAC) $@
+	@echo "$(PAC)-$(PAC-VERSION); $(RVERSION); RUN $(shell date) ON  $(shell uname --all)"\
+	                >$(notdir $<)out 
+	@# the next never finishes with an error because of last touch /dev/null
+	@( $(MKR) <$<  >>$(notdir $<)out ; \
+	    export success=$$? ;  \
+	    if [ 0 -eq $$success ]  ; then \
+	         echo -n " passed." >$@.tmp  ; \
+	    else echo -n " failed." >$@.tmp  ;fi ; touch /dev/null)
+	@echo " $(PAC)-$(PAC-VERSION) $(RVERSION) $(shell date) ON  $(shell uname --all)" >>$@.tmp 
+	@mv $@.tmp  $@

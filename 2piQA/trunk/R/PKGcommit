@@ -1,0 +1,33 @@
+#!/bin/sh
+
+#  This needs to be run at the R/ level
+#  PKGcommit is meant to be run after PKGsetp, using fetchTests. 
+#  PKGsetup can be run in parallel, with substantial time savings 
+#   downloading packages. PKGcommit cannot be run in parallel, or
+#   the commits collide (on the working copy (locked ...)
+
+#probably should source OSTYPES from same place as Makefiles, but...
+OSTYPES='Linux Ubuntu32 Ubuntu64 Mint64'
+
+if [ $# -ne 1 ]; then 
+   echo usage PKGcommit  packageName
+   exit 1
+fi
+
+TMP=TMP
+
+svn add  Packages/$1
+svn add  Summary/Packages/$1
+svn add  Testing/*/$1
+
+
+# Now set properties to ignore some files
+
+(cd Summary/Packages    ; svn propset svn:ignore "LABEL.png"	$1 )
+(cd Summary/Packages/$1 ; svn propset svn:ignore "SUMMARY.png"	SelfTest )
+
+# Note that Makefiles  and side effect (*.png *.pdf *.ps) from some tests are generated
+# in the Testing/OS  directories, which use rsync. These should not be leaking back
+# to central and svn, so better not to ignore them.
+
+svn commit  -m "adding package $1 and SelfTest directories."

@@ -1,0 +1,16 @@
+# variables used in Makefiles at all levels
+
+# set R and R_LIBS_SITE in Makevars.site
+MKR:=R_LIBS_SITE=$(SITE_LIB)  $(R)/bin/R --slave  --vanilla
+
+# using ssh, rsync daemon may be faster?
+# set CENTRAL, used by rsync, in Makevars.site
+RSYNC=rsync  -e 'ssh -p 23' --exclude=.* 
+
+RM:=rm -r -f
+
+
+# packages installed in available library
+INSTALLED:=$(shell  \
+echo 'cat(paste(" ", dimnames(installed.packages())[[1]], collapse=""))' | \
+$(MKR) )

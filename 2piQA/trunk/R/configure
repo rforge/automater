@@ -1,0 +1,46 @@
+#! /bin/sh
+
+CENTRAL=192.168.1.152:/home/paul/2piQA-dev-central/R/Testing/
+
+version="/2piQA configure  version 0.7 (for OS-Platform testing machines)"
+opts="--help --copy-files  --version"
+
+usage="Usage: configure [--help]  [--version] [OS]"
+
+if [ 1 != $# ] ;then   echo "${usage}" ; exit 1 ; fi
+
+while test -n "${1}"; do
+  case ${1} in
+    -h|--help)
+      echo "${usage}"; exit 0 ;;
+    -v|--version)
+      echo "${version}"; exit 0 ;;
+    *)   break ;;
+  esac
+done
+
+# want R/        files under svn control for system updates (after alpha ??)
+# want R/Testing/R-version under rsync
+# but do not want Makevars.site to sync !!!
+# want R/Testing/$OS   under rsync  ( for $OS syncs of everything)
+# want R/Packages      under rsync  ( for *-version syncs)
+# don't need Summary/ on OS-Platform testing machines
+
+#  this is assuming top level was checked out with eg
+#  svn checkout --depth files \
+#    svn+ssh://paul@mysvn/stor/2piQAsvnTestArchive/2piQA/branches/devel/R \
+#       2piQA-U64-dev
+# cd 2piQA-U64-dev  
+
+rsync -tru --exclude=.* -e 'ssh -p 23' ${CENTRAL}../Packages   .
+    
+# need ./Testing rather than just . because of not -r
+rsync -tu  --exclude=.* -e 'ssh -p 23' ${CENTRAL}{configure,R-version,Ma*} ./Testing
+
+rsync -tru --exclude=.* -e 'ssh -p 23' ${CENTRAL}$1  ./Testing
+
+(cd Testing ; chmod u+x configure ;   ./configure $1  ${CENTRAL} )
+
+echo "To run"
+echo "  cd Testing"
+echo "  make -j checkVersions ; make -j"

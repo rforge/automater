@@ -1,4 +1,5 @@
-# This file (R/Packages/PKG/Makevars-PKG.site ) is only needed if the package is
+# This file (R/Testing/$(OS_TAG)/$(PAC)/Makevars-PKG.site ) is only 
+# needed if the package is
 # installed but being made unavailable for some other reason. 
 # It will not usually be needed, but may be necessary for cases where the 
 # package is installed but does not work because of a special driver 

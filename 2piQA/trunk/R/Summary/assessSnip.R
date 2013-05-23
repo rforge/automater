@@ -1,47 +1,74 @@
 
-# Run this at the each snippet level.
+# Run this at the level Summary/pac/snip . It uses all  Testing/OS_TYPES.
 # It generates files $(SNIP).png with the bar graphs of the summarized
 # results for each snippet.
 
 assessSnip <- function(){
-  snippet <- sub('.*/', '', getwd(), perl = TRUE) 
-  labels  <- sub("TESTABLE-","", list.files(pattern="TESTABLE-*"))
+  wd <- getwd()
+  snippet <- sub('.*/', '', wd) 
+  pac <- sub('.*/', '', sub(paste0('/',snippet), '',wd))
+  src <- sub(paste0('/Summary/Packages/',pac,'/',snippet), '',wd)
+  
+  #list.files(pattern="TESTABLE", recursive = TRUE)))
+  OSlabels  <-  sub(paste0(src,'/Testing/'), '',
+             list.dirs(path=paste0(src,'/Testing'), recursive=FALSE))
+  OSlabels  <- OSlabels[ OSlabels != '.svn']
 
-  # number of ttests can be determined from passfail, but fails if 
-  #   the first OS is not testable. This get .r or .R but skips data.motor
-  N <- length(list.files(pattern= ".*\\.[Rr]$"))
-  os <- length(labels)
+  # number of tests can be determined from passfail, but fails if 
+  #   the first OS is not testable. This gets .r or .R but skips "data.motor" in one pac
+  N <- length(list.files(path=paste0(src,'/Packages/',pac,'/',snippet), pattern= ".*\\.[Rr]$"))
+  os <- length(OSlabels)
 
   # maintainerCat is for each *.R file the package maintainers classification
   # NA, bug, featureRequest:  NA, 0, 1
   # if the file is missing, NA is assumed for all tests
-  maintainerCat <- if (file.exists("MAINTAINER.CATEGORIZATION.txt"))
-     as.numeric( scan("MAINTAINER.CATEGORIZATION.txt", list("",""))[[2]])
-     else rep(NA, N)
+  z <-paste0(src,'/Packages/',pac,'/',snippet, '/MAINTAINER.categorization')
+  if (!file.exists(z)) {
+     maintainerCat <- rep(NA, N)
+     mNames <- NULL
+     }
+  else{
+     z <- scan(z, list("",""), quiet=TRUE)
+     maintainerCat <- as.numeric(z[[2]])
+     mNames <- z[[1]]
+     names(maintainerCat) <- mNames
+     }
 
   if(length(maintainerCat) != N)
     stop("maintainerCat needs to be same length as number of tests.")
 
   #testable is for each OS label, one indication for the whole snippet of
   #whether there is a farm server with the resources to run it.
-  #passfail needs to be in tha same order as maintainerCat
 
   testable  <- rep(NA, os)
   passfail  <- matrix(NA, N,os)
   for (i in 1:os) {
-     testable[i] <-  "UNKNOWN" != 
-        scan(paste("TESTABLE-", labels[i], sep=""), what="")[1]
+     z <- paste0(src,'/Testing/',OSlabels[i],'/',pac,'/',snippet)
+     testable[i] <-  "UNKNOWN" != scan(paste0(z,'/TESTABLE'), what="", quiet=TRUE)[1]
+     if(testable[i]) {
+        z <- scan(paste0(z, "/STATUS_SUMMARY"), what=list("",""), skip=1, quiet=TRUE)
+	nm <- z[[1]]
+	z <- z[[2]]
+        if (0 == length(z)) {
+	   warning("STATUS_SUMMARY file for OS ",OSlabels[i], " does not have results.")
+	   z <- rep(NA,N)
+	   nm <- mNames #not really, but value will not matter
+	   }
+	#passfail needs to be in tha same order as maintainerCat, if that exists
+	if (!is.null(mNames)) {
+	   nm <- sub("-STATUS:", "", nm)
+	   names(z) <- nm
+	   passfail[,i] <- "passed." == z[mNames]
+	   }
+	else passfail[,i] <- "passed." == z
+        }
 
-     if(testable[i])  passfail[,i] <- "passed." == 
-         scan(paste("STATUS_SUMMARY-",labels[i], sep=""),
-	      what=list("",""))[[2]]
      }
   
   snipGraph(snippet, passfail, maintainerCat, testable=testable)
   }
 
-snipGraph <- function(snippet, passfail, maintainerCat,     
-               testable=rep(TRUE, length(labels))){
+snipGraph <- function(snippet, passfail, maintainerCat, testable){
    n  <- NROW(passfail)
    os <- NCOL(passfail)
    # dev.new()
@@ -54,8 +81,8 @@ snipGraph <- function(snippet, passfail, maintainerCat,
    title(snippet)
    for (i in 1:os) {
      y <- 1.0 -(i-1)/(os-1)
-     if (!testable[i]){ 
-       # not testable
+     if (!testable[i] || (n > 0 & all(is.na(passfail[,i])))){ 
+       # not testable or not tested
        segments(x0=0,	 x1=1,    y0=y, col="black",	lwd=10)
        }
      else if (0==n){

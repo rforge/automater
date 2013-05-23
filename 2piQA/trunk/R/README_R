@@ -1,0 +1,60 @@
+======================================================
+=========         Installing 2piQA           ========= 
+======================================================
+
+==== For testing one platform (test farm server)  ====
+
+  gunzip -c 2piQA_version  | tar xf -
+
+and possibly rename 2piQA to something meanful for the platform being tested.
+
+or 
+  svn checkout --depth files  \
+    svn+ssh://paul@mysvn/stor/2piQAsvnTestArchive/2piQA/branches/devel/R 2piQA
+
+  cd 2piQA
+  ./configure OS CENTRAL #(OS= Linux  Ubuntu64 Ubuntu32 Mint64 ...)
+
+THIS IS STILL HARD CODED IN CONFIGURE!!!
+
+eg
+  ./configure Linux 192.168.1.152:/home/paul/2piQA-dev-central/R/Testing
+
+The configure above sets CENTRAL in Makevars.site, sets the platform being tested (Linux), and then rsync's the Packages/ and Testing/Linux directories with the CENTRAL server.
+
+
+==== Setting up a CENTRAL  server  ====
+
+svn checkout  \
+  svn+ssh://paul@mysvn/stor/2piQAsvnTestArchive/2piQA/branches/devel \
+     2piQA-dev-central
+
+svn checkout  \
+  svn+ssh://paul@mysvn/stor/2piQAsvnTestArchive/2piQA/trunk \
+     2piQA-central
+
+
+======================================================
+=========        Installing R packages       ========= 
+======================================================
+
+Your R installation needs a full complement of R packages, which need 
+to be kept up-to-date (e.g. site-library-fresh using RoboAdmin).
+This gives a library of about 4GB.
+
+# These steps will try to install everything from CRAN
+# In an R session (example using R-3.0.1/site-library-fresh:
+
+# Next time try with omegahat and Bioc for dependencies
+#REPOS <- c("http://cran.r-project.org", "http://www.omegahat.org/R")
+REPOS <- c("http://cran.r-project.org")
+zn <- rownames(available.packages(
+           contriburl =contrib.url(REPOS, type="source")))
+
+#Ncpus is passed to make -j Ncpus
+#Parallel processes can make the download much faster
+install.packages(zn, repos=REPOS, dependencies= TRUE, Ncpus=50,
+    lib="/home/paul/RoboAdmin/R-3.0.1/site-library-fresh")
+
+#in Ubuntu I get 3963 of 4522 CRAN packages (several installs failed)
+

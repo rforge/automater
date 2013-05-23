@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# script for retrieving packages' tests from CRAN and intalling SelfTest. 
+# script for retrieving packages' tests from CRAN and installing SelfTest. 
 
 # THIS SCRIPT IS FOR DEVELOPMENT PURPOSES. NOT FOR GENERAL USE !!!
 
@@ -9,71 +9,49 @@ if [ $# -ne 0 ]; then
    exit 1
  fi
 
+#ROBOHOME=/home/paul/RoboAdmin
+#R=${ROBOHOME}/`cat $(ROBOHOME)/R-src/latest`/
+R=/home/paul/RoboAdmin/R-3.0.1/
 
-#SOURCE=CRAN
-#PACS=`( cd $SOURCE ; ls */DESCRIPTION | perl -pe 's/\/DESCRIPTION//g')`
-#PACS=./PackageList.txt
-#PACS=`( cd $TARGET ; ls -a -d */.. | perl -pe 's/\/..//g')`
-#PACS="dse ctv"
-#PACS="quadprog quantmod gtools gdata date urca PerformanceAnalytics \
-#mgcv fBasics sna copula optimx dfoptim"
-PACS="DBI tseries zoo xts its tis WriteXLS RMySQL RSQLite RPostgreSQL fame RODBC XML \
-Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate rJava \
-RCurl googleVis RJSONIO rjson fftw polynom igraph IBrokers randomForest foreach \
-FinancialInstrument ctv"
+#REPOS="http://cran.r-project.org"
+#echo $REPOS
 
+PACS=`echo 'cat(rownames(available.packages(
+ contriburl =contrib.url("http://cran.r-project.org", type="source")))[1201:1400])' \
+  | ${R}/bin/R --slave  --vanilla`
 
-TARGET=~/2piQA/R/Packages
+#DONE TO ESG, ABOUT 1093 PACKAGES
+# +[1094:1100]
+# +[1101:1200]
 
+# need fields = to get packages that do not work on current OS ??
 #echo $PACS
 #   available.packages(contriburl = contrib.url(getOption("repos"), type),
 #                        method, fields = NULL,
 #                        type = getOption("pkgType"),
 #                        filters = NULL)
-# need fields = to get packages that do not work on current OS
 #"Package", "Version""OS_type""Repository"
 #    repos = "http://cran.at.r-project.org")
 #z <- available.packages()["$PACS"
 # paste( z[1:2, "Package"],"_", z[1:2, "Version"],".tar.gz", sep="")
 
-# wget "http://cran.at.r-project.org/src/contrib/$f_*.tar.gz"
-# wget  does not support *
-# using download.packages avoids needing to know the version 
-#download.packages(pkgs=c("dse", "ctv"),  destdir="/home/paul/zot/tmp",
-# gunzip -c ../dse_2012.6-1.tar.gz | tar  --update --wildcards -xf - dse/tests/*
+#  PKGsetup can be run in parallel, with substantial time savings 
+#   downloading packages. PKGcommit cannot be run in parallel, or
+#   the commits collide (on the working copy:  locked ...)
+
+# NOT GOOD!  & JOBS START AND THEN SCRIPT MOVES ON BEFORE THEY FINISH
+
+# RUN TWICE, COMMENTTING OUT ONE PART THEN OTHER !!!!!
+
+#for f in $PACS 
+#do
+# nice -n 19  ./PKGsetup  $f &
+#done
+
+echo  Wait until jobs are all finished then comment above and uncomment below
+echo  '  ps -elf | grep PKGsetup   '
 
 for f in $PACS 
 do
- mkdir -p $TARGET/$f/SelfTest
- echo "download.packages(pkgs='$f', destdir='$TARGET/$f/', repos='http://cran.r-project.org')" \
-     | R --vanilla --quiet >fetchTest.Rout
- (cd $TARGET/$f/ ; gunzip -c $f_*.tar.gz | tar -xf - )
- (cd $TARGET/$f/ ; mv $f/tests/*      SelfTest )
- (cd $TARGET/$f/ ; mv $f/DESCRIPTION  DESCRIPTION )
- rm -r $TARGET/$f/$f
- rm    $TARGET/$f/$f*tar.gz
- cp Makefile.snippet.template  $TARGET/$f/SelfTest/Makefile
- cp Makefile.packages.template $TARGET/$f/Makefile
- 
- echo "Description: SelfTest of package $f generated from package tests/" \
-                                            >$TARGET/$f/SelfTest/DESCRIPTION 
- echo "Package: $f"                        >>$TARGET/$f/SelfTest/DESCRIPTION 
- echo "Author: author or maintainer of $f" >>$TARGET/$f/SelfTest/DESCRIPTION 
-
- RFILES=`( cd $TARGET/$f/SelfTest ; ls *.[rR] )`
- #  Also need other OSes here
-  for r in $RFILES 
-  do
-    touch   $TARGET/$f/SelfTest/STATUS-${r}-Linux
-    touch   $TARGET/$f/SelfTest/${r}out-Linux
-    touch   $TARGET/$f/SelfTest/STATUS_SUMMARY-Linux
-  done
-
- touch $TARGET/$f/$f-version
- 
- # this add fails if /$f is in svn already. Any additional files are not added.
- svn add $TARGET/$f
- svn commit $TARGET/$f -m "adding $f package directory and files for SelfTest"
-
- ./PKGsetup  $f
+ ./PKGcommit  $f 
 done

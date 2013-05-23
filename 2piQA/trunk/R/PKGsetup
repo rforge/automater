@@ -1,27 +1,64 @@
 #!/bin/sh
 
+#  This needs to be run at the R/ level
+
+#probably should source OSTYPES from same place as Makefiles, but...
+OSTYPES='Linux Ubuntu32 Ubuntu64 Mint64'
+
 if [ $# -ne 1 ]; then 
    echo usage PKGsetup  packageName
    exit 1
- fi
+fi
 
-#beware NO spaces on the end of lines in quotes
-svn propset svn:ignore "
-Makevars.auto
-LABEL.png"  Packages/$1
+TMP=TMP
 
-SNIPPETS=`( cd Packages/$1 ; ls */DESCRIPTION | perl -pe 's/\/DESCRIPTION//g')`
-echo $SNIPPETS
+mkdir -p ${TMP}
+mkdir -p Packages/$1
+mkdir -p Packages/$1/SelfTest
 
-for f in $SNIPPETS 
+
+rm -rf ${TMP}/$1*   # rm pre-existing
+# using download.packages rather than wget avoids needing to know the version 
+echo "download.packages(pkgs='$1', destdir='$TMP', repos='http://cran.r-project.org')" \
+    | R --vanilla --quiet >${TMP}/$1fetch.Rout
+(cd ${TMP} ; gunzip -c $1_*.tar.gz | tar -xf - )
+mv ${TMP}/$1/DESCRIPTION  Packages/$1/DESCRIPTION
+mv ${TMP}/$1/tests/*      Packages/$1/SelfTest
+if [ -d ${TMP}/$1/tests ]; then 
+    mv  ${TMP}/$1/tests/*    Packages/$1/SelfTest ;
+fi
+#rm -rf ${TMP}/$1
+
+#rFILES=`(cd Packages/$1/SelfTest ; ls *.r )`
+#  mv *.r to *.R but that is easier with make target
+
+
+echo "Description: SelfTest of package $1 generated from package tests/" \
+                     >Packages/$1/SelfTest/DESCRIPTION.snippet
+echo "Package: $1"  >>Packages/$1/SelfTest/DESCRIPTION.snippet
+echo "Author: author or maintainer of $1" \
+                    >>Packages/$1/SelfTest/DESCRIPTION.snippet
+grep "Maintainer:"    Packages/$1/DESCRIPTION \
+                    >>Packages/$1/SelfTest/DESCRIPTION.snippet
+
+
+# Summary/ just has structure, files are ignored
+mkdir -p Summary/Packages/$1
+mkdir -p Summary/Packages/$1/SelfTest
+
+RFILES=`( cd Packages/$1/SelfTest ; ls *.[rR] 2>/dev/null )`
+# should mv *.r to *.R but that is easier with make target
+for o in $OSTYPES 
 do
-( cd Packages/$1 ; \
-#beware NO spaces on the end of lines in quotes
-svn propset svn:ignore "
-*.png
-*.pdf
-*.ps"	$f )
+  mkdir -p Testing/$o/$1/SelfTest
+  (cd Testing/$o/$1/SelfTest/; touch STATUS_SUMMARY WHYNOT.TXT )
+  echo "UNKNOWN" >Testing/$o/$1/SelfTest/TESTABLE
+  for f in $RFILES 
+  do
+    touch   Testing/$o/$1/SelfTest/${f}-STATUS
+    touch   Testing/$o/$1/SelfTest/${f}out
+  done
 done
-  
-( cd Packages/$1 ; svn commit \
-   -m "set package $1 and snippets directories to ignore some files.")
+
+# do this after above so fake test outputs (touched files) are out-of-date
+touch Packages/$1/$1-version
