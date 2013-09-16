@@ -29,8 +29,8 @@ REPOS=c("http://cran.r-project.org", "http://www.omegahat.org/R")
 
 
 DEVEL:=setRNG tframe tfplot tframePlus dse EvalEst GPArotation tsfa numDeriv BB \
-TSdbi TSMySQL TSodbc TSSQLite TShistQuote TSgetSymbol TSPostgreSQL \
-TSxls TSzip TScompare CDNmoney 
+TSdbi TSsql TSMySQL TSodbc TSSQLite TShistQuote TSgetSymbol TSPostgreSQL \
+TSjson TSxls TSzip TScompare CDNmoney 
 
 SITE:=$(DEVEL) quadprog quantmod gtools gdata date urca \
 PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
