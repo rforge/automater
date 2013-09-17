@@ -20,27 +20,25 @@ Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following object is masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 **************        with zoo
 **************   done with zoo
-**************        with ets
-**************        disconnecting ets
+**************        skipping ets tests
 Loading required package: tseries
-Loading required package: quadprog
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=9&e=15&f=2012&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=8&e=16&f=2013&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... .......... ..
-downloaded 222 Kb
+.......... .......... .......... ......
+downloaded 236 Kb
 
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=9&e=15&f=2012&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=8&e=16&f=2013&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -48,10 +46,10 @@ opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... .......... ......
-downloaded 276 Kb
+.......... .......... .......... ........
+downloaded 288 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=06%2F09%2F11&date=10%2F15%2F12&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=05%2F10%2F12&date=09%2F16%2F13&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .......... ..
@@ -68,7 +66,7 @@ Loading required package: timeDate
 
 Attaching package: ‘timeSeries’
 
-The following object(s) are masked from ‘package:zoo’:
+The following object is masked from ‘package:zoo’:
 
     time<-
 
@@ -78,4 +76,4 @@ NULL
 [1] TRUE
 > proc.time()
    user  system elapsed 
-123.011   1.280 737.288 
+ 49.923   0.476 694.347 
