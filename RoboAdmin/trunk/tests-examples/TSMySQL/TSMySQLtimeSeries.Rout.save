@@ -20,7 +20,7 @@ Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object is masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
@@ -76,4 +76,4 @@ NULL
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 49.923   0.476 694.347 
+ 53.179   0.464 694.402 

@@ -20,7 +20,7 @@ Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object is masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
@@ -62,4 +62,4 @@ closing unused connection 4 (http://quote.yahoo.com)
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 51.875   0.440 171.491 
+ 54.563   0.256 168.887 
