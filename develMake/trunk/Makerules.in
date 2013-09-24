@@ -307,6 +307,42 @@ errors:
 svnstatus:    ;@(svn status ;  touch /dev/null)
 svnupdate:    ;@(svn update ;  touch /dev/null)
 
+winbuild:  winbuilder
+winbuilder: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+	@echo 'open win-builder.r-project.org'         >FLAGS/winbuilder.tmp
+	@#echo 'user  anonymous'                       >>FLAGS/winbuilder.tmp
+	@echo 'quote USER  anonymous'                    >>FLAGS/winbuilder.tmp
+	@echo 'quote PASS $(MAINTAINER_EMAIL)'        >>FLAGS/winbuilder.tmp
+	@echo ''                                      >>FLAGS/winbuilder.tmp
+	@echo 'passive'                               >>FLAGS/winbuilder.tmp
+	@echo 'binary'                                >>FLAGS/winbuilder.tmp
+	@echo 'cd R-devel'                            >>FLAGS/winbuilder.tmp
+	@echo 'lcd $(FLAGS)'                          >>FLAGS/winbuilder.tmp
+	@echo 'put $(PAC)_$(VERSION).tar.gz'          >>FLAGS/winbuilder.tmp
+	@echo 'bye'                                   >>FLAGS/winbuilder.tmp
+	@#echo 'may need to input email as password: $(MAINTAINER_EMAIL)'
+	ftp -nv <FLAGS/winbuilder.tmp
+	@#rm FLAGS/winbuilder.tmp
+
+tocran: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+	@echo 'open CRAN.r-project.org'         >FLAGS/toCRAN.tmp
+	@#echo 'user  anonymous'               >>FLAGS/toCRAN.tmp
+	@echo 'quote USER  anonymous'          >>FLAGS/toCRAN.tmp
+	@echo 'quote PASS $(MAINTAINER_EMAIL)' >>FLAGS/toCRAN.tmp
+	@echo ''                               >>FLAGS/toCRAN.tmp
+	@echo 'passive'                        >>FLAGS/toCRAN.tmp
+	@echo 'binary'                         >>FLAGS/toCRAN.tmp
+	@echo 'cd incoming'                    >>FLAGS/toCRAN.tmp
+	@echo 'lcd $(FLAGS)'                   >>FLAGS/toCRAN.tmp
+	@echo 'put $(PAC)_$(VERSION).tar.gz'   >>FLAGS/toCRAN.tmp
+	@echo 'bye'                            >>FLAGS/toCRAN.tmp
+	@#echo 'may need to input email as password: $(MAINTAINER_EMAIL)'
+	ftp -nv <FLAGS/toCRAN.tmp
+	@echo 'now email CRAN@R-project.org'          
+	@echo 'subject: CRAN submission $(PAC) $(VERSION)'
+	@echo 'I have read and agree to CRAN policies.'
+	@#rm FLAGS/toCRAN.tmp
+
 debug:
 	@echo  starting R with Makefile environment
 	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) \

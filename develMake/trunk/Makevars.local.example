@@ -24,3 +24,6 @@
 #   you are actually using the released version like everyone else.
 PREFIX?=/path/to/my/R-xxx-library
 
+#this is used for targets tocran and winbuilder for ftp submit
+MAINTAINER_EMAIL=yourID@yourHost
+
