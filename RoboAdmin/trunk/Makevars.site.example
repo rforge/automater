@@ -3,6 +3,13 @@
 
 REPOS=c("http://cran.r-project.org", "http://www.omegahat.org/R")
 
+# R uses the /tmp directory to install packages unless variable TMPDIR is set.
+# The /tmp directory is often marked as noexec in the /etc/fstab file, so
+# files under /tmp cannot be executed.  Packages that require compilation
+# will thus fail unless TMPDIR is set.
+# (The error message is often 'configure' exists but is not executable ...')
+#RENV=TMPDIR=~/tmp
+
 #CONFIG_OPTIONS does not need to be set, but can add specific options.
 #  --prefix=$(RPATH) could be in CONFIG_OPTIONS but is passed separately 
 #CONFIG_OPTIONS=--enable-R-shlib
