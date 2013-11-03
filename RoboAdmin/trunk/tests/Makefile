@@ -11,6 +11,10 @@ clean:
 	   done ; 
 
 testsite:
+	@if [ -z ${DIRS} ]; then \
+	   echo There are no tests installed ;\
+	   exit 1;\
+	   fi
 	@for f in ${DIRS}"" ; do \
 	   (cd $$f ; $(MAKE) testsite );  \
 	   done ; 
@@ -23,6 +27,10 @@ testsite:
 	   done ; 
 
 testfresh:
+	@if [ -z ${DIRS} ]; then \
+	   echo There are no tests installed ;\
+	   exit 1;\
+	   fi 
 	@for f in ${DIRS}"" ; do \
 	   (cd $$f ; $(MAKE) $@ );  \
 	   done ; 
@@ -35,6 +43,10 @@ testfresh:
 	   done ; 
 
 updateAll:
+	@if [ -z ${DIRS} ]; then \
+	   echo There are no tests installed ;\
+	   exit 1;\
+	   fi
 	@for f in ${DIRS}"" ; do \
 	   (cd $$f ; svn update );  \
 	   (cd $$f ; svn status );  \
