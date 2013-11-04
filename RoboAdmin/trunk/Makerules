@@ -157,31 +157,6 @@ $(FRESH:%=$(RPATH)/site-library-fresh/%): installR
 	    >>$(RPATH)/site-library-fresh.log ; touch /dev/null)
 	@#touch $@
 
-##################################
-## site-library-fresh-notdevel  ##
-##################################
-
-#  is only needed it you would like a fresh library that has only packages not
-#  under development at your site, so testing can be done more easily
-#  without risk of accidentally finding your package in the fresh library.
-
-FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
-
-### site-library-fresh-notdevel
-site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
-	@echo ${shell date}  'Installed package(s) in $(RPATH)/$@' \
-	    >>$(RPATH)/$@.log
-	@echo '        current list of ALL packages in $(RPATH)/$@' \
-	    >>$(RPATH)/$@.log
-	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$(RPATH)/$@.log
-	@touch FLAGS/$@
-
-$(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
-	@echo making $@ ...
-	@$(MKDIR) $(RPATH)/site-library-fresh-notdevel
-	@$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
-	@#touch $@
-
 
 ######################
 ##     update       ##
@@ -190,17 +165,11 @@ $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
 ###  update policy ###
 ### site-library                 not updated except in special circumstances
 ### site-library-fresh           updated regularly
-### site-library-fresh-notdevel  updated regularly
 
-# If DEVEL is specified in Makevars.site then target "fresh" will also
-#    do target update-site-library-fresh-notdevel
-# This will typically be non-empty only if you have on site package development. 
-
-fresh: update-site-library-fresh   update-site-library-fresh-notdevel
+fresh: update-site-library-fresh 
 
 
-update-site-library update-site-library-fresh \
-update-site-library-fresh-notdevel:update-site-%: site-%
+update-site-library update-site-library-fresh :update-site-%: site-%
 	@echo making $@ ...
 	@echo ${shell date} updating in $(RPATH)/$(subst update-,,$@) \
 	   >>$(RPATH)/$(subst update-,,$@).log

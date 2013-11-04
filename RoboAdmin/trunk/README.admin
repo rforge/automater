@@ -131,16 +131,7 @@ want to run all tests then
 #####   Local R Package Development Configuration           #####
 #################################################################
 
-The library site-library-fresh-notdevel (packages defined by  FRESH and not 
-in DEVEL) are for the purpose of R package development at your own site. 
-These will not be used by normal users. 
-This library has packages needed for development but not actually 
-being developed. (The logic of this is to reduce the possibility 
-of accidentally testing with old versions of development packages that
-have been installed in site-library or site-library-fresh.)
-
-The packages in  site-library-fresh-notdevel are updated at the same time 
-as packages in site-library-fresh.
+See notes in Makerules.extra.example. 
    
     
 #################################################################
@@ -150,7 +141,7 @@ as packages in site-library-fresh.
 A cron job can be used to check for a new versions of R and install it. 
 The cron job should run ./getDates and then make. Make will build and install a 
 new R version if it is available, based on the dates, then install site-library,
-site-library-fresh, and site-library-fresh-notdevel. 
+site-library-fresh.  
 
 The cron job will check the version of the R release, which is relatively 
 quick when there is not a new release, and then update packages in the FRESH 

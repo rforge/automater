@@ -1,0 +1,74 @@
+
+# This file should be renamed Makerules.extra if these rules are
+# to be used. It will then be included by the main Makefile.
+
+##### BEWARE that this assumes DEVEL is not empty  ####
+
+#################################################################
+#####   Local R Package Development Configuration           #####
+#################################################################
+
+#The library site-library-fresh-notdevel (packages defined by  FRESH and not 
+#in DEVEL) are for the purpose of R package development at your own site. 
+#These will not be used by normal users. 
+#This library has packages needed for development but not actually 
+#being developed. (The logic of this is to reduce the possibility 
+#of accidentally testing with old versions of development packages that
+#have been installed in site-library or site-library-fresh.)
+#
+#The packages in  site-library-fresh-notdevel are updated along with 
+#site-library-fresh using target
+#  make freshPlus 
+
+#####         cron job Configuration     
+# Target site-library-fresh-notdevel can be done along with fresh using
+#  target freshPlus. 
+
+
+##################################
+## site-library-fresh-notdevel  ##
+##################################
+
+#  is only needed it you would like a fresh library that has only packages not
+#  under development at your site, so testing can be done more easily
+#  without risk of accidentally finding your package in the fresh library.
+
+FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
+
+### site-library-fresh-notdevel
+site-library-fresh-notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
+	@echo ${shell date}  'Installed package(s) in $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@echo '        current list of ALL packages in $(RPATH)/$@' \
+	    >>$(RPATH)/$@.log
+	@grep Version: $(RPATH)/$@/*/DESCRIPTION    >>$(RPATH)/$@.log
+	@touch FLAGS/$@
+
+$(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
+	@echo making $@ ...
+	@$(MKDIR) $(RPATH)/site-library-fresh-notdevel
+	@$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	@#touch $@
+
+
+######################
+##     update       ##
+######################
+### site-library-fresh-notdevel  updated regularly
+
+# If DEVEL is specified in Makevars.site then target "freshPlus" will also
+#    do target update-site-library-fresh-notdevel
+# This will typically be non-empty only if you have on site package development. 
+
+freshPlus: update-site-library-fresh   update-site-library-fresh-notdevel
+
+
+update-site-library-fresh-notdevel:update-site-%: site-%
+	@echo making $@ ...
+	@echo ${shell date} updating in $(RPATH)/$(subst update-,,$@) \
+	   >>$(RPATH)/$(subst update-,,$@).log
+	@$(Rnsl) 'update.packages(lib.loc="$(RPATH)/$(subst update-,,$@)", repos=$(REPOS), INSTALL_opts="--byte-compile", ask=FALSE) ; q(status=0)' \
+	  >FLAGS/$@.out 2>&1
+	@(egrep '(trying|installing \*source)'  FLAGS/$@.out \
+	   >>$(RPATH)/$(subst update-,,$@).log ;  touch /dev/null)
+
