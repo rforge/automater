@@ -22,8 +22,17 @@
 
 #####         cron job Configuration     
 # Target site-library-fresh-notdevel can be done along with fresh using
-#  target freshPlus. 
-
+#    make freshPlus
+# There is no target testfreshPlus since testfresh will test everything and the
+# main purpose of site-library-fresh-notdevel is to omit some packages (the ones
+# under development). A typical cron job might be 
+# m h * * * (cd RoboAdmin ; ./getDates ;
+#   make             >cron.out 2>&1 ; 
+#   make freshPlus  >>cron.out 2>&1 ; 
+#   make testsite   >>cron.out 2>&1 ; 
+#   make testfresh  >>cron.out 2>&1)  || 
+#   echo "Error occurred.  See $HOME/RoboAdmin/cron.out for details" 
+# (all on one line)
 
 ##################################
 ## site-library-fresh-notdevel  ##
