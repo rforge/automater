@@ -118,6 +118,8 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@echo Now acroread $@  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
 
+.PHONY:	FLAGS/RCMDcheckASCRAN.out
+
 as-cran:FLAGS/RCMDcheckASCRAN.out
 
 FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
