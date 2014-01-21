@@ -1,9 +1,10 @@
 
 ##### This file should be renamed Makerules.extra if these rules are    ####
 ##### to be used. It will then be included by the main Makefile and     ####
-##### will build the library site-library-fresh-notdevel.  This lib     ####
-####  is used by develMake rules (automateR project) for dependencies   ####
-####  that are not packages under development.                          ####
+##### the library site-library-fresh-notdevel can be built with         ####
+####  make freshPlus (see cron notes below).  This lib is used by       ####
+####  develMake rules (automateR project) for dependencies that are     ####
+####  not packages under development.                                   ####
 #####                                                                   ####
 ##### BEWARE that this ASSUMES variable DEVEL is set not empty          ####
 #####      in Makevars.site.                                            ####
