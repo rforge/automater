@@ -1,8 +1,12 @@
 
-# This file should be renamed Makerules.extra if these rules are
-# to be used. It will then be included by the main Makefile.
-
-##### BEWARE that this assumes DEVEL is not empty  ####
+##### This file should be renamed Makerules.extra if these rules are    ####
+##### to be used. It will then be included by the main Makefile and     ####
+##### will build the library site-library-fresh-notdevel.  This lib     ####
+####  is used by develMake rules (automateR project) for dependencies   ####
+####  that are not packages under development.                          ####
+#####                                                                   ####
+##### BEWARE that this ASSUMES variable DEVEL is set not empty          ####
+#####      in Makevars.site.                                            ####
 
 #################################################################
 #####   Local R Package Development Configuration           #####
