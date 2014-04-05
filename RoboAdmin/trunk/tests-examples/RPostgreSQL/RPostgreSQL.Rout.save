@@ -1,6 +1,4 @@
 Loading required package: TSPostgreSQL
-Loading required package: tframe
-Loading required package: tframePlus
 Loading required package: TSdbi
 Loading required package: RPostgreSQL
 Loading required package: DBI
@@ -8,10 +6,11 @@ Loading required package: DBI
 **************************************************************
 * WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
 **************************************************************
+Loading required package: TSsql
  [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
 [11] "t"   
 [1] TRUE
 [1] TRUE
 > proc.time()
    user  system elapsed 
-  3.000   0.060   4.816 
+  1.928   0.038   2.380 

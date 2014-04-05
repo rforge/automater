@@ -32,7 +32,11 @@ m <- dbDriver("PostgreSQL") # note that this is needed in sourced files.
 
 sink("tableLayout.txt.tmp")
 dbListTables(con) 
-source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+#source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+require("TSsql")
+removeTSdbTables(con, yesIknowWhatIamDoing=TRUE)
+createTSdbTables(con, index=FALSE)
+
 sink(NULL)
 dbListTables(con) 
 dbDisconnect(con)
