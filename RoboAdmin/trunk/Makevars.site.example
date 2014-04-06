@@ -43,6 +43,7 @@ SITE:=$(DEVEL) quadprog quantmod gtools gdata date urca \
 PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
 DBI tseries zoo xts its tis WriteXLS RMySQL RPostgreSQL RSQLite fame RODBC XML \
 Hmisc quantreg survival bitops TTR Defaults timeSeries timeDate features \
-googleVis RCurl RJSONIO fftw polynom igraph randomForest foreach iterators doMC SSOAP
+googleVis RCurl RJSONIO rjson findpython \
+fftw polynom igraph randomForest foreach iterators doMC SSOAP
 
 FRESH:=$(SITE)
