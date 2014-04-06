@@ -11,7 +11,7 @@ clean:
 	   done ; 
 
 testsite:
-	@if [ -z ${DIRS} ]; then \
+	@if [ -z "${DIRS}" ]; then \
 	   echo There are no tests installed ;\
 	   exit 1;\
 	   fi
@@ -27,7 +27,7 @@ testsite:
 	   done ; 
 
 testfresh:
-	@if [ -z ${DIRS} ]; then \
+	@if [ -z "${DIRS}" ]; then \
 	   echo There are no tests installed ;\
 	   exit 1;\
 	   fi 
@@ -43,7 +43,7 @@ testfresh:
 	   done ; 
 
 updateAll:
-	@if [ -z ${DIRS} ]; then \
+	@if [ -z "${DIRS}" ]; then \
 	   echo There are no tests installed ;\
 	   exit 1;\
 	   fi

@@ -26,7 +26,7 @@ endef
 $(TESTS:%=%out):%out: %   $(DEPENDS_PKGS:%=$(RPATH)/site-library/%)
 	@$(RM) $@ 
 	@echo making $@ ...
-	@R_LIBS=$(RPATH)/library \
+	R_LIBS=$(RPATH)/library \
 	    R_LIBS_SITE=$(RPATH)/site-library  $(RB)  $< $@.fail
 	@if [ -f $@.save ]; then  \
 	  cat $@.save | $(RdiffPlus) >$@.save.tmp ; \
@@ -43,7 +43,7 @@ testfresh: $(TESTS:%=%outfresh)
 $(TESTS:%=%outfresh):%outfresh: % $(DEPENDS_PKGS:%=$(RPATH)/site-library-fresh/%) 
 	@$(RM) $@ 
 	@echo making $@ ...
-	@R_LIBS_SITE=$(RPATH)/site-library-fresh \
+	R_LIBS_SITE=$(RPATH)/site-library-fresh \
 	    R_LIBS=$(RPATH)/library  $(RB)  $< $@.fail
 	@if [ -f $(subst fresh,,$@.save) ]; then  \
 	  cat $(subst fresh,,$@.save) | $(RdiffPlus) >$@.save.tmp ; \
