@@ -9,17 +9,20 @@ m <- dbDriver("PostgreSQL") # note that this is needed in sourced files.
 
 ###### This is to set up tables. Otherwise use TSconnect#########
 
-con <- dbConnect(m, dbname="test", 
+conInit <- dbConnect(m, dbname="test", 
      user     = Sys.getenv("POSTGRES_USER"), 
      password = Sys.getenv("POSTGRES_PASSWD"), 
      host     = Sys.getenv("POSTGRES_HOST"))  
 
 sink("tableLayout.txt.tmp")
-dbListTables(con) 
-source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+dbListTables(conInit) 
+#source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+require("TSsql")
+removeTSdbTables(conInit, yesIknowWhatIamDoing=TRUE)
+createTSdbTables(conInit, index=FALSE)
 sink(NULL)
-dbListTables(con) 
-dbDisconnect(con)
+dbListTables(conInit) 
+dbDisconnect(conInit)
 
 con <- tryCatch(TSconnect(m, dbname="test",
      user     = Sys.getenv("POSTGRES_USER"), 
@@ -28,12 +31,12 @@ con <- tryCatch(TSconnect(m, dbname="test",
     
 if(inherits(con, "try-error")) stop("CreateTables did not work.")
 
-source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
-source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
+source(system.file("TSsql/Populate.TSsql", package = "TSsql"))
+source(system.file("TSsql/TSdbi.TSsql", package = "TSsql"))
 sink("tableLayout.txt.tmp", append=TRUE)
-source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
+source(system.file("TSsql/dbGetQuery.TSsql", package = "TSsql"))
 # sink next because series end is printed (and changes)
-source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
+source(system.file("TSsql/HistQuote.TSsql", package = "TSsql"))
 sink(NULL)
 
 cat("**************        disconnecting test\n")

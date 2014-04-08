@@ -1,19 +1,19 @@
 Loading required package: TSPostgreSQL
-Loading required package: tframe
-Loading required package: tframePlus
-Loading required package: DBI
 Loading required package: TSdbi
 Loading required package: RPostgreSQL
+Loading required package: DBI
 ************** RPostgreSQL  Examples ******************************
 **************************************************************
 * WARNING: THIS OVERWRITES TABLES IN TEST DATABASE ON SERVER**
 **************************************************************
+Loading required package: TSsql
  [1] "meta" "a"    "b"    "d"    "m"    "u"    "q"    "s"    "w"    "i"   
 [11] "t"   
 [1] TRUE
 Examples to put (fictitious) data in tables
 *************  Examples  Using TSdbi*************
 Loading required package: tfplot
+Loading required package: tframe
 **************        with ts
 **************   done with ts
 Loading required package: zoo
@@ -28,17 +28,17 @@ The following objects are masked from ‘package:base’:
 **************   done with zoo
 **************        skipping ets tests
 Loading required package: tseries
-trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=8&e=16&f=2013&g=d&q=q&y=0&z=^gspc&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=^gspc&a=0&b=01&c=1998&d=3&e=07&f=2014&g=d&q=q&y=0&z=^gspc&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... .......... .......... ......
-downloaded 236 Kb
+.......... .......... .......... .......... ....
+downloaded 244 Kb
 
-trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=8&e=16&f=2013&g=d&q=q&y=0&z=ibm&x=.csv'
+trying URL 'http://chart.yahoo.com/table.csv?s=ibm&a=0&b=02&c=1991&d=3&e=07&f=2014&g=d&q=q&y=0&z=ibm&x=.csv'
 Content type 'text/csv' length unknown
 opened URL
 .......... .......... .......... .......... ..........
@@ -46,10 +46,10 @@ opened URL
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
 .......... .......... .......... .......... ..........
-.......... .......... .......... ........
-downloaded 288 Kb
+.......... .......... .......... .......... .....
+downloaded 295 Kb
 
-trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=05%2F10%2F12&date=09%2F16%2F13&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
+trying URL 'http://www.oanda.com/convert/fxhistory?lang=en&date1=11%2F29%2F12&date=04%2F07%2F14&date_fmt=us&exch=EUR&exch2=&expr=USD&expr2=&margin_fixed=0&&SUBMIT=Get+Table&format=ASCII&redirected=1'
 Content type 'text/html' length unknown
 opened URL
 .......... .......... .......... ..
@@ -62,4 +62,4 @@ closing unused connection 4 (http://quote.yahoo.com)
 [1] TRUE
 > proc.time()
    user  system elapsed 
- 54.563   0.256 168.887 
+ 73.584   1.132 194.381 
