@@ -19,18 +19,21 @@ m <- dbDriver("MySQL") # note that this is needed in sourced files.
        passwd  <- Sys.getenv("MYSQL_PASSWD")
        if ("" == passwd)   passwd <- NULL
        #  See  ?"dbConnect-methods"
-       con <- dbConnect("MySQL",
+       conInit <- dbConnect("MySQL",
           username=user, password=passwd, host=host, dbname=dbname)  
-     }else  con <- 
+     }else  conInit <- 
        dbConnect(m, dbname=dbname) # pass user/passwd/host in ~/.my.cnf
 
 # sink here because printout from commands in source depends somewhat on
 #  the server character set
 sink("tableLayout.txt.tmp")
-source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+#source(system.file("TSsql/CreateTables.TSsql", package = "TSdbi"))
+require("TSsql")
+removeTSdbTables(conInit, yesIknowWhatIamDoing=TRUE)
+createTSdbTables(conInit, index=FALSE)
 sink(NULL)
-dbListTables(con) 
-dbDisconnect(con)
+dbListTables(conInit) 
+dbDisconnect(conInit)
 ##################################################################
 
 con <- if ("" != user) tryCatch(TSconnect(m, dbname=dbname, 
@@ -39,12 +42,12 @@ con <- if ("" != user) tryCatch(TSconnect(m, dbname=dbname,
 
 if(inherits(con, "try-error")) stop("CreateTables did not work.")
 
-source(system.file("TSsql/Populate.TSsql", package = "TSdbi"))
-source(system.file("TSsql/TSdbi.TSsql", package = "TSdbi"))
+source(system.file("TSsql/Populate.TSsql", package = "TSsql"))
+source(system.file("TSsql/TSdbi.TSsql", package = "TSsql"))
 sink("tableLayout.txt.tmp", append=TRUE)
-source(system.file("TSsql/dbGetQuery.TSsql", package = "TSdbi"))
+source(system.file("TSsql/dbGetQuery.TSsql", package = "TSsql"))
 # sink next because series end is printed (and changes)
-source(system.file("TSsql/HistQuote.TSsql", package = "TSdbi"))
+source(system.file("TSsql/HistQuote.TSsql", package = "TSsql"))
 sink(NULL)
 
 cat("**************        disconnecting test\n")
