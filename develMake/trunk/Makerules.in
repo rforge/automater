@@ -115,7 +115,9 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	(cd $(FLAGS)/vignettes ; \
 	        R_LIBS=$(QCLIB)  $(RSITE) $(RENV) LC_ALL=C  \
 	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
-	@echo Now acroread $@  to check, then possibly
+	@echo Now acroread $@ 
+	@echo  or diffpdf  inst/doc/$(subst $(FLAGS)/vignettes/,,$@)  $@
+	@echo  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
 
 .PHONY:	FLAGS/RCMDcheckASCRAN.out
