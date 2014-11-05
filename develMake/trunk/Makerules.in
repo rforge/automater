@@ -73,7 +73,7 @@ $(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@echo $(ECHOLINE)  $(TIMELINE)
 	@echo "Using R=$(R_HOME)"
 	@echo -n "        VERSION and date-stamp:"
-	@R --slave --version | grep "R version"
+	@R --slave --version | egrep "R version|Under development"
 	@$(RM) $@.tmp
 	@$(MKDIR) $@.tmp 
 	@#if .o and .so exist then some compiling is skipped, so warnings missed
