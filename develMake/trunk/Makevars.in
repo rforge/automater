@@ -15,7 +15,12 @@ BUILD_OPTIONS=--compact-vignettes --resave-data
 # BUT there is a (phony) target "as-cran" which should be run before submitting 
 # to CRAN
 
-CHECK_OPTIONS=--no-tests
+#EXAMPLE_OPTIONS=--run-dontrun --run-donttest --no-tests  --no-codoc --no-install \
+#   --no-vignettes --no-build-vignettes --no-manual 
+# ABOVE IS PREFERRED BUT BUG CAUSES SKIPPING EXECUTION.
+EXAMPLE_OPTIONS=--run-dontrun --run-donttest  
+
+CHECK_OPTIONS=--no-tests  --no-examples --no-vignettes 
 
 R_HOME=${shell echo "Sys.getenv('R_HOME'); q()" |  R --slave | sed -n 's/\[1\] //p'| sed -n 's/"//gp'}
 

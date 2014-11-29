@@ -1,6 +1,12 @@
 # The Makefile in individual package directories should define the 
 # default - usually using $(DEFAULT)
 
+# Individual test files and vignette files are run with the package installed 
+#in FLAGS/unchecked, target $(FLAGS)/unchecked/$(PAC).
+# Other package checking is done on the tarball created in FLAGS/unchecked,
+# target $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz, and
+#  if the checking is ok then the tarball is moved to FLAGS/.
+
 ifdef RSITETEST
   RSITE=R_LIBS_SITE=$(RSITETEST)
 else
@@ -120,22 +126,22 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@echo  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
 
-.PHONY:	FLAGS/RCMDcheckASCRAN.out
+.PHONY:	FLAGS/RCMDcheckASCRAN.log
 
-as-cran:FLAGS/RCMDcheckASCRAN.out
+as-cran:FLAGS/RCMDcheckASCRAN.log
 
-FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@echo $(ECHOLINE) $(TIMELINE)
 	@# $(RM) $(FLAGS)/$(PAC).Rcheck
 	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
-	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/RCMDcheckASCRAN.out
-	@test -z "`grep 'Error' $(FLAGS)/RCMDcheckASCRAN.out`" || \
-	          (grep -v "OK" $(FLAGS)/RCMDcheckASCRAN.out; exit 1 )
-	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheckASCRAN.out`" || \
-	          (grep -v "OK"  $(FLAGS)/RCMDcheckASCRAN.out; $(ONWARNING))
-	@test -z "`grep 'NOTE' $(FLAGS)/RCMDcheckASCRAN.out`" || \
-	          (grep -v "OK" $(FLAGS)/RCMDcheckASCRAN.out; exit 0 )
+	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/$@.tmp
+	@test -z "`grep 'Error' $(FLAGS)/$@.tmp`" || \
+	          (grep -v "OK" $(FLAGS)/$@.tmp; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/$@.tmp`" || \
+	          (grep -v "OK"  $(FLAGS)/$@.tmp; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/$@.tmp`" || \
+	          (grep -v "OK" $(FLAGS)/$@.tmp; exit 0 )
 	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
 	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
 	@test -z "`grep 'Non-standard files' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
@@ -152,12 +158,13 @@ FLAGS/RCMDcheckASCRAN.out: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
 	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
 	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
-	@touch $@
+	@mv $@.tmp  $@
 	@$(TIMELINE2)
 
 # vignettes are optional too, but are automatically missing if they do not exist
-$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
-	   $(RD:%=man/%)  $(VIGNS:%=vignettes/%.Stex) $(OPTIONAL_R_FILES)
+$(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
+	   $(RD:%=man/%) $(VIGNS:%=vignettes/%.Stex) \
+	   $(OPTIONAL_R_FILES)
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(RM) $(CURDIR)/src/*.o $(CURDIR)/src/*.so 
 	@#  This may cause problem in parallel make
@@ -166,10 +173,32 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	@test -z "`grep 'BuildVignettes' DESCRIPTION | grep -i 'false'`" || \
 	          (cp vignettes/*  inst/doc )
 	@$(MKDIR) $(FLAGS)/unchecked 
-	@#cd $(FLAGS)/unchecked && $(RM) $(PAC)_$(VERSION).tar.gz 
-	@cd $(FLAGS)/unchecked &&  \
+	@$(RM) $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz 
+	@cd $(FLAGS)/unchecked &&   \
 	    R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH)  $(RENV) LC_ALL=C  \
-	        R CMD build $(BUILD_OPTIONS) $(CURDIR)
+	        R CMD build $(BUILD_OPTIONS) $(CURDIR) \
+		    >$(CURDIR)/$(FLAGS)/RCMDbuild.log
+
+$(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  man
+	@echo $(ECHOLINE) $(TIMELINE)
+	@$(MKDIR) $(FLAGS)/examples
+	#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
+	#    | R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) R --vanilla --slave \
+	#       >$@.tmp
+	@# next in R-devel but not release until April 2015
+	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
+	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	    R CMD check $(EXAMPLE_OPTIONS)  -o $(FLAGS)/examples  \
+	        $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz   >$@.tmp
+	@test -z "`grep 'WARNING' $@.tmp`" || \
+	          (grep -v "OK"  $@.tmp; $(ONWARNING))
+	@test -z "`grep 'WARNING' $(FLAGS)/examples/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK"   $(FLAGS)/examples/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@mv $@.tmp  $@
+	@$(TIMELINE2)
+
+$(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  man 
+	@echo $(ECHOLINE) $(TIMELINE)
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
 	@# possibly --no-vignettes could be specified here (since building 
 	@#    the vignette was just done in unchecked)
@@ -181,14 +210,10 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(CHECK_OPTIONS) \
-	          -o $(FLAGS) $(FLAGS)/unchecked/$(notdir $@)  \
-		    >$(FLAGS)/RCMDcheck.out
-	@test -z "`grep 'Error' $(FLAGS)/RCMDcheck.out`" || \
-	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 1 )
-	@test -z "`grep 'WARNING' $(FLAGS)/RCMDcheck.out`" || \
-	          (grep -v "OK"  $(FLAGS)/RCMDcheck.out; $(ONWARNING))
-	@test -z "`grep 'NOTE' $(FLAGS)/RCMDcheck.out`" || \
-	          (grep -v "OK" $(FLAGS)/RCMDcheck.out; exit 0 )
+	      -o $(FLAGS) $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  >$@.tmp
+	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
+	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
+	@test -z "`grep 'NOTE' $@.tmp`"    || (grep -v "OK" $@.tmp; exit 0 )
 	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
 	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
 	@test -z "`grep 'WARNING' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
@@ -203,8 +228,13 @@ $(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
 		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
 	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
 	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
-	@cp  $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+	@mv $@.tmp  $@
 	@$(TIMELINE2)
+
+$(PAC)_$(VERSION).tar.gz:  $(FLAGS)/RCMDcheck.log  $(FLAGS)/examples.log
+	@echo $(ECHOLINE) $(TIMELINE)
+	@cd $(FLAGS) && \
+	   cp unchecked/$(PAC)_$(VERSION).tar.gz  $(PAC)_$(VERSION).tar.gz
 
 
 clean:	
@@ -260,7 +290,7 @@ site-library site-library-fresh site-library-devel site-library-fresh-notdevel:	
 # prevent these from being deleted when they are intermediate targets
 .SECONDARY:	INDEX  $(PAC).tar.gz  $(FLAGS)/$(PAC).tar.gz  
 
-INDEX:	man 
+INDEX:	man  
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(MKDIR) $(FLAGS)
 	@cd $(FLAGS) && echo "library(tools);  if (0 == length(\
@@ -298,12 +328,12 @@ allWarnings:
 
 issues: notes warnings errors
 
-notes:    ;@(grep -A 2 -i NOTE $(FLAGS)/RCMDcheck.out ;  touch /dev/null)
+notes:    ;@(grep -A 2 -i NOTE $(FLAGS)/RCMDcheck.log ;  touch /dev/null)
 
-warnings: ;@(grep -A 2 -i WARN $(FLAGS)/RCMDcheck.out ;  touch /dev/null)
+warnings: ;@(grep -A 2 -i WARN $(FLAGS)/RCMDcheck.log ;  touch /dev/null)
 
 errors:
-	@(grep -A 2 -i ERROR $(FLAGS)/RCMDcheck.out \
+	@(grep -A 2 -i ERROR $(FLAGS)/RCMDcheck.log \
 	    | grep -v "syntax errors ... OK" \
 	    | grep -v "can be loaded ... OK" \
 	    | grep -v "can be loaded with stated dependencies ... OK" \
@@ -314,7 +344,7 @@ svnstatus:    ;@(svn status ;  touch /dev/null)
 svnupdate:    ;@(svn update ;  touch /dev/null)
 
 winbuild:  winbuilder
-winbuilder: $(FLAGS)/$(PAC)_$(VERSION).tar.gz FLAGS/RCMDcheckASCRAN.out
+winbuilder: $(FLAGS)/$(PAC)_$(VERSION).tar.gz FLAGS/RCMDcheckASCRAN.log
 	@echo 'open win-builder.r-project.org'         >FLAGS/winbuilder.tmp
 	@#echo 'user  anonymous'                       >>FLAGS/winbuilder.tmp
 	@echo 'quote USER  anonymous'                    >>FLAGS/winbuilder.tmp
@@ -330,7 +360,7 @@ winbuilder: $(FLAGS)/$(PAC)_$(VERSION).tar.gz FLAGS/RCMDcheckASCRAN.out
 	ftp -nv <FLAGS/winbuilder.tmp
 	@#rm FLAGS/winbuilder.tmp
 
-tocran: $(FLAGS)/$(PAC)_$(VERSION).tar.gz FLAGS/RCMDcheckASCRAN.out
+tocran: $(FLAGS)/$(PAC)_$(VERSION).tar.gz FLAGS/RCMDcheckASCRAN.log
 	@echo 'open CRAN.r-project.org'         >FLAGS/toCRAN.tmp
 	@#echo 'user  anonymous'               >>FLAGS/toCRAN.tmp
 	@echo 'quote USER  anonymous'          >>FLAGS/toCRAN.tmp
