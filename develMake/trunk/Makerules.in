@@ -84,9 +84,6 @@ $(EXTRA_TESTS:%=$(FLAGS)/%):$(FLAGS)/%: inst/% \
 	@mv  $@.tmp  $@
 	@$(TIMELINE2)
 
-zz:
-	echo $(EXTRA_TEST_DIRS)
-	echo $(EXTRA_TESTS)
 
 $(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@echo $(ECHOLINE)  $(TIMELINE)
