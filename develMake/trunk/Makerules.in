@@ -77,11 +77,11 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) 
 $(EXTRA_TESTS:%=$(FLAGS)/%):$(FLAGS)/%: inst/% \
             $(FLAGS)/unchecked/$(PAC)  #$(PREREQ_PACS:%=$(QCLIB)/%)  
 	@echo $(ECHOLINE)  $(TIMELINE)
-	#$(RM) $@.tmp 
-	$(MKDIR) $(dir $@)
-	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) $(RENV) \
+	@$(RM) $@.tmp 
+	@$(MKDIR) $(dir $@)
+	@R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) $(RENV) \
 	    R CMD BATCH  --vanilla $<  $@.tmp
-	mv  $@.tmp  $@
+	@mv  $@.tmp  $@
 	@$(TIMELINE2)
 
 
