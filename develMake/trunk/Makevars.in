@@ -62,8 +62,8 @@ CODE=${shell  test -d R      && (ls R/*.[rR] ) }
 RD=${shell    test -d man    && (cd man ;  ls *.Rd  )}
 TESTS=${shell test -d tests  && (cd tests; ls *.[rR] ) }
 DEMOS=${shell test -d demo   && (cd demo;  ls *.[rR] ) }
-EXTRA_TEST_DIRS=${shell test -d inst/*[tT]est*  && (cd inst; ls -d *[tT]est* ) }
-EXTRA_TESTS=${shell test $(EXTRA_TEST_DIRS)  && (cd inst; ls *[tT]est*/*.[rR] ) }
+EXTRA_TEST_DIRS=${shell test -d inst && (cd inst; test -d *[tT]est*  && ls -d *[tT]est* )}
+EXTRA_TESTS=${shell test -n ""$(EXTRA_TEST_DIRS) && (cd inst; ls *[tT]est*/*.[rR] ) }
 
 #################################################################
 #
