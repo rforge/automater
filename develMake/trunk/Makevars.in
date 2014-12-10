@@ -18,7 +18,9 @@ BUILD_OPTIONS=--compact-vignettes --resave-data
 #EXAMPLE_OPTIONS=--run-dontrun --run-donttest --no-tests  --no-codoc --no-install \
 #   --no-vignettes --no-build-vignettes --no-manual 
 # ABOVE IS PREFERRED BUT BUG CAUSES SKIPPING EXECUTION.
-EXAMPLE_OPTIONS=--run-dontrun --run-donttest  
+
+# Not --run-donttest  (some examples require prompt input which stalls, marked donttest)
+EXAMPLE_OPTIONS=--run-dontrun  
 
 CHECK_OPTIONS=--no-tests  --no-examples --no-vignettes 
 
@@ -60,6 +62,8 @@ CODE=${shell  test -d R      && (ls R/*.[rR] ) }
 RD=${shell    test -d man    && (cd man ;  ls *.Rd  )}
 TESTS=${shell test -d tests  && (cd tests; ls *.[rR] ) }
 DEMOS=${shell test -d demo   && (cd demo;  ls *.[rR] ) }
+EXTRA_TEST_DIRS=${shell test -d inst/*[tT]est*  && (cd inst; ls -d *[tT]est* ) }
+EXTRA_TESTS=${shell test $(EXTRA_TEST_DIRS)  && (cd inst; ls *[tT]est*/*.[rR] ) }
 
 #################################################################
 #

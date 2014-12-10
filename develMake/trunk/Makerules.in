@@ -74,6 +74,16 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) 
 	@mv  $@.tmp  $@
 	@$(TIMELINE2)
 
+$(EXTRA_TESTS:%=$(FLAGS)/%):$(FLAGS)/%: inst/% \
+            $(FLAGS)/unchecked/$(PAC)  #$(PREREQ_PACS:%=$(QCLIB)/%)  
+	@echo $(ECHOLINE)  $(TIMELINE)
+	#$(RM) $@.tmp 
+	$(MKDIR) $(dir $@)
+	R_LIBS=$(FLAGS)/unchecked/$(PAC):$(QCLIB)  $(RSITE) $(RENV) \
+	    R CMD BATCH  --vanilla $<  $@.tmp
+	mv  $@.tmp  $@
+	@$(TIMELINE2)
+
 
 $(FLAGS)/unchecked/$(PAC):  $(CODE)  $(PREREQ_PACS:%=$(QCLIB)/%)
 	@echo $(ECHOLINE)  $(TIMELINE)
@@ -162,7 +172,8 @@ FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@$(TIMELINE2)
 
 # vignettes are optional too, but are automatically missing if they do not exist
-$(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIPTION \
+$(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%)  \
+	   $(EXTRA_TESTS:%=$(FLAGS)/%) DESCRIPTION \
 	   $(RD:%=man/%) $(VIGNS:%=vignettes/%.Stex) \
 	   $(OPTIONAL_R_FILES)
 	@echo $(ECHOLINE) $(TIMELINE)
@@ -179,7 +190,7 @@ $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%) DESCRIP
 	        R CMD build $(BUILD_OPTIONS) $(CURDIR) \
 		    >$(CURDIR)/$(FLAGS)/RCMDbuild.log
 
-$(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  man
+$(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%)
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(MKDIR) $(FLAGS)/examples
 	#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
@@ -197,7 +208,7 @@ $(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  man
 	@mv $@.tmp  $@
 	@$(TIMELINE2)
 
-$(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  man 
+$(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%) 
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(RM) $(FLAGS)/$(PAC).Rcheck
 	@# possibly --no-vignettes could be specified here (since building 
