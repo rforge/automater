@@ -13,9 +13,6 @@ else
   RSITE=
 endif
  
-ifndef R_LIBS_SITE_FRESH
-  R_LIBS_SITE_FRESH=$(R_LIBS_SITE)
-endif
 
 ONWARNING=exit 1
 #ONWARNING=echo WARNING Ignored.
@@ -143,7 +140,7 @@ as-cran:FLAGS/RCMDcheckASCRAN.log
 FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
 	@echo $(ECHOLINE) $(TIMELINE)
 	@# $(RM) $(FLAGS)/$(PAC).Rcheck
-	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
+	@R_LIBS=$(QCLIB)  $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/$@.tmp
 	@test -z "`grep 'Error' $(FLAGS)/$@.tmp`" || \
@@ -186,19 +183,19 @@ $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz: $(TESTS:%=$(FLAGS)/tests/%)  \
 	@$(MKDIR) $(FLAGS)/unchecked 
 	@$(RM) $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz 
 	@cd $(FLAGS)/unchecked &&   \
-	    R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH)  $(RENV) LC_ALL=C  \
+	    R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) LC_ALL=C  \
 	        R CMD build $(BUILD_OPTIONS) $(CURDIR) \
 		    >$(CURDIR)/$(FLAGS)/RCMDbuild.log
 
 $(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%)
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(MKDIR) $(FLAGS)/examples
+	@# next should work in R-3.1.2
 	#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
 	#    | R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) R --vanilla --slave \
 	#       >$@.tmp
 	@# next in R-devel but not release until April 2015
-	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
-	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(EXAMPLE_OPTIONS)  -o $(FLAGS)/examples  \
 	        $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz   >$@.tmp
 	@test -z "`grep 'WARNING' $@.tmp`" || \
@@ -218,8 +215,7 @@ $(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/
 	@#   check generates note about packages not available for checking (Rd
 	@#    and enhances: in DESCRIPTION references) which makes it 
 	@#    harder to identify issues.
-	@R_LIBS=$(QCLIB):$(R_LIBS_SITE_FRESH) \
-	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(CHECK_OPTIONS) \
 	      -o $(FLAGS) $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  >$@.tmp
 	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
