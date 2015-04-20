@@ -86,3 +86,38 @@ update-site-library-fresh-notdevel:update-site-%: site-%
 	@(egrep '(trying|installing \*source)'  FLAGS/$@.out \
 	   >>$(RPATH)/$(subst update-,,$@).log ;  touch /dev/null)
 
+
+#############################################################
+###   Install current  devel version of R    and          ###
+###     site-library-fresh-notdevel.    Skip checking.    ###
+### This library is the one used by develMake QC system.  ###
+###  The devel target is PHONY so it is always redone.    ###
+#############################################################
+
+DEV=ftp://ftp.stat.math.ethz.ch/Software/R/
+DEVPATH=$(ROBOHOME)R-devel
+
+.PHONY: devel $(ROBOHOME)/R-src/R-devel.tar.gz
+
+devel: $(ROBOHOME)/R-src/R-devel.tar.gz $(DEVPATH)/bin/Rcmd DevelSiteLibrary
+
+$(ROBOHOME)/R-src/R-devel.tar.gz: 
+	@echo making $@ ...
+	(cd R-src ;  $(RM) R-devel.tar.gz; wget -o Rwget.log $(DEV)"R-devel.tar.gz")
+
+$(DEVPATH)/bin/Rcmd: $(ROBOHOME)/R-src/R-devel.tar.gz
+	@echo making $@ ...
+	@$(RM) $(DEVPATH)
+	@gunzip -c $< | tar xf -
+	(cd $(DEVPATH) ; ./configure --prefix=$(DEVPATH) $(CONFIG_OPTIONS) )
+	(cd $(DEVPATH) ; make )
+	@touch $@
+
+
+DevelSiteLibrary: $(FRESHnotDEVEL:%=$(DEVPATH)/site-library-fresh-notdevel/%)
+
+$(FRESHnotDEVEL:%=$(DEVPATH)/site-library-fresh-notdevel/%): $(DEVPATH)/bin/Rcmd
+	@echo making $@ ...
+	@$(MKDIR) $(DEVPATH)/site-library-fresh-notdevel
+	$(Rnsl) 'install.packages(pkgs="$(notdir $@)", lib="$(dir $@)", repos=$(REPOS), INSTALL_opts="--byte-compile") ; q(status=0)'
+	@#touch $@

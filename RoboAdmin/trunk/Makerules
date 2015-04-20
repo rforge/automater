@@ -185,6 +185,10 @@ update-site-library update-site-library-fresh :update-site-%: site-%
 tests testsite testfresh: 
 	@(cd tests ; $(MAKE) $@)
 
+#####################
+###    Misc        ##
+#####################
+
 clean:
 	@echo this does not remove the built or installed R, or packages
 	$(RM) FLAGS testFame.db Rplots.pdf 
