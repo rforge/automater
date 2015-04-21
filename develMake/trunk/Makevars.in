@@ -62,8 +62,10 @@ CODE=${shell  test -d R      && (ls R/*.[rR] ) }
 RD=${shell    test -d man    && (cd man ;  ls *.Rd  )}
 TESTS=${shell test -d tests  && (cd tests; ls *.[rR] ) }
 DEMOS=${shell test -d demo   && (cd demo;  ls *.[rR] ) }
-EXTRA_TEST_DIRS=${shell test -d inst && (cd inst; test -d *[tT]est*  && ls -d *[tT]est* )}
-EXTRA_TESTS=${shell test -n ""$(EXTRA_TEST_DIRS) && (cd inst; ls *[tT]est*/*.[rR] ) }
+# ls in next returns exit code if nothing is found
+EXTRA_TEST_DIRS=${shell test -d inst && (cd inst; (ls  *[tT]est* >/dev/null 2>&1)  && ls -d *[tT]est* )}
+# only first dir is needed for test
+EXTRA_TESTS=${shell test -n ""$(word 1,$(EXTRA_TEST_DIRS)) && (cd inst; ls *[tT]est*/*.[rR] ) }
 
 #################################################################
 #

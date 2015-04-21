@@ -71,6 +71,8 @@ $(TESTS:%=$(FLAGS)/tests/%):$(FLAGS)/tests/%: tests/% $(FLAGS)/unchecked/$(PAC) 
 	@mv  $@.tmp  $@
 	@$(TIMELINE2)
 
+# individual tests one at a time vs e.g.
+# (cd FLAGS ;  R CMD check --test-dir=inst/testWithInternet TSmisc_2015.1-1.tar.gz )
 $(EXTRA_TESTS:%=$(FLAGS)/%):$(FLAGS)/%: inst/% \
             $(FLAGS)/unchecked/$(PAC)  #$(PREREQ_PACS:%=$(QCLIB)/%)  
 	@echo $(ECHOLINE)  $(TIMELINE)
@@ -127,28 +129,77 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 	@# Note: not using R_LIBS=$(CURDIR)/$(FLAGS)/unchecked/$(PAC):$(QCLIB)
 	(cd $(FLAGS)/vignettes ; \
 	        R_LIBS=$(QCLIB)  $(RSITE) $(RENV) LC_ALL=C  \
-	            R CMD Sweave --pdf $(subst vignettes/,,$<) )
+	          R CMD Sweave --clean=keepOuts --pdf $(subst vignettes/,,$<) )
 	@echo Now acroread $@ 
 	@echo  or diffpdf  inst/doc/$(subst $(FLAGS)/vignettes/,,$@)  $@
 	@echo  to check, then possibly
 	@echo  mv $@ inst/doc and commit in the svn archive.
 
-.PHONY:	FLAGS/RCMDcheckASCRAN.log
+#.PHONY:	FLAGS/RCMDcheckASCRAN.log
+
+as-cranSummary: $(FLAGS)/RCMDcheckASCRAN.log
+	@grep  "Status" $<
+
+as-cranSummary2:
+	@#(grep -A 2 -v OK $(FLAGS)/RCMDcheckASCRAN.log ;  touch /dev/null)
+	@(test -e $(FLAGS)/RCMDcheckASCRAN.log.tmp && \
+	    echo "ERROR RCMDcheckASCRAN.log.tmp exists" ;  touch /dev/null)
+	@(grep -v "using log directory" $(FLAGS)/RCMDcheckASCRAN.log*  | \
+	  grep -v "using R"   | \
+	  grep -v "using platform"   | \
+	  grep -v "Note_to_CRAN_maintainers"   | \
+	  grep -v "Maintainer"   | \
+	  grep -v "using session charset"   | \
+	  grep -v "checking tests"   | \
+	  grep -v "checking running R code from vignettes"   | \
+	  grep -v "DONE"   | \
+	  grep -v "OK" ;  touch /dev/null)
+
+as-cranSummary3:
+	@(grep "Status" $(FLAGS)/RCMDcheckASCRAN.log* ;  touch /dev/null)
+
 
 as-cran:FLAGS/RCMDcheckASCRAN.log
 
-FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz \
+                           $(FLAGS)/RCMDcheckASCRANextra.log
 	@echo $(ECHOLINE) $(TIMELINE)
 	@# $(RM) $(FLAGS)/$(PAC).Rcheck
 	@R_LIBS=$(QCLIB)  $(RSITE) \
 	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
-	    R CMD check --as-cran -o $(FLAGS) $< >$(FLAGS)/$@.tmp
-	@test -z "`grep 'Error' $(FLAGS)/$@.tmp`" || \
-	          (grep -v "OK" $(FLAGS)/$@.tmp; exit 1 )
-	@test -z "`grep 'WARNING' $(FLAGS)/$@.tmp`" || \
-	          (grep -v "OK"  $(FLAGS)/$@.tmp; $(ONWARNING))
-	@test -z "`grep 'NOTE' $(FLAGS)/$@.tmp`" || \
-	          (grep -v "OK" $(FLAGS)/$@.tmp; exit 0 )
+	    R CMD check --as-cran -o $(FLAGS) $< >$@.tmp
+	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
+	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
+	@test -z "`grep 'NOTE' $@.tmp`" || (grep -v "OK" $@.tmp; exit 0 )
+	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
+	@test -z "`grep 'Non-standard files' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
+	@test -z "`grep 'WARNING' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK"  $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'NOTE' $(FLAGS)/$(PAC).Rcheck/00check.log`"   || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 0 )
+	@test -z "`grep 'missing link' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
+	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; $(ONWARNING))
+	@test -z "`grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep 'Emergency stop' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log`"  || \
+		  (grep -A 2 'Undefined control' $(FLAGS)/$(PAC).Rcheck/*.log ; exit 1 )
+	@test -z "`grep 'Note:' $(FLAGS)/$(PAC).Rcheck/*.log`" || \
+	          (grep "Note:" $(FLAGS)/$(PAC).Rcheck/*.log; $(ONWARNING) )
+	@mv $@.tmp  $@
+	@$(TIMELINE2)
+
+FLAGS/RCMDcheckASCRANextra.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz
+	@echo $(ECHOLINE) $(TIMELINE)
+	@if [ -n "$(EXTRA_TEST_DIRS)" ] ; then \
+	   for f in $(EXTRA_TEST_DIRS)"" ; do (R_LIBS=$(QCLIB)  $(RSITE) \
+	      $(RENV) _R_CHECK_CODOC_S4_METHODS_=false \
+	      R CMD check --as-cran $(CHECK_OPTIONS) --test-dir=inst/$$f \
+	          -o $(FLAGS) $< >$@.tmp  ); done ; else touch $@.tmp ; fi
+	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
+	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
+	@test -z "`grep 'NOTE' $@.tmp`" || (grep -v "OK" $@.tmp; exit 0 )
 	@test -z "`grep 'Error' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \
 	          (grep -v "OK" $(FLAGS)/$(PAC).Rcheck/00check.log; exit 1 )
 	@test -z "`grep 'Non-standard files' $(FLAGS)/$(PAC).Rcheck/00check.log`" || \

@@ -18,8 +18,14 @@ Makepac.Depends:$(PACKAGES:%=$(QC)/%/DESCRIPTION)
 
 
 vignettes install install-site issues errors warnings notes version \
-svnstatus svnupdate as-cran: 
-	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
+svnstatus svnupdate as-cran as-cranSummary2 as-cranSummary3: 
+	@#for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) || exit 1; done
+	@for f in $(PACKAGES)  ; do (cd $${f} && $(MAKE) $@) ; done
+
+as-cranSummary:
+	@for f in $(PACKAGES)  ; do \
+	    echo -n $${f}" " ;\
+	    grep  "Status" $${f}/$(FLAGS)/RCMDcheckASCRAN.log* ; done
 
 clean reallyclean:	  
 	@$(RM) $(QCLIB)  $(QC)/Makepac.Depends
