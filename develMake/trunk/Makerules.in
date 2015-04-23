@@ -242,9 +242,8 @@ $(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%
 	@echo $(ECHOLINE) $(TIMELINE)
 	@$(MKDIR) $(FLAGS)/examples
 	@# next should work in R-3.1.2
-	#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
-	#    | R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) R --vanilla --slave \
-	#       >$@.tmp
+	@#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
+	 #    | R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) R --vanilla --slave  >$@.tmp
 	@# next in R-devel but not release until April 2015
 	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(EXAMPLE_OPTIONS)  -o $(FLAGS)/examples  \
