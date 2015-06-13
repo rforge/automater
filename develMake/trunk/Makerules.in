@@ -266,8 +266,7 @@ $(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/
 	@#    and enhances: in DESCRIPTION references) which makes it 
 	@#    harder to identify issues.
 	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
-	    R CMD check $(CHECK_OPTIONS) \
-	      -o $(FLAGS) $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  >$@.tmp
+	    R CMD check $(CHECK_OPTIONS)  -o $(FLAGS)  $<  >$@.tmp
 	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
 	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
 	@test -z "`grep 'NOTE' $@.tmp`"    || (grep -v "OK" $@.tmp; exit 0 )
