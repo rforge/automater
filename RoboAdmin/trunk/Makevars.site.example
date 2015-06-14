@@ -44,6 +44,6 @@ PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
 DBI tseries zoo xts its tis WriteXLS RMySQL RPostgreSQL RSQLite fame RODBC XML \
 Hmisc quantreg survival bitops TTR timeSeries timeDate features \
 googleVis RCurl RJSONIO rjson findpython \
-fftw polynom igraph randomForest foreach iterators doMC SSOAP
+fftw polynom igraph randomForest foreach iterators doMC 
 
 FRESH:=$(SITE)
