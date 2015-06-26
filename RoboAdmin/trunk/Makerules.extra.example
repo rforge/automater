@@ -34,7 +34,10 @@
 ## site-library-fresh-notdevel  ##
 ##################################
 
-FRESHnotDEVEL=$(filter-out $(DEVEL),$(FRESH))
+#site-library-fresh has dependencies for $(FRESH) so
+ALLFRESH=${shell  (cd $(RPATH)/site-library-fresh ;  ls -d * )}
+
+FRESHnotDEVEL=$(filter-out $(DEVEL),$(ALLFRESH))
 
 notdevel: $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%)
 	@echo "linked paclkages in $(RPATH)/site-library-fresh-notdevel to site-library-fresh"
