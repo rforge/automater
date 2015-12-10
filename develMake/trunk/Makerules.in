@@ -245,7 +245,9 @@ $(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%
 	@#echo "devtools::run_examples(test = FALSE, run=FALSE)" \
 	 #    | R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) R --vanilla --slave  >$@.tmp
 	@# next in R-devel but not release until April 2015
-	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	@# see note further below about
+	@#    _R_CHECK_FORCE_SUGGESTS_=FALSE
+	R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(EXAMPLE_OPTIONS)  -o $(FLAGS)/examples  \
 	        $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz   >$@.tmp
 	@test -z "`grep 'WARNING' $@.tmp`" || \
@@ -265,7 +267,12 @@ $(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/
 	@#   check generates note about packages not available for checking (Rd
 	@#    and enhances: in DESCRIPTION references) which makes it 
 	@#    harder to identify issues.
-	@R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	@#   add    here and above in examples.log target
+	@#        _R_CHECK_FORCE_SUGGESTS_=FALSE
+	@#   in next and above in examples.log target to build tfplot if googleVis is
+	@#     not available. (googleVis is not always updated quickly with new R
+	@#     release, and tframePlus depends on tfplot so almost everything fails.
+	R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
 	    R CMD check $(CHECK_OPTIONS)  -o $(FLAGS)  $<  >$@.tmp
 	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
 	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
