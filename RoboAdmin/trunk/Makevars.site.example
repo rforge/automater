@@ -37,12 +37,14 @@ REPOS=c("http://cran.r-project.org", "http://www.omegahat.org/R")
 
 DEVEL:=setRNG tframe tfplot tframePlus dse EvalEst GPArotation tsfa numDeriv BB \
 TSdbi TSsql TSMySQL TSPostgreSQL TSodbc TSSQLite \
-TSmisc TSsdmx TScompare TSdata TSfame CDNmoney 
+TSmisc TScompare TSdata TSfame CDNmoney 
 
-SITE:=$(DEVEL) quadprog quantmod gdata date urca \
-sna copula optimx dfoptim deSolve \
-DBI tseries zoo xts its tis WriteXLS RMySQL RPostgreSQL RSQLite fame RODBC \
-Hmisc quantreg survival timeSeries googleVis rjson findpython devtools
-
+SITE:=$(DEVEL) quadprog quantmod gtools gdata date urca \
+PerformanceAnalytics mgcv fBasics sna copula optimx dfoptim deSolve \
+DBI tseries zoo xts its tis WriteXLS RMySQL RPostgreSQL RSQLite fame RODBC XML \
+Hmisc quantreg survival bitops TTR timeSeries timeDate features \
+googleVis RCurl RJSONIO rjson findpython rJava RJSDMX \
+fftw polynom igraph randomForest foreach iterators doMC Quandl \
+Formula Rcpp ggplot2 
 
 FRESH:=$(SITE)
