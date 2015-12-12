@@ -137,8 +137,16 @@ $(VIGNS:%=$(FLAGS)/vignettes/%.pdf):$(FLAGS)/vignettes/%.pdf: vignettes/%.Stex
 
 #.PHONY:	FLAGS/RCMDcheckASCRAN.log
 
-as-cranSummary: $(FLAGS)/RCMDcheckASCRAN.log
+as-cranSummary0: $(FLAGS)/RCMDcheckASCRAN.log
 	@grep  "Status" $<
+
+# Next is not perfect, still get NOTE line for ignorable messages, 
+#  but at least the follwing line of context is removed
+
+as-cranSummary: $(FLAGS)/RCMDcheckASCRAN.log
+	@grep -v Status  $<   | egrep  "NOTE" -A 1  \
+	    | egrep  -v "No repository set"  \
+	    | egrep  -v "Maintainer:"  
 
 as-cranSummary2:
 	@#(grep -A 2 -v OK $(FLAGS)/RCMDcheckASCRAN.log ;  touch /dev/null)

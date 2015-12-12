@@ -24,8 +24,11 @@ svnstatus svnupdate as-cran as-cranSummary2 as-cranSummary3:
 
 as-cranSummary:
 	@for f in $(PACKAGES)  ; do \
-	    echo -n $${f}" " ;\
-	    grep  "Status" $${f}/$(FLAGS)/RCMDcheckASCRAN.log* ; done
+	    echo ">>>" $${f}"***" ;\
+	    grep -v Status  $${f}/$(FLAGS)/RCMDcheckASCRAN.log* \
+	      | egrep  "NOTE" -A 1  \
+	      | egrep  -v "No repository set"  \
+	      | egrep  -v "Maintainer:"  ; done
 
 clean reallyclean:	  
 	@$(RM) $(QCLIB)  $(QC)/Makepac.Depends
