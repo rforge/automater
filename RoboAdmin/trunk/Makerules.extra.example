@@ -61,9 +61,9 @@ $(FRESHnotDEVEL:%=$(RPATH)/site-library-fresh-notdevel/%): installR
 DEV=ftp://ftp.stat.math.ethz.ch/Software/R/
 DEVPATH=$(ROBOHOME)R-devel
 
-.PHONY: devel $(ROBOHOME)/R-src/R-devel.tar.gz
+.PHONY: R-devel $(ROBOHOME)/R-src/R-devel.tar.gz
 
-devel: $(ROBOHOME)/R-src/R-devel.tar.gz $(DEVPATH)/bin/Rcmd DevelSiteLibrary
+R-devel: $(ROBOHOME)/R-src/R-devel.tar.gz $(DEVPATH)/bin/Rcmd DevelSiteLibrary
 
 $(ROBOHOME)/R-src/R-devel.tar.gz: 
 	@echo making $@ ...
