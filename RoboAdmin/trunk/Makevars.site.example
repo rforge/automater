@@ -12,10 +12,14 @@ REPOS=c("http://cran.r-project.org", "http://www.omegahat.org/R")
 
 #CONFIG_OPTIONS does not need to be set, but can add specific options.
 #  --prefix=$(RPATH) could be in CONFIG_OPTIONS but is passed separately 
+
+#--enable-R-shlib is necessary for package littler
 #CONFIG_OPTIONS=--enable-R-shlib
+
 #Atlas
 #see  http://cran.at.r-project.org/doc/manuals/R-admin.html#ATLAS
 #CONFIG_OPTIONS=--enable-R-shlib --with-blas="-lptf77blas -lpthread -latlas"
+
 #Goto
 #see  http://cran.at.r-project.org/doc/manuals/R-admin.html#Goto-BLAS
 # and http://cran.at.r-project.org/doc/manuals/R-admin.html#Shared-BLAS
