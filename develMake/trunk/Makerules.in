@@ -173,8 +173,9 @@ FLAGS/RCMDcheckASCRAN.log: $(FLAGS)/$(PAC)_$(VERSION).tar.gz \
                            $(FLAGS)/RCMDcheckASCRANextra.log
 	@echo $(ECHOLINE) $(TIMELINE)
 	@# $(RM) $(FLAGS)/$(PAC).Rcheck
-	@R_LIBS=$(QCLIB)  $(RSITE) \
-	    $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	@R_LIBS=$(QCLIB)  $(RSITE) $(RENV) \
+	       _R_CHECK_CODOC_S4_METHODS_=true \
+	       _R_CHECK_CRAN_INCOMING_USE_ASPELL_=true \
 	    R CMD check --as-cran -o $(FLAGS) $< >$@.tmp
 	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
 	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
@@ -256,6 +257,7 @@ $(FLAGS)/examples.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/%
 	@# see note further below about
 	@#    _R_CHECK_FORCE_SUGGESTS_=FALSE
 	R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	     _R_CHECK_FORCE_SUGGESTS_=FALSE \
 	    R CMD check $(EXAMPLE_OPTIONS)  -o $(FLAGS)/examples  \
 	        $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz   >$@.tmp
 	@test -z "`grep 'WARNING' $@.tmp`" || \
@@ -281,6 +283,7 @@ $(FLAGS)/RCMDcheck.log: $(FLAGS)/unchecked/$(PAC)_$(VERSION).tar.gz  $(RD:%=man/
 	@#     not available. (googleVis is not always updated quickly with new R
 	@#     release, and tframePlus depends on tfplot so almost everything fails.
 	R_LIBS=$(QCLIB)  $(RSITE)  $(RENV) _R_CHECK_CODOC_S4_METHODS_=true \
+	        _R_CHECK_FORCE_SUGGESTS_=FALSE \
 	    R CMD check $(CHECK_OPTIONS)  -o $(FLAGS)  $<  >$@.tmp
 	@test -z "`grep 'Error' $@.tmp`"   || (grep -v "OK" $@.tmp; exit 1 )
 	@test -z "`grep 'WARNING' $@.tmp`" || (grep -v "OK"  $@.tmp; $(ONWARNING))
