@@ -9,7 +9,7 @@ rm -f R-src/index.html
 	
 # omit time from date as wget of tar.gz has UTC time not local time
 cat R-src/index.html | grep ".tar.gz" | tail -1 | perl \
-   -pe 's/.*right">(\d{2})-(\w+)-(\d{4}) (\d{2}):(\d{2}).*/$1-$2-$3/go' >R-src/latestdt
+   -pe 's/.*right">(\d{4})-(\w+)-(\d{2}) (\d{2}):(\d{2}).*/$1-$2-$3/go' >R-src/latestdt
 
 
 cat R-src/index.html | grep ".tar.gz" | tail -1 | perl \
