@@ -1,7 +1,7 @@
 #RUSERS=somebody@somewhere
 #RSUPPORT=somebody@somewhere
 
-REPOS=c("http://cran.r-project.org", "http://www.omegahat.org/R")
+REPOS=c("http://cran.r-project.org", "http://www.omegahat.net/R")
 
 # R uses the /tmp directory to install packages unless variable TMPDIR is set.
 # The /tmp directory is often marked as noexec in the /etc/fstab file, so
