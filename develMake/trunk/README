@@ -7,14 +7,12 @@ relationships among the packages in the qc directory.
 You may already have done this, to be reading this README file but, if not, 
 the qc directory is checked out of the automateR project anonomously by
 
-  svn checkout \
-   svn://svn.r-forge.r-project.org/svnroot/automater/trunk/develMake qc
+  svn checkout svn://scm.r-forge.r-project.org/svnroot/automater qc
 
 or with a developer name by
 
   svn checkout \
-   svn+ssh://developername@svn.r-forge.r-project.org/svnroot/automater/trunk/develMake qc
-
+svn+ssh://developername@scm.r-forge.r-project.org/svnroot/automater qc
 
 ###############  Configuration ############### 
 
